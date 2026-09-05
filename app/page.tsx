@@ -89,25 +89,25 @@ export default function LandingPage() {
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
             El ideal necesita poder material
           </h2>
-          <div className="grid gap-8 md:grid-cols-5 mb-12">
-            <div className="text-center p-4">
-              <div className="text-4xl font-bold mb-2">IDEAL</div>
-              <div className="text-6xl font-bold">*</div>
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-4 mb-12 text-center">
+            <div className="flex items-center gap-3 rounded-lg bg-white px-4 py-3 shadow-sm">
+              <span className="text-2xl font-bold sm:text-3xl">IDEAL</span>
+              <span className="text-3xl font-bold sm:text-4xl" aria-hidden="true">*</span>
             </div>
-            <div className="text-center p-4">
-              <div className="text-4xl font-bold mb-2">COMUNIDAD</div>
-              <div className="text-6xl font-bold">*</div>
+            <div className="flex items-center gap-3 rounded-lg bg-white px-4 py-3 shadow-sm">
+              <span className="text-2xl font-bold sm:text-3xl">COMUNIDAD</span>
+              <span className="text-3xl font-bold sm:text-4xl" aria-hidden="true">*</span>
             </div>
-            <div className="text-center p-4">
-              <div className="text-4xl font-bold mb-2">CAPITAL</div>
-              <div className="text-6xl font-bold">*</div>
+            <div className="flex items-center gap-3 rounded-lg bg-white px-4 py-3 shadow-sm">
+              <span className="text-2xl font-bold sm:text-3xl">CAPITAL</span>
+              <span className="text-3xl font-bold sm:text-4xl" aria-hidden="true">*</span>
             </div>
-            <div className="text-center p-4">
-              <div className="text-4xl font-bold mb-2">TECNOLOGÍA</div>
-              <div className="text-6xl font-bold">=</div>
+            <div className="flex items-center gap-3 rounded-lg bg-white px-4 py-3 shadow-sm">
+              <span className="text-2xl font-bold sm:text-3xl">TECNOLOGÍA</span>
+              <span className="text-3xl font-bold sm:text-4xl" aria-hidden="true">=</span>
             </div>
-            <div className="text-center p-4 bg-blue-600 text-white rounded-lg">
-              <div className="text-4xl font-bold">AUTONOMÍA</div>
+            <div className="rounded-lg bg-blue-600 px-4 py-3 text-white shadow-sm">
+              <span className="text-2xl font-bold sm:text-3xl">AUTONOMÍA</span>
             </div>
           </div>
           <p className="text-gray-600 text-center max-w-2xl mx-auto">
