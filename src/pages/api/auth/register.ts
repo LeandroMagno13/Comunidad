@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { sign } from 'jose/jwt';
+import { SignJWT } from 'jose';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 
@@ -45,11 +45,12 @@ async function register(req: NextApiRequest, res: NextApiResponse) {
       },
     });
 
-    const token = await sign(
-      { userId: user.id, email: user.email },
-      new TextEncoder().encode(process.env.JWT_SECRET),
-      { expiresIn: '7d' }
-    );
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'test-secret');
+    const token = await new SignJWT({ userId: user.id, email: user.email })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('7d')
+      .setIssuedAt()
+      .sign(secret);
 
     res.status(201).json({
       user: {
