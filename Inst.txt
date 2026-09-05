@@ -1,0 +1,1407 @@
+# PROYECTO: COMUNIDAD DE CAPITAL HUMANO
+
+## Landing + Registro y Gestor Inicial de Colaboradores
+
+Quiero construir una landing page y una primera plataforma web para iniciar una comunidad experimental cuyo objetivo es explorar una transición económica frente al avance de la automatización y la inteligencia artificial.
+
+No quiero presentar el proyecto como una organización ya constituida, una ONG, una empresa financiera ni como un sistema terminado.
+
+**Estamos construyéndolo.**
+
+La primera finalidad del sitio es reunir a las personas capaces de ayudar a diseñarlo, cuestionarlo, probarlo y eventualmente financiarlo.
+
+---
+
+# 1. IDEA CENTRAL
+
+La automatización puede aumentar enormemente la productividad y reducir la cantidad de trabajo humano necesario para producir bienes y servicios.
+
+Esto puede generar una transición:
+
+> trabajo → ingreso → supervivencia
+
+hacia una situación donde cada vez más personas dependan de un mercado laboral que necesita menos trabajo humano.
+
+El problema que queremos abordar no es:
+
+> "¿Cómo impedimos que la IA quite empleos?"
+
+La pregunta es:
+
+> **¿Cómo hacemos para que el aumento de productividad generado por la automatización también genere autonomía económica para las personas?**
+
+No queremos prohibir la tecnología.
+
+No queremos luchar contra la automatización.
+
+No queremos depender exclusivamente de una redistribución estatal.
+
+Queremos explorar una alternativa voluntaria:
+
+> **construir colectivamente capital productivo y utilizar parte de sus rendimientos para generar acceso a recursos para los miembros de una comunidad.**
+
+La idea combina:
+
+* comunidad;
+* cooperación humana;
+* capital productivo;
+* inversión;
+* tecnología;
+* democracia;
+* gremios;
+* reputación;
+* intercambio;
+* experimentación económica.
+
+El principio filosófico fundamental es:
+
+> **El ideal sin poder no sirve.
+> El poder sin ideal tampoco.**
+
+Una comunidad puede tener excelentes ideales y ser completamente impotente si no posee recursos.
+
+Un capital enorme puede tener muchísimo poder y carecer de propósito.
+
+Queremos explorar la combinación de ambos.
+
+---
+
+# 2. NO ES UNA RENTA BÁSICA TRADICIONAL
+
+No presentar el proyecto simplemente como "UBI privada".
+
+La idea es conceptualmente diferente.
+
+Una renta básica tradicional parte de:
+
+> alguien recauda recursos → alguien los redistribuye → las personas reciben dinero.
+
+Nuestro planteamiento explora:
+
+> personas → cooperación → comunidad → acumulación de capital → inversión → productividad → utilidades → patrimonio colectivo → acceso humano a recursos.
+
+El objetivo es construir una base patrimonial capaz de producir recursos.
+
+La comunidad no solamente distribuye dinero.
+
+**Construye el capital que posteriormente puede producirlo.**
+
+---
+
+# 3. EL CAPITAL ES FUNDAMENTAL
+
+No queremos construir una comunidad puramente idealista.
+
+Una comunidad sin patrimonio puede colaborar, conversar y producir conocimiento, pero tiene poca capacidad material.
+
+Por eso el proyecto debe desarrollar eventualmente un:
+
+**PATRIMONIO PRODUCTIVO COLECTIVO**
+
+que podría estar compuesto, sujeto a la estructura legal y financiera que finalmente se determine, por inversiones diversificadas en:
+
+* empresas;
+* tecnología;
+* inteligencia artificial;
+* robótica;
+* semiconductores;
+* energía;
+* infraestructura;
+* software;
+* producción;
+* activos financieros;
+* otros activos productivos.
+
+La finalidad no es especular por especular.
+
+La finalidad es construir una base patrimonial cuya productividad pueda generar recursos para la comunidad.
+
+---
+
+# 4. DOS CIRCUITOS
+
+El sistema debe visualizarse como dos circuitos conectados.
+
+## CIRCUITO HUMANO
+
+Necesidades y capacidades humanas:
+
+persona → necesidad → solicitud → colaboración → valor → CU
+
+## CIRCUITO PRODUCTIVO
+
+Capital y productividad:
+
+capital → inversión → productividad → utilidades → patrimonio → recursos
+
+Ambos circuitos se encuentran en:
+
+> **CU + comunidad → acceso a recursos**
+
+Esto debe explicarse visualmente en la landing.
+
+---
+
+# 5. COMMUNITY UNITS — CU
+
+Nombre provisional:
+
+**CU — Community Units**
+
+No asumir que el nombre es definitivo.
+
+Las CU son una unidad interna de intercambio, colaboración y participación comunitaria.
+
+No son:
+
+* dólares;
+* acciones;
+* propiedad sobre el patrimonio;
+* salario;
+* una medida del valor de una persona;
+* necesariamente convertibles directamente a dinero.
+
+Una CU representa capacidad de intercambio dentro del ecosistema.
+
+Ejemplo:
+
+Una persona necesita resolver un problema técnico.
+
+Publica:
+
+> "Necesito un especialista en electrónica para resolver X. Ofrezco 30 CU."
+
+Otra persona realiza el trabajo.
+
+Las 30 CU pasan de quien solicita a quien realiza la tarea.
+
+Las CU circulan.
+
+---
+
+# 6. EL MERCADO HUMANO DE LA COMUNIDAD
+
+No queremos establecer desde arriba cuánto "vale" cada profesión.
+
+El sistema debe permitir que la oferta y la demanda ayuden a descubrir el valor.
+
+Por ejemplo:
+
+Si hay cien programadores disponibles y pocas personas necesitan programación, el precio en CU puede bajar.
+
+Si muy pocas personas pueden realizar determinada actividad y muchas personas la necesitan, el precio puede subir.
+
+Esto permite descubrir qué capacidades humanas continúan siendo escasas.
+
+Y algo importante:
+
+No asumir que solamente las actividades tradicionalmente consideradas "productivas" tienen valor.
+
+En una sociedad altamente automatizada podría ocurrir que:
+
+* programar sea barato;
+* reparar algo siga siendo escaso;
+* enseñar sea valioso;
+* acompañar a alguien sea muy valioso;
+* escuchar a otra persona sea extremadamente valioso;
+* resolver conflictos tenga gran valor;
+* crear confianza sea escaso.
+
+La comunidad puede convertirse en un mecanismo para observar qué cosas los propios seres humanos siguen valorando.
+
+---
+
+# 7. GREMIOS
+
+El sistema debe contemplar "gremios" o comunidades especializadas.
+
+Ejemplos:
+
+* Gremio de programación
+* Gremio de electrónica
+* Gremio de abogados
+* Gremio de finanzas
+* Gremio de sociología
+* Gremio de diseño
+* Gremio de educación
+* Gremio de investigación
+* Gremio de fabricación
+* Gremio de comunicación
+* Gremio de filosofía
+* Gremio de infraestructura
+* etc.
+
+Los gremios no son necesariamente asociaciones profesionales tradicionales.
+
+Son espacios donde personas con capacidades o intereses similares pueden:
+
+* colaborar;
+* debatir;
+* resolver problemas;
+* crear proyectos;
+* establecer estándares;
+* ofrecer servicios;
+* analizar propuestas;
+* generar conocimiento.
+
+Los gremios deben poder interactuar entre sí.
+
+Por ejemplo:
+
+Finanzas + Derecho + Tecnología pueden crear conjuntamente una propuesta de estructura patrimonial.
+
+---
+
+# 8. UNIDADES DE RECURSOS
+
+Concepto provisional:
+
+**UR — Unit of Resources**
+
+Una UR representa una unidad de acceso a recursos materiales provenientes del patrimonio colectivo.
+
+El concepto todavía NO debe considerarse jurídicamente definido.
+
+Es una abstracción económica que debe ser investigada y validada.
+
+La relación entre CU y UR no tiene que ser fijada definitivamente por un administrador.
+
+La hipótesis es que:
+
+> **la propia comunidad pueda participar en la determinación de cuánto esfuerzo/participación en CU debería ser necesario para acceder a determinada cantidad de recursos.**
+
+Ejemplo:
+
+Una persona propone:
+
+100 CU
+
+Otra:
+
+120 CU
+
+Otra:
+
+90 CU
+
+Otra:
+
+200 CU
+
+Otra:
+
+50 CU
+
+El sistema podría utilizar mecanismos de agregación colectiva para determinar un valor de referencia.
+
+No asumir que el promedio aritmético es necesariamente el mecanismo definitivo.
+
+La plataforma debe dejar abierta la posibilidad de investigar:
+
+* promedio;
+* mediana;
+* promedio recortado;
+* ponderación por reputación;
+* votación;
+* consenso;
+* mecanismos de mercado;
+* predicción;
+* otros mecanismos.
+
+La cuestión debe aparecer como:
+
+> **una de las grandes preguntas abiertas del proyecto.**
+
+---
+
+# 9. DEMOCRACIA
+
+La comunidad no debe depender de una autoridad única que decida todo.
+
+La democracia debe ser experimental y distribuida.
+
+La plataforma debe contemplar conceptualmente mecanismos mediante los cuales la comunidad pueda decidir:
+
+* reglas;
+* parámetros;
+* propuestas;
+* proyectos;
+* asignación de determinados recursos;
+* creación de nuevos gremios;
+* modificaciones del protocolo;
+* mecanismos de emisión o destrucción de CU;
+* relación CU/UR;
+* criterios de participación.
+
+No presentar una forma de democracia como definitiva.
+
+El proyecto está investigando qué forma de gobernanza funciona mejor.
+
+Una de las hipótesis centrales es:
+
+> **las reglas importantes deberían surgir de la comunidad y poder evolucionar con ella.**
+
+---
+
+# 10. MUCHAS COMUNIDADES, NO UNA SOLA
+
+No queremos necesariamente crear una única comunidad mundial.
+
+La visión a largo plazo contempla una red de comunidades.
+
+Cada comunidad podría tener:
+
+* sus propias reglas;
+* sus propios gremios;
+* su propia cultura;
+* sus propias unidades CU;
+* distintos mecanismos de gobernanza;
+* distintos criterios de acceso;
+* distintos niveles de recursos;
+* diferentes experimentos económicos.
+
+Una comunidad podría requerir 100 CU para determinada unidad de recursos.
+
+Otra podría requerir 500.
+
+Otra podría tener una economía completamente diferente.
+
+Estas comunidades podrían colaborar.
+
+Podrían intercambiar bienes, servicios, conocimientos y eventualmente unidades de intercambio.
+
+La analogía conceptual es:
+
+> dólares ↔ euros ↔ pesos
+
+pero aplicada a comunidades económicas experimentales.
+
+No asumir que esto implica crear inmediatamente una criptomoneda.
+
+Es una hipótesis de interoperabilidad que debe investigarse.
+
+---
+
+# 11. EMISIÓN Y DESTRUCCIÓN DE CU
+
+Este punto es deliberadamente una pregunta abierta.
+
+La plataforma debe distinguir conceptualmente entre:
+
+### Transferencia
+
+Una persona entrega CU a otra.
+
+No se crean unidades nuevas.
+
+### Emisión
+
+El sistema crea nuevas CU bajo determinadas reglas.
+
+### Destrucción
+
+El sistema elimina CU bajo determinadas reglas.
+
+No asumir que:
+
+> "más miembros = más CU"
+
+sea automáticamente correcto.
+
+Eso podría producir inflación.
+
+La economía de CU debe ser objeto de investigación.
+
+---
+
+# 12. REPUTACIÓN
+
+El sistema debería incorporar progresivamente una capa de reputación.
+
+La reputación NO representa el valor de una persona.
+
+Debe servir para generar confianza dentro de la comunidad.
+
+Por ejemplo:
+
+* trabajos completados;
+* colaboraciones verificadas;
+* proyectos terminados;
+* evaluaciones;
+* participación;
+* contribuciones;
+* cumplimiento;
+* comportamiento comunitario.
+
+Debe existir también:
+
+* mecanismos de apelación;
+* moderación;
+* prevención de fraude;
+* protección contra abuso;
+* reglas de conducta.
+
+No construir todavía un sistema complejo de reputación si no es necesario para el MVP.
+
+---
+
+# 13. QUIÉNES ESTAMOS BUSCANDO
+
+La landing debe tener una sección:
+
+# "No estamos buscando empleados. Estamos buscando constructores."
+
+Queremos atraer personas capaces de aportar conocimiento, trabajo, crítica, capital o infraestructura.
+
+Categorías principales:
+
+### Economía / Finanzas
+
+Buscamos:
+
+* economistas;
+* especialistas en mercados;
+* gestores de fondos;
+* especialistas en inversión;
+* contadores;
+* expertos en modelos financieros;
+* analistas de riesgo;
+* especialistas en tokenización si resulta pertinente;
+* personas con experiencia en construcción de patrimonio.
+
+Pregunta para ellos:
+
+> ¿Cómo podríamos construir un patrimonio productivo colectivo sostenible sin destruir los incentivos económicos que permiten que ese patrimonio crezca?
+
+---
+
+### Derecho
+
+Buscamos:
+
+* abogados;
+* especialistas societarios;
+* especialistas tributarios;
+* especialistas en mercados de capitales;
+* especialistas en asociaciones/fundaciones;
+* especialistas en cooperativas/mutuales;
+* expertos en regulación financiera;
+* especialistas en propiedad y gobernanza.
+
+Pregunta:
+
+> ¿Qué estructuras jurídicas permitirían construir algo parecido sin caer en una figura incompatible con el objetivo?
+
+No asumir que la respuesta será una ONG.
+
+La estructura legal es una de las preguntas que necesitamos resolver.
+
+---
+
+### Sociología
+
+Esta categoría es especialmente importante.
+
+No queremos simplemente construir una máquina financiera.
+
+Queremos entender qué ocurre con una sociedad donde el trabajo deja progresivamente de ser el principal mecanismo de integración social.
+
+Preguntas:
+
+* ¿Qué ocurre con la identidad cuando desaparece el trabajo?
+* ¿Cómo se mantiene el sentido de pertenencia?
+* ¿Cómo evitar una sociedad de individuos aislados?
+* ¿Qué actividades humanas continuarán siendo valiosas?
+* ¿Cómo se forman nuevas instituciones?
+* ¿Cómo evitar que la comunidad reproduzca jerarquías destructivas?
+* ¿Cómo diseñar cooperación sin convertirla en coerción?
+
+---
+
+### Filosofía / Ciencias Sociales
+
+Queremos personas capaces de cuestionar los fundamentos:
+
+* ¿Qué entendemos por valor?
+* ¿Qué entendemos por trabajo?
+* ¿Qué entendemos por propiedad?
+* ¿Qué significa libertad económica?
+* ¿Qué significa participar de una sociedad?
+* ¿Puede existir una economía post-empleo?
+* ¿Qué papel debería tener el capital?
+
+No queremos solamente gente que diga que la idea es buena.
+
+**Queremos gente capaz de demostrar que estamos equivocados cuando sea necesario.**
+
+---
+
+### Tecnología
+
+Buscamos:
+
+* programadores;
+* arquitectos de software;
+* especialistas en bases de datos;
+* expertos en sistemas distribuidos;
+* IA;
+* seguridad;
+* blockchain/DLT si eventualmente resulta útil;
+* UX/UI;
+* infraestructura.
+
+La tecnología debe servir al modelo económico.
+
+No queremos agregar blockchain, tokens o IA solamente porque estén de moda.
+
+---
+
+### Inversores
+
+Esta categoría debe tener una sección específica.
+
+No pedir dinero inmediatamente.
+
+La primera invitación es:
+
+> **Ayudanos a construir el modelo.**
+
+Pero también debemos decir claramente que, si el modelo demuestra ser viable, necesitaremos capital real.
+
+Buscamos personas que entiendan que:
+
+> **un ideal sin capital no tiene capacidad de acción.**
+
+Queremos inversores interesados en:
+
+* impacto;
+* tecnología;
+* nuevas estructuras económicas;
+* capital de largo plazo;
+* automatización;
+* productividad;
+* experimentación institucional.
+
+Debe existir un CTA:
+
+**"Quiero hablar sobre inversión"**
+
+---
+
+### Diseñadores / Comunicación
+
+Necesitamos explicar una idea extremadamente compleja de manera que cualquier persona pueda comprenderla.
+
+---
+
+### Investigadores
+
+Necesitamos personas que puedan estudiar:
+
+* modelos históricos;
+* cooperativas;
+* fondos soberanos;
+* fondos de inversión;
+* mutuales;
+* organizaciones comunitarias;
+* economías alternativas;
+* sistemas de reputación;
+* mecanismos de gobernanza;
+* monedas comunitarias;
+* mercados;
+* modelos post-trabajo.
+
+---
+
+# 14. EL PRINCIPIO DE CONTRIBUCIÓN
+
+La comunidad no debería comenzar pidiendo dinero.
+
+El primer recurso que pedimos es:
+
+> **tu capacidad de contribuir.**
+
+Puede ser:
+
+* conocimiento;
+* tiempo;
+* experiencia;
+* programación;
+* investigación;
+* diseño;
+* contactos;
+* crítica;
+* infraestructura;
+* asesoramiento;
+* capital.
+
+Una persona puede entrar diciendo:
+
+> "Soy sociólogo."
+
+Otra:
+
+> "Soy abogado."
+
+Otra:
+
+> "Soy programador."
+
+Otra:
+
+> "Tengo experiencia gestionando inversiones."
+
+Otra:
+
+> "No tengo ninguna profesión relacionada, pero quiero ayudar."
+
+Todas pueden tener un lugar.
+
+---
+
+# 15. EXPERIENCIA PERSONALIZADA POR PERFIL
+
+Cuando una persona selecciona una etiqueta profesional durante el registro, la plataforma debe poder mostrarle una explicación específica del proyecto desde su perspectiva.
+
+Ejemplo:
+
+## SOY SOCIÓLOGO
+
+> Estamos intentando diseñar una institución para una sociedad donde el empleo podría dejar de ser el principal mecanismo de integración económica.
+>
+> Necesitamos entender qué consecuencias tendría esto sobre identidad, pertenencia, cooperación, prestigio, desigualdad y sentido de propósito.
+>
+> No buscamos que aceptes nuestra hipótesis.
+>
+> Queremos que nos ayudes a destruirla, mejorarla o demostrar que puede funcionar.
+
+---
+
+## SOY ABOGADO
+
+> Queremos construir patrimonio colectivo y mecanismos de acceso a recursos sin asumir de antemano qué figura jurídica debe utilizarse.
+>
+> Necesitamos determinar qué estructuras permiten separar propiedad, gobernanza, participación y distribución de recursos.
+>
+> Necesitamos saber qué es legal, qué es posible y qué directamente no puede hacerse.
+
+---
+
+## SOY ECONOMISTA
+
+> Queremos explorar una economía donde el capital productivo colectivo genere una fuente de recursos para los participantes.
+>
+> Necesitamos estudiar incentivos, inflación, distribución, productividad, emisión de CU, circulación, escasez, formación de precios y sostenibilidad.
+
+---
+
+## SOY FINANCISTA / INVERSOR
+
+> La pregunta es sencilla:
+>
+> ¿podemos transformar una comunidad en una estructura capaz de acumular capital productivo de largo plazo?
+>
+> Si la respuesta es sí, necesitamos descubrir cómo hacerlo de manera sostenible, transparente y económicamente racional.
+
+---
+
+## SOY PROGRAMADOR
+
+> La plataforma debe permitir que personas, gremios y comunidades intercambien necesidades, capacidades, conocimiento y recursos.
+>
+> Necesitamos construir la infraestructura tecnológica que permita experimentar con estas reglas sin convertir el sistema en una caja negra controlada por una autoridad central.
+
+---
+
+# 16. MENSAJE PRINCIPAL DE LA LANDING
+
+La primera pantalla debe ser muy clara.
+
+Conceptualmente:
+
+> # ¿Qué pasa cuando el trabajo deja de ser necesario?
+>
+> La inteligencia artificial y la automatización pueden producir una transformación económica mucho más profunda que la pérdida de algunos empleos.
+>
+> Si cada vez necesitamos menos trabajo humano para producir lo que necesitamos, también tenemos que preguntarnos:
+>
+> **¿Quién será dueño de esa productividad?**
+>
+> Nosotros estamos explorando una respuesta:
+>
+> **construir colectivamente el capital que permita participar de ella.**
+
+CTA:
+
+**QUIERO CONTRIBUIR**
+
+CTA secundario:
+
+**QUIERO ENTENDER LA IDEA**
+
+---
+
+# 17. SEGUNDA SECCIÓN
+
+Título:
+
+> ## No queremos detener el futuro. Queremos participar de él.
+
+Explicar que no estamos proponiendo:
+
+* prohibir IA;
+* destruir empresas;
+* eliminar mercados;
+* reemplazar al Estado;
+* obligar a nadie a participar;
+* garantizar un resultado que todavía no sabemos construir.
+
+Estamos proponiendo experimentar.
+
+---
+
+# 18. TERCERA SECCIÓN
+
+Título:
+
+> ## El ideal necesita poder material.
+
+Mostrar:
+
+IDEAL
+
+*
+
+COMUNIDAD
+
+*
+
+CAPITAL
+
+*
+
+TECNOLOGÍA
+
+=
+
+**AUTONOMÍA**
+
+Explicar que una comunidad sin patrimonio depende permanentemente de terceros.
+
+Por eso uno de los objetivos fundamentales es acumular capital productivo.
+
+---
+
+# 19. CUARTA SECCIÓN
+
+Título:
+
+> ## ¿Cómo podría funcionar?
+
+Mostrar un diagrama simple:
+
+PERSONAS
+
+↓
+
+NECESIDADES + CAPACIDADES
+
+↓
+
+COLABORACIÓN
+
+↓
+
+CU
+
+↓
+
+PARTICIPACIÓN COMUNITARIA
+
+↓
+
+ACCESO A RECURSOS
+
+Y en paralelo:
+
+CAPITAL
+
+↓
+
+INVERSIÓN
+
+↓
+
+PRODUCTIVIDAD
+
+↓
+
+UTILIDADES
+
+↓
+
+PATRIMONIO COLECTIVO
+
+↓
+
+RECURSOS
+
+---
+
+# 20. QUINTA SECCIÓN
+
+Título:
+
+> ## Nadie decide desde arriba cuánto vale tu trabajo.
+
+Explicar el mecanismo de oferta/demanda.
+
+Las personas pueden solicitar tareas y ofrecer CU.
+
+Los participantes pueden aceptar o rechazar.
+
+Los precios emergen.
+
+La comunidad puede experimentar con distintos mecanismos.
+
+---
+
+# 21. SEXTA SECCIÓN
+
+Título:
+
+> ## ¿Y quién decide las reglas?
+
+Respuesta:
+
+> La comunidad.
+
+Pero no afirmar que ya tenemos resuelto el mecanismo democrático.
+
+Explicar que estamos investigando mecanismos de:
+
+* votación;
+* consenso;
+* delegación;
+* reputación;
+* democracia líquida;
+* mercados de predicción;
+* gobernanza distribuida;
+* representación.
+
+La pregunta no está cerrada.
+
+---
+
+# 22. SÉPTIMA SECCIÓN
+
+Título:
+
+> ## No tiene que existir una sola comunidad.
+
+Explicar la arquitectura de múltiples comunidades interoperables.
+
+Visual:
+
+COMUNIDAD A ↔ COMUNIDAD B ↔ COMUNIDAD C ↔ COMUNIDAD D
+
+Cada una puede experimentar con diferentes reglas.
+
+---
+
+# 23. OCTAVA SECCIÓN
+
+Título:
+
+> ## Esto todavía no existe.
+
+Esta sección es importante.
+
+No vender humo.
+
+Decir explícitamente:
+
+> No tenemos todas las respuestas.
+>
+> No tenemos todavía la estructura jurídica definitiva.
+>
+> No tenemos todavía el mecanismo económico definitivo.
+>
+> No sabemos cuál será el mejor modelo de gobernanza.
+>
+> No sabemos si todas las hipótesis funcionarán.
+>
+> Precisamente por eso estamos buscando personas capaces de ayudarnos a descubrirlo.
+
+---
+
+# 24. NOVENA SECCIÓN
+
+Título:
+
+> ## Buscamos constructores.
+
+Mostrar tarjetas:
+
+ECONOMÍA
+FINANZAS
+DERECHO
+SOCIOLOGÍA
+FILOSOFÍA
+TECNOLOGÍA
+IA
+DISEÑO
+INVESTIGACIÓN
+INVERSIÓN
+COMUNICACIÓN
+OTROS
+
+Cada tarjeta debe ser clickeable.
+
+Al hacer clic debe abrir una explicación personalizada de:
+
+* por qué esa disciplina es importante;
+* qué problemas queremos resolver;
+* qué preguntas necesita responder;
+* qué tipo de contribución buscamos.
+
+CTA:
+
+**QUIERO CONTRIBUIR DESDE [CATEGORÍA]**
+
+---
+
+# 25. REGISTRO
+
+Crear un formulario simple.
+
+Campos iniciales:
+
+* nombre;
+* email;
+* país;
+* profesión / especialidad;
+* categorías de interés;
+* experiencia;
+* qué puede aportar;
+* qué le interesa investigar;
+* disponibilidad aproximada;
+* LinkedIn / web / GitHub opcional;
+* ¿le interesa eventualmente invertir?;
+* ¿le interesa participar en la construcción técnica?;
+* ¿le interesa participar en gobernanza?;
+* comentario libre.
+
+No pedir información innecesaria.
+
+---
+
+# 26. PERFIL DEL COLABORADOR
+
+Crear una pequeña área privada para cada colaborador.
+
+Debe mostrar:
+
+* nombre;
+* especialidad;
+* categorías;
+* habilidades;
+* intereses;
+* contribuciones;
+* proyectos en los que participa;
+* gremios;
+* estado de incorporación.
+
+Estados iniciales:
+
+1. Registrado
+2. En revisión
+3. Incorporado
+4. Colaborador activo
+
+No construir todavía un sistema complejo de permisos.
+
+---
+
+# 27. PANEL ADMINISTRATIVO
+
+Crear un dashboard privado para los administradores.
+
+Debe permitir:
+
+* ver colaboradores;
+* filtrar por profesión;
+* filtrar por gremio;
+* filtrar por país;
+* buscar;
+* cambiar estado;
+* agregar notas internas;
+* asignar categorías;
+* crear gremios;
+* ver estadísticas básicas;
+* exportar datos.
+
+Dashboard inicial:
+
+* total de colaboradores;
+* nuevos colaboradores;
+* distribución por especialidad;
+* cantidad de potenciales inversores;
+* cantidad de abogados;
+* cantidad de economistas;
+* cantidad de programadores;
+* etc.
+
+El objetivo es responder rápidamente:
+
+> **¿Qué tipo de personas tenemos y qué tipo de personas todavía nos faltan?**
+
+---
+
+# 28. GREMIO COMO PRIMERA UNIDAD ORGANIZATIVA
+
+En el MVP, un colaborador puede pertenecer a uno o varios gremios.
+
+Cada gremio debería tener:
+
+* nombre;
+* descripción;
+* objetivo;
+* integrantes;
+* preguntas abiertas;
+* proyectos;
+* documentos;
+* discusiones.
+
+Ejemplo:
+
+Gremio de Finanzas
+
+Pregunta abierta:
+
+> ¿Cómo debería estructurarse el patrimonio productivo?
+
+Gremio Jurídico:
+
+> ¿Qué estructura legal permitiría separar propiedad, gobernanza y distribución?
+
+Gremio Sociología:
+
+> ¿Qué función social tendría la comunidad en una economía post-empleo?
+
+Esto transforma inmediatamente la web de una simple landing en **una infraestructura inicial de construcción colectiva**.
+
+---
+
+# 29. PROYECTOS
+
+Permitir crear proyectos.
+
+Ejemplo:
+
+### PROYECTO 001
+
+"Modelo de patrimonio colectivo"
+
+Responsables:
+
+* Finanzas
+* Derecho
+* Economía
+
+Estado:
+
+INVESTIGACIÓN
+
+Preguntas:
+
+* ¿Qué estructura utilizar?
+* ¿Qué activos?
+* ¿Cómo se gobierna?
+* ¿Cómo se distribuyen rendimientos?
+* ¿Cómo se protege el patrimonio?
+
+Otros proyectos:
+
+* Modelo CU
+* Modelo democrático
+* Sistema de reputación
+* Interoperabilidad entre comunidades
+* Arquitectura tecnológica
+* Modelo sociológico
+* Modelo financiero
+* Marco jurídico
+
+---
+
+# 30. FILOSOFÍA DEL PROYECTO
+
+Debe quedar explícito:
+
+No buscamos convencer a todo el mundo.
+
+Buscamos construir algo que pueda sobrevivir a nuestras propias ideas.
+
+La comunidad debe tener mecanismos para decir:
+
+> "Esta idea es mala."
+
+Y reemplazarla.
+
+Una propuesta no debe ser verdadera porque la haya propuesto el fundador.
+
+Debe ser evaluada por sus argumentos y resultados.
+
+---
+
+# 31. TONO
+
+La estética y el lenguaje deben evitar:
+
+* lenguaje de startup vacío;
+* "revolucionario";
+* "disruptivo";
+* promesas de riqueza;
+* lenguaje de criptomoneda;
+* espiritualidad New Age;
+* lenguaje político partidario;
+* propaganda.
+
+El tono debe ser:
+
+* intelectual;
+* ambicioso;
+* sobrio;
+* experimental;
+* transparente;
+* tecnológico;
+* humano;
+* económicamente serio.
+
+No presentar una utopía terminada.
+
+Presentar **una hipótesis que estamos intentando convertir en una institución real.**
+
+---
+
+# 32. FRASES CLAVE
+
+Utilizar algunas de estas frases como elementos visuales de la página:
+
+> **No estamos buscando empleados. Estamos buscando constructores.**
+
+> **No queremos detener el futuro. Queremos participar de él.**
+
+> **El ideal sin poder no sirve. El poder sin ideal tampoco.**
+
+> **Si las máquinas producen cada vez más, necesitamos preguntarnos quién posee esa productividad.**
+
+> **No queremos distribuir solamente riqueza existente. Queremos construir patrimonio.**
+
+> **Esto todavía no existe. Por eso necesitamos construirlo.**
+
+> **No tenemos todas las respuestas. Tenemos preguntas que vale la pena intentar responder.**
+
+---
+
+# 33. MVP TECNOLÓGICO
+
+No sobredimensionar.
+
+Primera versión:
+
+Frontend:
+
+* Next.js
+* TypeScript
+* diseño responsive
+* buena experiencia móvil
+
+Backend:
+
+* API sencilla
+* base de datos relacional
+
+Entidades iniciales:
+
+User
+Profile
+Skill
+Category
+Guild
+Project
+Contribution
+Interest
+Application
+AdminNote
+
+No implementar todavía:
+
+* CU real;
+* dinero real;
+* inversiones;
+* blockchain;
+* distribución de utilidades;
+* sistema financiero;
+* votación compleja.
+
+Esas son fases posteriores.
+
+---
+
+# 34. PRIORIDAD ABSOLUTA
+
+La primera versión debe permitir hacer esto:
+
+1. Una persona llega.
+2. Entiende el problema.
+3. Entiende la hipótesis.
+4. Descubre que todavía estamos construyendo.
+5. Encuentra su disciplina.
+6. Lee por qué necesitamos su disciplina.
+7. Se registra.
+8. Queda incorporada al mapa de colaboradores.
+9. Los administradores pueden ver quién está llegando.
+10. Podemos comenzar a formar gremios.
+11. Podemos empezar a trabajar en proyectos concretos.
+
+Ese es el MVP.
+
+---
+
+# 35. ROADMAP
+
+## FASE 1 — REUNIR PERSONAS
+
+Landing + registro + perfiles + administración.
+
+Objetivo:
+
+**construir la primera comunidad.**
+
+---
+
+## FASE 2 — CONSTRUIR CONOCIMIENTO
+
+Gremios + proyectos + documentos + discusiones.
+
+Objetivo:
+
+**resolver las preguntas económicas, jurídicas, sociológicas y tecnológicas.**
+
+---
+
+## FASE 3 — EXPERIMENTAR
+
+Implementar prototipos de:
+
+* CU;
+* reputación;
+* solicitudes;
+* intercambio;
+* mecanismos democráticos.
+
+Objetivo:
+
+**experimentar antes de comprometer capital real.**
+
+---
+
+## FASE 4 — CONSTRUIR PATRIMONIO
+
+Una vez resueltos los aspectos jurídicos, financieros y de gobernanza:
+
+* estructura patrimonial;
+* captación de capital;
+* inversión;
+* gestión;
+* transparencia;
+* auditoría.
+
+Objetivo:
+
+**crear capacidad material real.**
+
+---
+
+## FASE 5 — DISTRIBUIR ACCESO
+
+Experimentar con la relación:
+
+CU → acceso → recursos
+
+y validar el mecanismo con datos reales.
+
+---
+
+## FASE 6 — INTEROPERABILIDAD
+
+Si el modelo funciona:
+
+comunidad A ↔ comunidad B ↔ comunidad C
+
+Cada comunidad puede experimentar con sus propias reglas.
+
+---
+
+# 36. PRINCIPIO FINAL
+
+El sitio debe transmitir una idea muy concreta:
+
+Estamos ante una posible transformación histórica:
+
+**automatización → productividad creciente → menor necesidad de trabajo humano.**
+
+La respuesta no tiene por qué ser:
+
+**miedo → prohibición → dependencia.**
+
+Podría ser:
+
+**automatización → productividad → capital colectivo → autonomía.**
+
+No sabemos todavía si este modelo funcionará.
+
+Pero sí sabemos qué necesitamos para descubrirlo:
+
+**personas capaces de pensar, cuestionar, construir y aportar recursos.**
+
+Por eso la llamada final debe ser:
+
+# ¿Querés ayudarnos a construirlo?
+
+Botones:
+
+**QUIERO CONTRIBUIR**
+
+**QUIERO INVESTIGAR**
+
+**QUIERO INVERTIR**
+
+**QUIERO CONSTRUIR LA TECNOLOGÍA**
+
+**QUIERO ENTENDERLO MEJOR**
+
+---
+
+# INSTRUCCIÓN FINAL PARA EL DESARROLLADOR
+
+No construyas solamente una landing bonita.
+
+Construí el primer ladrillo de una organización que todavía no existe.
+
+La landing debe explicar la visión.
+
+El registro debe comenzar a formar la comunidad.
+
+Los perfiles deben comenzar a mapear capacidades.
+
+Los gremios deben comenzar a organizar conocimiento.
+
+Los proyectos deben comenzar a transformar preguntas en trabajo.
+
+Y el sistema debe estar diseñado desde el principio para poder evolucionar hacia una infraestructura económica mucho más grande.
+
+**No queremos aparentar que ya tenemos el futuro resuelto.**
+
+**Queremos construir el lugar donde podamos descubrirlo.**
