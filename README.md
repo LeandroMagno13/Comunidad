@@ -1,4 +1,4 @@
-# Comunidad de Capital Humano
+# Comunidad Post Singularidad
 
 Plataforma web experimental para explorar una transición económica frente al avance de la automatización y la inteligencia artificial.
 
