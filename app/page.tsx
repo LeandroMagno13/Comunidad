@@ -1,114 +1,99 @@
 import Link from 'next/link';
 import Section from '../src/components/ui/Section';
 import Diagram from '../src/components/ui/Diagram';
-import ExampleCard from '../src/components/ui/ExampleCard';
 import ProfessionalCard from '../src/components/ui/ProfessionalCard';
 import KeyPhrase from '../src/components/ui/KeyPhrase';
 import TwoColumnLayout from '../src/components/ui/TwoColumnLayout';
-import ComparisonTable from '../src/components/ui/ComparisonTable';
-import CTASection from '../src/components/ui/CTASection';
 
-const builders = [
+const guilds = [
   {
-    category: 'SOCIOLOGÍA',
-    icon: '👥',
-    color: 'bg-amber-500',
-    description: 'Encontrar los problemas que los tecnólogos probablemente no vemos.',
-    whyNeeded: 'Estamos planteando una posible transición desde una sociedad donde empleo, ingreso, identidad y estatus están fuertemente conectados hacia otra donde el trabajo humano podría dejar de ser económicamente necesario en muchas actividades. Eso genera preguntas que no son técnicas.',
-    questions: [
-      '¿Qué reemplaza al trabajo como espacio de integración social?',
-      '¿Qué sucede con el sentido de propósito?',
-      '¿Cómo se construye prestigio sin profesión?',
-      '¿Cómo evitamos nuevas castas?',
-      '¿Qué incentivos produce una economía basada en colaboración?',
-      '¿Qué sucede con quienes no quieren participar?',
-      '¿Cómo surgen relaciones de poder dentro de los gremios?',
-      '¿Cómo evitamos que la reputación se transforme en control social?',
-    ],
-    projects: [
-      'Diseñar el estudio de las preguntas abiertas del proyecto',
-      'Documentar hipótesis sobre integración social sin empleo',
-    ],
-    href: '/register?category=sociologia',
-  },
-  {
-    category: 'ECONOMÍA',
-    icon: '📊',
-    color: 'bg-blue-500',
-    description: 'Necesitamos que intentes romper nuestra propia idea.',
-    whyNeeded: 'Necesitamos investigar los fundamentos económicos de un sistema de unidades internas, patrimonio colectivo y mecanismos de acceso a recursos. No necesitamos que confirmes que nuestra idea funciona. Necesitamos que intentes romperla.',
-    questions: [
-      'Oferta monetaria de CU: ¿cómo debería funcionar?',
-      'Inflación y velocidad de circulación',
-      'Formación de precios en una economía de colaboración',
-      'Concentración y comportamiento estratégico',
-      'Mecanismos de acceso a recursos',
-      'Relación entre patrimonio y CU',
-      'Sostenibilidad del sistema',
-      'Posibles ataques económicos al sistema',
-    ],
-    projects: [
-      'Modelar escenarios de emisión, transferencia y destrucción de CU',
-      'Diseñar mecanismos anti-concentración e anti-inflación',
-    ],
-    href: '/register?category=economia',
-  },
-  {
-    category: 'DERECHO',
+    category: 'GREMIOS / DERECHO',
     icon: '⚖️',
-    color: 'bg-green-500',
-    description: 'Determinar qué es posible, qué requiere estructura y qué no puede hacerse.',
-    whyNeeded: 'Necesitamos determinar qué cosas de esta idea ya son posibles, requieren estructuras separadas, están reguladas, podrían considerarse actividad financiera, requieren autorización, o directamente no pueden hacerse como las imaginamos.',
+    description: 'Diseñar la estructura legal del patrimonio.',
+    whyNeeded:
+      'Determinar qué vehículo jurídico permite recibir capital, invertirlo, conservar patrimonio, reinvertir rendimientos, distribuir recursos y mantener reglas de gobernanza. Puede ser un fondo, fideicomiso, sociedad, cooperativa o estructura híbrida.',
     questions: [
-      'Separación entre patrimonio, miembros y gobernanza',
-      'Separación entre beneficiarios, aportantes e inversionistas',
-      '¿Cuándo una unidad interna se vuelve actividad financiera regulada?',
-      'Vehículos legales: cooperativas, asociaciones, estructuras híbridas',
-      'Distribución de recursos y marco legal',
+      '¿Qué vehículo legal permite todo esto sin violar regulaciones?',
+      '¿Qué cosas requieren autorización o estructuras separadas?',
+      '¿Cómo separar patrimonio, miembros y gobernanza?',
+      '¿Cuándo esto se convierte en actividad financiera regulada?',
     ],
     projects: [
-      'Investigar la arquitectura jurídica viable para el patrimonio colectivo',
-      'Mapear regulaciones relevantes para unidades internas',
+      'Diseñar la arquitectura jurídica del patrimonio común de inversión',
+      'Mapear regulaciones relevantes para la captación de capital',
     ],
     href: '/register?category=derecho',
   },
   {
-    category: 'INVERSIÓN / FINANZAS',
-    icon: '💼',
-    color: 'bg-purple-500',
-    description: 'Transformar una comunidad con buenas ideas en una institución con capacidad económica real.',
-    whyNeeded: 'Para que exista patrimonio colectivo necesitamos estudiar formas legítimas y sostenibles de captar capital. Podrían existir distintas clases de aportantes, inversionistas, donantes, instituciones o vehículos financieros. Necesitamos expertos que nos ayuden a determinar qué arquitectura es viable.',
+    category: 'GREMIOS / FINANZAS',
+    icon: '📈',
+    description: 'Proponer criterios de inversión, riesgo y reinversión.',
+    whyNeeded:
+      'Diseñar una cartera inicial de activos tradicionales, líquidos, auditables y comprensibles, y definir criterios de riesgo, diversificación y reinversión para el patrimonio común.',
     questions: [
-      '¿Cómo formamos patrimonio de largo plazo?',
-      'Diversificación, riesgo y liquidez',
-      'Modelos de aportación y vehículos de inversión',
-      'Transparencia, auditoría y protección del patrimonio',
-      'Incentivos para quienes aportan capital',
-      '¿Podemos construir un vehículo donde el capital privado preserve la misión del sistema?',
+      '¿Qué instrumentos financieros existentes son apropiados para la primera cartera?',
+      '¿Qué criterios de riesgo y diversificación deben gobernar?',
+      '¿Cómo se mide y audita el rendimiento real?',
+      '¿Qué proporción debería reinvertirse para que el patrimonio crezca?',
     ],
     projects: [
-      'Diseñar la estructura de captación de capital del proyecto',
-      'Estudiar casos de estructuras híbridas (lucro + misión social)',
+      'Proponer la estrategia de inversión de la primera cartera',
+      'Diseñar el sistema de transparencia y auditoría del patrimonio',
     ],
-    href: '/register?category=inversion',
+    href: '/register?category=finanzas',
   },
   {
-    category: 'TECNOLOGÍA',
-    icon: '💻',
-    color: 'bg-red-500',
-    description: 'No necesitamos solo una web: necesitamos infraestructura eventual.',
-    whyNeeded: 'No necesitamos solamente desarrollar una web. Necesitamos eventualmente infraestructura para identidad, perfiles, gremios, solicitudes, intercambio de CU, reputación, gobernanza, proyectos, auditoría, transparencia e interoperabilidad entre comunidades. Pero NO implementar todo ahora.',
+    category: 'GREMIOS / ECONOMÍA',
+    icon: '📊',
+    description: 'Modelar CU y distribución.',
+    whyNeeded:
+      'Modelar cómo las CU representan participación y cómo se relacionan con el acceso a los rendimientos distribuibles, sin generar inflación, concentración o comportamientos perversos.',
     questions: [
-      '¿Qué arquitectura permite transparencia y auditoría?',
-      '¿Cómo diseñamos identidad y reputación sin control social?',
-      '¿Cómo se construye interoperabilidad entre comunidades?',
-      '¿Qué se construye ahora y qué se pospone?',
+      '¿Cómo se obtienen y circulan las CU sin inflación?',
+      '¿Qué reglas de acceso a rendimientos son justas y sostenibles?',
+      '¿Cómo evitamos concentración y comportamiento estratégico?',
+      '¿Qué datos debería producir el primer experimento?',
+    ],
+    projects: [
+      'Modelar un sistema limitado de participación comunitaria (CU)',
+      'Diseñar el primer experimento de distribución de rendimientos',
+    ],
+    href: '/register?category=economia',
+  },
+  {
+    category: 'GREMIOS / TECNOLOGÍA',
+    icon: '💻',
+    description: 'Construir identidad, registro de CU y transparencia.',
+    whyNeeded:
+      'Construir el sistema de identidad, registro, contabilidad de CU y transparencia que permita operar la comunidad y auditar el patrimonio. Sin implementar todo de golpe.',
+    questions: [
+      '¿Qué se necesita construir ahora y qué se pospone?',
+      '¿Cómo diseñamos un registro de CU transparente y auditable?',
+      '¿Cómo garantizamos identidad sin control social?',
     ],
     projects: [
       'Mantener y evolucionar la plataforma actual',
-      'Prototipar los mecanismos de intercambio de colaboración',
+      'Prototipar el registro de participación y CU',
     ],
     href: '/register?category=tecnologia',
+  },
+  {
+    category: 'GREMIOS / SOCIOLOGÍA',
+    icon: '👥',
+    description: 'Analizar incentivos, poder y efectos sociales del sistema.',
+    whyNeeded:
+      'Analizar incentivos, comportamiento, relaciones de poder, pertenencia y efectos sociales de un sistema donde el acceso a recursos se relaciona con participación comunitaria.',
+    questions: [
+      '¿Qué incentivos produce la participación comunitaria?',
+      '¿Cómo evitar que la reputación se transforme en control social?',
+      '¿Cómo surgen relaciones de poder dentro de los gremios?',
+      '¿Qué sucede con quienes no quieren participar?',
+    ],
+    projects: [
+      'Diseñar el análisis de incentivos y comportamiento del sistema',
+      'Estudiar efectos sociales de la distribución por participación',
+    ],
+    href: '/register?category=sociologia',
   },
 ];
 
@@ -118,6 +103,60 @@ const otherBuilders = [
   'INVESTIGACIÓN',
   'COMUNICACIÓN',
   'OTROS',
+];
+
+const roadmap = [
+  {
+    etapa: 'ETAPA 1',
+    titulo: 'Diseñar el vehículo',
+    actores: 'Derecho + finanzas + contabilidad + gobernanza.',
+    resultado: 'Una arquitectura legal y económica viable.',
+  },
+  {
+    etapa: 'ETAPA 2',
+    titulo: 'Formar el patrimonio',
+    actores: 'Captar los primeros aportes bajo la estructura correspondiente.',
+    resultado: 'Capital real.',
+  },
+  {
+    etapa: 'ETAPA 3',
+    titulo: 'Invertir',
+    actores: 'Construir una cartera inicial utilizando activos existentes.',
+    resultado: 'Patrimonio productivo.',
+  },
+  {
+    etapa: 'ETAPA 4',
+    titulo: 'Generar rendimientos',
+    actores: 'Medir resultados reales.',
+    resultado: 'Recursos reales generados por capital.',
+  },
+  {
+    etapa: 'ETAPA 5',
+    titulo: 'Probar CU',
+    actores: 'Implementar un sistema limitado de participación comunitaria.',
+    resultado: 'Datos reales sobre circulación, incentivos y comportamiento.',
+  },
+  {
+    etapa: 'ETAPA 6',
+    titulo: 'Conectar CU con rendimientos',
+    actores: 'Destinar experimentalmente una parte limitada de los rendimientos disponibles.',
+    resultado: 'Primer mecanismo real: CU → acceso a recursos.',
+  },
+  {
+    etapa: 'ETAPA 7',
+    titulo: 'Escalar',
+    actores: 'Solo después: más miembros, más capital, nuevos activos, gremios, gobernanza más sofisticada, interoperabilidad, otras comunidades.',
+    resultado: 'El sistema crece con base en datos reales.',
+  },
+];
+
+const foundingSteps = [
+  { icon: '👥', title: 'Comunidad fundadora', text: 'Reunir personas capaces de diseñar la estructura.' },
+  { icon: '📋', title: 'Arquitectura jurídica y financiera', text: 'Determinar qué vehículo permite recibir capital, invertirlo, conservarlo y distribuir recursos.' },
+  { icon: '🏛️', title: 'Primer patrimonio', text: 'Crear el vehículo real y comenzar a acumular capital.' },
+  { icon: '📈', title: 'Primera cartera', text: 'Invertir inicialmente en activos tradicionales, líquidos, auditables y comprensibles.' },
+  { icon: '💵', title: 'Primer rendimiento', text: 'Generar rendimiento financiero real.' },
+  { icon: '🧪', title: 'Primer experimento de distribución', text: 'Destinar una pequeña parte del rendimiento y experimentar con reglas de acceso asociadas a CU.' },
 ];
 
 export default function LandingPage() {
@@ -150,47 +189,87 @@ export default function LandingPage() {
       {/* ===== HERO ===== */}
       <section className="bg-gray-900 text-white py-20 sm:py-28">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            ¿Qué pasa cuando el trabajo deja de ser necesario?
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-8 leading-tight">
+            Construir capital antes de necesitarlo.
           </h1>
-          <p className="text-xl sm:text-2xl text-gray-300 mb-6 max-w-3xl mx-auto leading-relaxed">
-            Durante siglos vinculamos trabajo, ingreso y acceso a recursos.
-          </p>
-          <p className="text-lg text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Si la automatización rompe gradualmente ese vínculo, necesitamos experimentar con otro.
+          <p className="text-xl text-gray-300 mb-6 max-w-3xl mx-auto leading-relaxed">
+            La inteligencia artificial puede reducir progresivamente el valor económico de una parte
+            del trabajo humano. Esperar a que eso ocurra para discutir cómo distribuir riqueza sería
+            llegar tarde.
           </p>
           <p className="text-lg sm:text-xl text-blue-300 font-medium mb-10 max-w-3xl mx-auto leading-relaxed">
-            Nuestra hipótesis: construir comunidades que posean capital productivo y permitan
-            que las personas participen de la riqueza que ese capital genera.
+            Queremos empezar antes: construir un patrimonio común, invertirlo en activos reales y
+            experimentar con una forma comunitaria de distribuir parte de sus rendimientos.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="#entender"
+              href="#modelo"
               className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors"
             >
-              ENTENDER CÓMO PODRÍA FUNCIONAR
+              ENTENDER EL MODELO
             </Link>
             <Link
-              href="#construir"
+              href="#capital"
               className="bg-transparent border-2 border-gray-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors"
             >
-              CONSTRUIRLO CON NOSOTROS
+              AYUDAR A CONSTRUIR EL PRIMER PATRIMONIO
             </Link>
           </div>
         </div>
       </section>
 
-{/* ===== EL PROBLEMA ===== */}
-      <Section background="gray" id="entender">
+      {/* ===== DOS CLASES DE CONTRIBUCIÓN ===== */}
+      <section className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <p className="text-center text-gray-500 text-sm uppercase tracking-wider font-semibold mb-6">
+            Hay dos formas de sumarte desde el comienzo
+          </p>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-6 text-center">
+              <div className="text-3xl mb-2">🧠</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">CAPITAL INTELECTUAL</h3>
+              <p className="text-gray-700 text-sm mb-4">
+                Personas que ayuden a diseñar el sistema: derecho, finanzas, economía, tecnología,
+                sociología.
+              </p>
+              <Link
+                href="#construir"
+                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                QUIERO APORTAR CONOCIMIENTO
+              </Link>
+            </div>
+            <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center">
+              <div className="text-3xl mb-2">💼</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">CAPITAL FINANCIERO</h3>
+              <p className="text-gray-700 text-sm mb-4">
+                Personas e instituciones dispuestas eventualmente a aportar capital al patrimonio,
+                una vez definida una estructura jurídicamente viable.
+              </p>
+              <Link
+                href="/register?category=inversion"
+                className="inline-block bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+              >
+                ME INTERESA APORTAR CAPITAL
+              </Link>
+            </div>
+          </div>
+          <p className="text-center text-xs text-gray-500 mt-4">
+            Todavía no recibimos dinero: registramos interés hasta definir el vehículo legal.
+          </p>
+        </div>
+      </section>
+
+      {/* ===== EL PROBLEMA ACTUAL ===== */}
+      <Section background="gray">
         <div className="max-w-4xl mx-auto">
           <p className="text-sm uppercase tracking-wider text-blue-600 font-semibold text-center mb-3">
-            El problema
+            El problema actual
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
-            Nuestra economía conecta tres cosas
+            Hoy, la mayoría de las personas accede a recursos casi exclusivamente a través del trabajo
           </h2>
-
-          <div className="text-center mb-10">
+          <div className="text-center mb-8">
             <Diagram
               steps={[
                 { label: 'TRABAJO' },
@@ -201,280 +280,281 @@ export default function LandingPage() {
               ]}
             />
           </div>
-
-          <p className="text-center text-gray-600 text-lg mb-6">
-            Pero si la automatización produce cada vez más con cada vez menos trabajo humano,
-            esa conexión se vuelve inestable.
+          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-8">
+            Si una parte creciente de la producción depende de máquinas, software e inteligencia
+            artificial, depender exclusivamente del salario puede generar cada vez más incertidumbre.
           </p>
-
-          <div className="text-center mb-10">
-            <Diagram
-              steps={[
-                { label: 'MÁQUINAS + IA' },
-                { label: '↓', type: 'arrow' },
-                { label: 'MAYOR PRODUCTIVIDAD' },
-                { label: '↓', type: 'arrow' },
-                { label: 'MENOR NECESIDAD DE TRABAJO HUMANO' },
-                { label: '↓', type: 'arrow' },
-                { label: 'INCERTIDUMBRE SOBRE EL INGRESO', type: 'highlight' },
-              ]}
-            />
-          </div>
-
           <div className="bg-white border-l-4 border-blue-500 p-6 rounded-r-lg shadow-sm">
-            <p className="text-lg text-gray-800 mb-2 font-semibold">
-              La pregunta más profunda no es solo «¿qué trabajos desaparecerán?»
-            </p>
-            <p className="text-xl sm:text-2xl text-gray-900 font-bold">
-              ¿Cómo accede una persona a recursos en una economía que necesita cada vez menos
-              de su trabajo para producirlos?
+            <p className="text-xl sm:text-2xl text-gray-900 font-bold text-center">
+              La pregunta es: ¿quién se beneficia de esa productividad?
             </p>
           </div>
         </div>
       </Section>
 
-      {/* ===== NUESTRA HIPÓTESIS ===== */}
+      {/* ===== ESTRATEGIA ECONÓMICA / TRANSICIÓN ===== */}
       <Section background="white">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <p className="text-sm uppercase tracking-wider text-blue-600 font-semibold text-center mb-3">
-            Nuestra hipótesis
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">
-            No queremos detener la automatización.
-          </h2>
-          <h3 className="text-2xl sm:text-3xl font-semibold text-center text-blue-700 mb-12">
-            Queremos ampliar el acceso a su productividad.
-          </h3>
-
-          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-10">
-            Si las máquinas son cada vez más capaces de producir recursos, la pregunta es quién
-            accede a esos recursos y bajo qué condiciones. Nuestra propuesta: que las comunidades
-            puedan poseer capital productivo, colectivamente.
-          </p>
-
-          <div className="text-center">
-            <Diagram
-              steps={[
-                { label: 'CAPITAL PRODUCTIVO COLECTIVO' },
-                { label: '↓', type: 'arrow' },
-                { label: 'PRODUCTIVIDAD' },
-                { label: '↓', type: 'arrow' },
-                { label: 'RECURSOS' },
-                { label: '↓', type: 'arrow' },
-                { label: 'NUEVO MECANISMO DE ACCESO', type: 'highlight' },
-              ]}
-            />
-          </div>
-
-          <KeyPhrase text="El ideal sin poder no sirve. El poder sin ideal tampoco." variant="blockquote" />
-          <div className="max-w-3xl mx-auto text-gray-600 space-y-3">
-            <p>
-              <strong>El ideal</strong> es construir una comunidad donde el progreso tecnológico
-              amplíe la autonomía humana.
-            </p>
-            <p>
-              <strong>El poder</strong> es poseer el capital, la infraestructura y las instituciones
-              necesarias para hacerlo posible.
-            </p>
-          </div>
-        </div>
-      </Section>
-
-      {/* ===== EL PODER MATERIAL ===== */}
-      <Section background="gray">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-sm uppercase tracking-wider text-blue-600 font-semibold text-center mb-3">
-            El poder material
+            La transición que queremos construir
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
-            ¿Por qué el capital es indispensable?
+            Una segunda fuente de acceso a recursos
           </h2>
-          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-8">
-            Colaborar entre personas NO crea por sí solo los recursos materiales que queremos
-            distribuir. Una comunidad puede compartir conocimiento, tiempo y ayuda, pero para
-            generar capacidad económica real necesita también poseer activos productivos.
+          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-10">
+            No necesitamos destruir ni reemplazar los mecanismos existentes. Proponemos construir,
+            en paralelo, una segunda fuente de acceso a recursos basada en la propiedad colectiva
+            de capital productivo.
           </p>
 
           <TwoColumnLayout
             left={{
-              title: 'MOTOR HUMANO',
-              icon: '👥',
-              color: 'blue',
+              title: 'MODELO ACTUAL',
+              icon: '🕰️',
+              color: 'gray',
               children: (
-                <p className="text-gray-700">
-                  Personas que colaboran entre ellas. Aportan capacidades, tiempo, conocimientos
-                  y decisiones.
-                </p>
+                <Diagram
+                  steps={[
+                    { label: 'TRABAJO' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'INGRESO' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'ACCESO A RECURSOS', type: 'highlight' },
+                  ]}
+                />
               ),
             }}
             right={{
-              title: 'MOTOR MATERIAL',
-              icon: '🏭',
-              color: 'purple',
+              title: 'TRANSICIÓN QUE QUEREMOS CONSTRUIR',
+              icon: '🌱',
+              color: 'green',
               children: (
-                <p className="text-gray-700">
-                  Capital que posee activos capaces de producir rendimiento. Es la base
-                  económica real del sistema.
-                </p>
+                <Diagram
+                  steps={[
+                    { label: 'PATRIMONIO' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'INVERSIONES' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'RENDIMIENTOS' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'ACCESO A RECURSOS', type: 'highlight' },
+                  ]}
+                />
               ),
             }}
           />
 
-          <KeyPhrase text="La comunidad organiza el valor humano. El patrimonio genera capacidad material." variant="center" />
-        </div>
-      </Section>
-
-      {/* ===== QUÉ SON LAS CU ===== */}
-      <Section background="white">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-sm uppercase tracking-wider text-blue-600 font-semibold text-center mb-3">
-            Una pieza de la arquitectura
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
-            ¿Qué son las CU?
-          </h2>
-
-          <p className="text-center text-gray-600 text-lg mb-8">
-            CU significa provisionalmente <strong>Community Units</strong>.
-            Son unidades internas que permiten registrar e intercambiar colaboración dentro de una comunidad.
-          </p>
-
-          <div className="grid gap-4 md:grid-cols-2 mb-8">
-            {[
-              'No representan cuánto vale una persona.',
-              'No son acciones del patrimonio colectivo.',
-              'No significan ser dueño de una cantidad de dinero.',
-              'No prometen una conversión fija a pesos, dólares o cualquier otra moneda.',
-            ].map((item) => (
-              <div key={item} className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800">
-                <span className="font-bold mr-2">✕</span>{item}
-              </div>
-            ))}
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mt-8">
+            <p className="text-center text-gray-700">
+              El trabajo, los mercados, las empresas y el dinero siguen existiendo.{' '}
+              <strong>La propuesta no requiere destruirlos.</strong> Lo que queremos es que la
+              comunidad también pueda acceder a recursos porque <strong>posee</strong> parte del
+              capital productivo.
+            </p>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-            <p className="text-gray-800 mb-4 text-lg">
-              Su función sería otra:
+          <div className="mt-8 bg-gray-900 rounded-xl p-8 text-white text-center">
+            <p className="text-lg text-gray-300 mb-4">
+              Si empresas de inteligencia artificial, energía, automatización, infraestructura o
+              cualquier otro sector aumentan su productividad, una comunidad que posea parte de esos
+              activos también participa de ese crecimiento.
             </p>
-            <p className="text-gray-900 font-medium text-xl mb-3">
-              Permitir que las personas intercambien capacidades entre ellas y construir un
-              registro económico de participación dentro de la comunidad.
-            </p>
-            <p className="text-gray-700">
-              CU es solamente una pieza de una arquitectura mucho mayor. No es una criptomoneda,
-              ni un token especulativo, ni una acción, ni un salario.
-            </p>
+            <KeyPhrase text="En lugar de intentar protegernos de la productividad, queremos poseer una parte de ella." />
           </div>
         </div>
       </Section>
 
-      {/* ===== EJEMPLO REAL: ANA Y MARTÍN ===== */}
+      {/* ===== EMPEZAMOS CON ALGO QUE YA FUNCIONA ===== */}
       <Section background="gray">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
-            Una CU se entiende mejor con un ejemplo
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">
+            Empezamos con algo que ya sabemos que funciona
           </h2>
-          <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
-            Así imaginamos que podría funcionar el intercambio de colaboración dentro de una comunidad.
+          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-8">
+            No necesitamos esperar a que exista una economía completamente automatizada. Tampoco
+            necesitamos inventar desde cero una nueva forma de producir riqueza.
           </p>
-
-          <ExampleCard
-            title="Ana necesita una herramienta web"
-            steps={[
-              { actor: 'Ana', action: 'Tiene una necesidad: crear un pequeño formulario web.', type: 'need' },
-              { actor: 'Ana', action: 'Publica una solicitud: “Necesito ayuda para crear este formulario. Ofrezco 30 CU.”', cue: 30, type: 'offer' },
-              { actor: 'Martín', action: 'Sabe programarlo. Acepta la solicitud y realiza el trabajo.', type: 'work' },
-              { actor: 'Ana', action: 'Transfiere las 30 CU a Martín en agradecimiento por su capacidad.', cue: -30, type: 'transfer' },
-            ]}
-            conclusion="Las CU no fueron el producto. El producto fue la colaboración entre Ana y Martín. Las CU permitieron expresar e intercambiar valor dentro de la comunidad."
-          />
-
-          <div className="mt-10">
-            <ExampleCard
-              title="Martín gasta sus CU"
-              steps={[
-                { actor: 'Martín', action: 'Ahora tiene 30 CU y necesita otra cosa: “Necesito ayuda de un contador.”', type: 'offer' },
-                { actor: 'Martín', action: 'Publica la solicitud ofreciendo 20 CU.', cue: 20, type: 'offer' },
-                { actor: 'Otro miembro', action: 'Acepta, realiza el trabajo de contabilidad.', type: 'work' },
-                { actor: 'Martín', action: 'Transfiere las 20 CU.', cue: -20, type: 'transfer' },
-              ]}
-              conclusion="Así las CU circulan: se acumulan, se gastan, se ganan, en función de la colaboración entre personas."
-            />
-          </div>
-        </div>
-      </Section>
-
-      {/* ===== CU NO ES PAGO POR TRABAJAR ===== */}
-      <Section background="white">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
-            CU no es «pago por trabajar para la comunidad»
-          </h2>
-          <p className="text-center text-gray-600 text-lg mb-8 max-w-3xl mx-auto">
-            No queremos crear simplemente otro empleo disfrazado. La comunidad debería permitir
-            valorar muchas clases de contribuciones humanas.
-          </p>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
-            {[
-              'Programar', 'Reparar', 'Enseñar', 'Investigar', 'Diseñar',
-              'Organizar', 'Mediar', 'Cuidar', 'Acompañar', 'Escuchar',
-              'Crear', 'Resolver conflictos', 'Documentar conocimiento',
-              'Ayudar a otra persona', 'Construir herramientas',
-            ].map((item) => (
-              <div key={item} className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center text-sm font-medium text-gray-700">
-                {item}
-              </div>
-            ))}
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-            <p className="text-gray-800">
-              La automatización podría cambiar radicalmente el precio relativo de estas cosas.
-              Quizás en algún momento programar sea abundante porque las IA lo hacen casi gratis,
-              mientras que una hora de atención humana genuina resulte escasa.
+          <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8">
+            <p className="text-gray-700 mb-4">
+              Ya existen activos productivos que generan rendimientos todos los días:
             </p>
-            <p className="text-gray-800 mt-3">
-              No debemos decidir eso desde arriba. Queremos que <strong>las interacciones entre
-              personas ayuden a descubrir qué continúa teniendo valor humano</strong>.
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              {['Empresas', 'Acciones', 'Bonos', 'Fondos', 'Infraestructura', 'Energía', 'Tecnología', 'Otras formas de capital'].map((item) => (
+                <div key={item} className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center text-sm font-medium text-gray-700">
+                  {item}
+                </div>
+              ))}
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 text-center">
+              <p className="text-xl font-bold text-gray-900">
+                Nuestro primer objetivo es más concreto:
+              </p>
+              <p className="text-lg text-gray-800 mt-3">
+                Construir un <strong>patrimonio común de inversión</strong> en activos existentes y
+                estudiar cómo distribuir parte de sus rendimientos entre quienes participan de la
+                comunidad.
+              </p>
+            </div>
+          </div>
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-900 text-sm">
+            <p>
+              <strong>Nota:</strong> todavía no afirmamos qué estructura jurídica concreta tendrá ese
+              patrimonio. Puede requerir un fondo, fideicomiso, sociedad, cooperativa, estructura
+              híbrida u otro vehículo. Lo llamamos «patrimonio común de inversión» en sentido
+              conceptual hasta que especialistas jurídicos determinen la estructura apropiada.
             </p>
           </div>
         </div>
       </Section>
 
-      {/* ===== CÓMO SE ACCEDE A RECURSOS ===== */}
-      <Section background="gray">
+      {/* ===== UN EJEMPLO CON NÚMEROS ===== */}
+      <Section background="white" id="modelo">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
-            ¿Por qué querrías CU?
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-3">
+            Un ejemplo con números
           </h2>
-          <p className="text-center text-gray-600 text-lg mb-10 max-w-3xl mx-auto">
-            Las CU no solo sirven para intercambiar colaboración. La hipótesis es que también
-            puedan funcionar como <strong>mecanismo de acceso al rendimiento producido por el
-            patrimonio colectivo</strong>.
+          <p className="text-center text-xs font-semibold uppercase tracking-wide text-red-600 mb-8">
+            Ejemplo conceptual. No representa una promesa de rentabilidad ni un modelo financiero definitivo.
           </p>
 
-          <p className="text-center text-gray-600 mb-8">Pero esto hay que explicarlo con cuidado:</p>
-
-          <div className="grid gap-4 md:grid-cols-3 mb-10">
-            {[
-              { label: 'No es: “1 CU = X dólares”', style: 'red' },
-              { label: 'No es: “las CU son convertibles”', style: 'red' },
-              { label: 'No es: “ganás dinero trabajando”', style: 'red' },
-            ].map((item) => (
-              <div key={item.label} className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800 text-center font-medium">
-                ✕ {item.label}
-              </div>
-            ))}
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
+            <p className="text-gray-700 mb-4 text-center">
+              100 personas construyen progresivamente un patrimonio común. El patrimonio alcanza:
+            </p>
+            <p className="text-center text-4xl font-bold text-gray-900 mb-4">USD 100.000</p>
+            <p className="text-gray-600 text-center text-sm">
+              Ese capital se invierte de manera diversificada en activos existentes.
+            </p>
           </div>
 
-          <p className="text-center text-gray-800 text-lg max-w-3xl mx-auto mb-8">
-            En cambio: a medida que una persona participa y acumula CU, podría alcanzar
-            determinados <strong>umbrales de participación</strong> que le permitan acceder a
-            una porción de los recursos disponibles generados por el patrimonio colectivo.
-          </p>
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
+            <p className="text-gray-700 mb-4 text-center">
+              Supongamos, exclusivamente como ejemplo, que durante cierto período genera rendimiento neto disponible de:
+            </p>
+            <p className="text-center text-4xl font-bold text-blue-700 mb-4">USD 8.000</p>
+            <p className="text-gray-600 text-center text-sm mb-6">
+              La comunidad podría decidir:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
+                <p className="text-2xl font-bold text-green-700">USD 5.000</p>
+                <p className="text-sm text-gray-600 mt-1">Reinvertir</p>
+              </div>
+              <div className="bg-white border border-amber-200 rounded-lg p-4 text-center">
+                <p className="text-2xl font-bold text-amber-700">USD 1.000</p>
+                <p className="text-sm text-gray-600 mt-1">Reservar</p>
+              </div>
+              <div className="bg-white border border-blue-200 rounded-lg p-4 text-center">
+                <p className="text-2xl font-bold text-blue-700">USD 2.000</p>
+                <p className="text-sm text-gray-600 mt-1">A disposición de los participantes</p>
+              </div>
+            </div>
+          </div>
 
           <div className="text-center mb-8">
+            <Diagram
+              steps={[
+                { label: 'USD 2.000' },
+                { label: '↓', type: 'arrow' },
+                { label: 'RECURSOS DISTRIBUIBLES' },
+                { label: '↓', type: 'arrow' },
+                { label: 'REGLAS DE ACCESO' },
+                { label: '↓', type: 'arrow' },
+                { label: 'CU' },
+                { label: '↓', type: 'arrow' },
+                { label: 'PARTICIPANTES', type: 'highlight' },
+              ]}
+            />
+          </div>
+
+          <KeyPhrase text="La innovación no es que una inversión pueda generar rendimientos. Eso ya existe. La innovación es cómo construir colectivamente ese patrimonio y cómo relacionar sus rendimientos con la participación humana en la comunidad." />
+        </div>
+      </Section>
+
+      {/* ===== DIFERENCIA CON UN FONDO TRADICIONAL ===== */}
+      <Section background="gray">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-10">
+            ¿En qué se diferencia de un fondo de inversión tradicional?
+          </h2>
+
+          <TwoColumnLayout
+            left={{
+              title: 'FONDO TRADICIONAL',
+              icon: '🏦',
+              color: 'gray',
+              children: (
+                <Diagram
+                  steps={[
+                    { label: 'APORTÁS CAPITAL' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'POSEÉS PARTICIPACIÓN' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'RECIBÍS RENDIMIENTO SEGÚN TU CAPITAL', type: 'highlight' },
+                  ]}
+                />
+              ),
+            }}
+            right={{
+              title: 'NUESTRA HIPÓTESIS',
+              icon: '🌱',
+              color: 'blue',
+              children: (
+                <Diagram
+                  steps={[
+                    { label: 'SE CONSTRUYE UN PATRIMONIO COMÚN' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'EL PATRIMONIO GENERA RENDIMIENTOS' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'UNA PARTE SE REINVIERTE' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'UNA PARTE PUEDE CONVERTIRSE EN RECURSOS DISPONIBLES' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'LA PARTICIPACIÓN COMUNITARIA EN CU AYUDA A DETERMINAR EL ACCESO', type: 'highlight' },
+                  ]}
+                />
+              ),
+            }}
+          />
+        </div>
+      </Section>
+
+      {/* ===== ¿DÓNDE ENTRAN LAS CU? ===== */}
+      <Section background="white">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">
+            ¿Dónde entran las CU?
+          </h2>
+          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-8">
+            Si un patrimonio común genera rendimientos y existen cientos o miles de participantes,
+            aparece una pregunta: <strong>¿cómo determinamos quién puede acceder a qué parte de esos
+            recursos?</strong>
+          </p>
+
+          <div className="space-y-4 mb-8">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <p className="text-gray-700">Una solución sería repartir exactamente lo mismo a todo el mundo. Sería uniforme, pero ignoraría la participación.</p>
+            </div>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <p className="text-gray-700">Otra sería repartir según cuánto dinero aportó cada uno. Pero eso nos devolvería simplemente a un fondo de inversión tradicional.</p>
+            </div>
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+              <p className="text-gray-900 font-medium">
+                Nuestra hipótesis es introducir una tercera dimensión: <strong>la participación en la
+                comunidad.</strong>
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-xl p-6">
+            <p className="text-gray-800 text-lg">
+              Las <strong>CU</strong> serían una unidad interna para representar esa participación.
+              Se obtendrían mediante intercambios y contribuciones entre miembros, y podrían utilizarse
+              como uno de los mecanismos que determinan acceso a parte de los rendimientos disponibles.
+            </p>
+          </div>
+
+          <div className="mt-8 text-center">
             <Diagram
               steps={[
                 { label: 'COLABORACIÓN' },
@@ -483,108 +563,143 @@ export default function LandingPage() {
                 { label: '↓', type: 'arrow' },
                 { label: 'ACUMULACIÓN / PARTICIPACIÓN' },
                 { label: '↓', type: 'arrow' },
-                { label: 'UMBRAL DE ACCESO', type: 'highlight' },
+                { label: 'UMBRAL DE ACCESO' },
                 { label: '↓', type: 'arrow' },
                 { label: 'RECURSOS DISPONIBLES DEL PATRIMONIO', type: 'highlight' },
               ]}
             />
           </div>
+        </div>
+      </Section>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Ejemplo puramente ilustrativo <span className="text-sm font-normal text-gray-500">(los números NO son definitivos)</span>
-            </h3>
-            <p className="text-gray-700 mb-4">
-              Supongamos que una comunidad determina experimentalmente:
-            </p>
-            <div className="bg-blue-50 rounded-lg p-4 text-center mb-4">
-              <p className="text-2xl font-bold text-blue-800">100 CU = 1 unidad de acceso a recursos</p>
-            </div>
-            <p className="text-gray-700 mb-3">
-              Una persona participa en diferentes intercambios y llega a 100 CU. Eso podría habilitar
-              una unidad de acceso a los recursos que el patrimonio de esa comunidad pueda efectivamente distribuir.
-            </p>
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-900">
-              <p className="font-medium mb-1">Importante:</p>
-              <p>
-                No significa que 100 CU «valgan» una cantidad fija de dinero. Significa que la comunidad
-                decidió utilizar ese nivel de participación como condición para liberar una determinada
-                unidad de recursos. La disponibilidad real depende siempre del patrimonio y de los
-                rendimientos reales existentes.
-              </p>
+      {/* ===== CU NO CREA EL DINERO ===== */}
+      <Section background="gray">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
+            Importante: las CU no crean el dinero
+          </h2>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8">
+            <div className="text-center">
+              <Diagram
+                steps={[
+                  { label: 'ACCIONES / BONOS / EMPRESAS / ACTIVOS' },
+                  { label: '↓', type: 'arrow' },
+                  { label: 'RENDIMIENTO REAL' },
+                  { label: '↓', type: 'arrow' },
+                  { label: 'PATRIMONIO', type: 'highlight' },
+                ]}
+              />
             </div>
           </div>
+          <div className="text-center">
+            <div className="inline-block bg-red-50 border-2 border-red-200 rounded-xl p-4">
+              <p className="text-red-700 font-medium">NO es</p>
+              <p className="text-red-800 font-bold text-lg">CU → dinero mágico</p>
+            </div>
+          </div>
+          <KeyPhrase text="Las CU no generan rendimientos. Los activos generan rendimientos. Las CU sirven para organizar participación y eventualmente determinar acceso a una parte de esos rendimientos." />
+        </div>
+      </Section>
+
+      {/* ===== REINVERSIÓN ===== */}
+      <Section background="white">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">
+            Reinversión: la clave del crecimiento
+          </h2>
+          <div className="text-center mb-8">
+            <Diagram
+              steps={[
+                { label: 'RENDIMIENTO' },
+                { label: '↙ ↓ ↘', type: 'arrow' },
+                { label: 'REINVERSIÓN' },
+                { label: 'RESERVAS' },
+                { label: 'DISTRIBUCIÓN' },
+              ]}
+            />
+          </div>
+          <p className="text-center text-gray-600 text-lg mb-6">
+            No queremos repartir automáticamente todo lo que genere el patrimonio. Si hacemos eso,
+            nunca adquirirá suficiente tamaño.
+          </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <p className="text-center text-gray-900 text-lg">
+              Una parte relevante de los rendimientos debería reinvertirse para que el patrimonio
+              pueda crecer. El objetivo no es consumir el fondo. El objetivo es construir una fuente
+              de recursos cada vez mayor.
+            </p>
+          </div>
+          <p className="text-center text-sm text-gray-500 mt-4">
+            La proporción de cada componente (reinversión, reservas, distribución) sería una decisión
+            de gobernanza de la comunidad.
+          </p>
         </div>
       </Section>
 
       {/* ===== LOS DOS CIRCUITOS ===== */}
-      <Section background="white">
+      <Section background="gray">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
-            Dos circuitos que se encuentran
+            El modelo comienza conectando dos circuitos
           </h2>
-          <p className="text-center text-gray-600 text-lg mb-12 max-w-3xl mx-auto">
-            El circuito humano organiza la colaboración. El circuito productivo genera la capacidad
-            material. Ninguno funciona solo.
-          </p>
 
           <TwoColumnLayout
             left={{
-              title: 'CIRCUITO HUMANO',
-              icon: '👥',
+              title: 'CIRCUITO PRODUCTIVO',
+              icon: '🏭',
               color: 'blue',
               children: (
                 <Diagram
                   steps={[
-                    { label: 'PERSONAS' },
+                    { label: 'APORTES DE CAPITAL' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'NECESIDADES + CAPACIDADES' },
+                    { label: 'VEHÍCULO JURÍDICO / PATRIMONIAL' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'INTERCAMBIOS' },
+                    { label: 'CARTERA DE ACTIVOS EXISTENTES' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'CU', type: 'highlight' },
+                    { label: 'ACCIONES + FONDOS + BONOS + OTROS ACTIVOS' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'PARTICIPACIÓN' },
+                    { label: 'RENDIMIENTOS' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'REINVERSIÓN + RESERVAS + RECURSOS DISTRIBUIBLES', type: 'highlight' },
                   ]}
                 />
               ),
             }}
             right={{
-              title: 'CIRCUITO PRODUCTIVO',
-              icon: '🏭',
-              color: 'purple',
+              title: 'CIRCUITO HUMANO',
+              icon: '👥',
+              color: 'green',
               children: (
                 <Diagram
                   steps={[
-                    { label: 'APORTES / CAPITAL' },
+                    { label: 'PERSONAS' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'PATRIMONIO COLECTIVO' },
+                    { label: 'COMUNIDAD' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'INVERSIÓN' },
+                    { label: 'COLABORACIÓN' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'PRODUCTIVIDAD' },
+                    { label: 'CU' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'RENDIMIENTOS' },
-                    { label: '↓', type: 'arrow' },
-                    { label: 'RECURSOS DISPONIBLES', type: 'highlight' },
+                    { label: 'PARTICIPACIÓN', type: 'highlight' },
                   ]}
                 />
               ),
             }}
           />
 
-          <div className="mt-12 bg-gray-900 rounded-2xl p-8 text-white">
-            <p className="text-center text-gray-400 mb-6">Y ambos se encuentran aquí:</p>
+          <div className="mt-10 bg-gray-900 rounded-2xl p-8 text-white">
+            <p className="text-center text-gray-400 mb-6">Y se encuentran aquí:</p>
             <div className="text-center">
               <Diagram
                 steps={[
-                  { label: 'PARTICIPACIÓN EN CU', type: 'highlight' },
+                  { label: 'RECURSOS DISTRIBUIBLES', type: 'highlight' },
                   { label: '+' },
-                  { label: 'RECURSOS REALES DISPONIBLES', type: 'highlight' },
+                  { label: 'CU', type: 'highlight' },
                   { label: '+' },
-                  { label: 'REGLAS DE LA COMUNIDAD', type: 'highlight' },
+                  { label: 'REGLAS DE ACCESO', type: 'highlight' },
                   { label: '↓', type: 'arrow' },
-                  { label: 'ACCESO A RECURSOS', type: 'highlight' },
+                  { label: 'DISTRIBUCIÓN', type: 'highlight' },
                 ]}
               />
             </div>
@@ -592,192 +707,46 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* ===== UNIDAD DE RECURSOS ===== */}
-      <Section background="gray">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
-            ¿Qué es una «Unidad de Recursos»?
-          </h2>
-          <p className="text-center text-gray-600 text-lg mb-8 max-w-3xl mx-auto">
-            Podemos usar provisionalmente el término <strong>UR</strong> o simplemente
-            «Unidad de Recursos», pero sin abusar de nuevas siglas.
-          </p>
-
-          <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8">
-            <p className="text-gray-800 text-lg">
-              Una Unidad de Recursos es una abstracción para representar una determinada cantidad
-              de capacidad material que el patrimonio puede distribuir.
-            </p>
-            <p className="text-gray-600 mt-4">
-              Todavía NO sabemos cuál debería ser su definición final. Podría representar dinero
-              distribuible, acceso a bienes o servicios, o evolucionar hacia otros mecanismos.
-              Es una pregunta abierta.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-5 text-center">
-              <p className="font-bold text-blue-900 mb-1">CU</p>
-              <p className="text-blue-800">Participación e intercambio humano</p>
-            </div>
-            <div className="bg-green-50 border-2 border-green-300 rounded-xl p-5 text-center">
-              <p className="font-bold text-green-900 mb-1">RECURSOS</p>
-              <p className="text-green-800">Capacidad económica real generada por el patrimonio</p>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* ===== DE DÓNDE SALEN LAS CU ===== */}
+      {/* ===== LA COMUNIDAD NO ES UN CLUB SOCIAL ===== */}
       <Section background="white">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
-            ¿De dónde salen las CU?
+            La comunidad no es un club social
           </h2>
-
-          <div className="grid gap-6 md:grid-cols-3 mb-8">
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-3">↗ Transferencia</h3>
-              <p className="text-gray-700">
-                Las CU ya existen y pasan de una persona a otra. Ejemplo: Ana → 30 CU → Martín.
-              </p>
-              <p className="mt-3 text-sm bg-white border border-gray-200 rounded-lg p-2 text-center font-medium">
-                No cambia la cantidad total de CU.
-              </p>
-            </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-3">✦ Emisión</h3>
-              <p className="text-gray-700">
-                La comunidad crea nuevas CU.
-              </p>
-              <p className="mt-3 text-sm bg-white border border-gray-200 rounded-lg p-2 text-center font-medium text-amber-700">
-                Todavía debemos investigar bajo qué condiciones debería ocurrir.
-              </p>
-            </div>
-            <div className="bg-red-50 border border-red-200 rounded-xl p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-3">✕ Destrucción</h3>
-              <p className="text-gray-700">
-                CU salen de circulación bajo determinadas reglas.
-              </p>
-              <p className="mt-3 text-sm bg-white border border-gray-200 rounded-lg p-2 text-center font-medium text-amber-700">
-                Todavía debemos investigar cuándo o por qué.
-              </p>
-            </div>
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8">
+            <p className="text-gray-800 text-lg text-center">
+              La comunidad es la estructura humana que gobierna el patrimonio, desarrolla sus reglas,
+              produce conocimiento, intercambia capacidades y decide cómo evoluciona el sistema.
+            </p>
+            <p className="text-center text-gray-600 mt-4">
+              Tiene una función económica e institucional. No solamente social.
+            </p>
           </div>
 
-          <div className="bg-gray-900 rounded-xl p-6 text-white">
-            <p className="text-center text-lg font-medium mb-2">
-              Esto abre una pregunta fundamental:
-            </p>
-            <p className="text-center text-xl text-blue-300 font-semibold">
-              ¿Cómo evitamos que una economía de CU genere inflación, concentración o
-              comportamientos perversos?
-            </p>
-            <p className="text-center text-gray-400 mt-4">
-              Eso debe formar parte del trabajo de economistas y especialistas financieros.
-            </p>
-          </div>
-        </div>
-      </Section>
-
-      {/* ===== QUÉ COSAS PUEDEN TENER VALOR ===== */}
-      <Section background="gray">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
-            ¿Qué cosas pueden tener valor?
-          </h2>
-          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-10">
-            No lo decidimos nosotros desde arriba. Las interacciones entre personas —la oferta y la
-            demanda real de capacidades— deberían descubrir qué continúa teniendo valor humano.
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <h3 className="text-2xl font-semibold text-gray-900 text-center mb-6">
+            ¿Qué decide la comunidad?
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
             {[
-              { a: 'Programar', b: '→ ¿abundante?' },
-              { a: 'Reparar', b: '→ ¿sigue escaso?' },
-              { a: 'Enseñar', b: '→ ¿cambia de precio?' },
-              { a: 'Acompañar', b: '→ ¿humano escaso?' },
-              { a: 'Escuchar', b: '→ ¿valor genuino?' },
-              { a: 'Crear', b: '→ ¿qué desplaza la IA?' },
-              { a: 'Resolver conflictos', b: '→ ¿medio escaso?' },
-              { a: 'Construir herramientas', b: '→ ¿colaborativo?' },
-            ].map((item) => (
-              <div key={item.a} className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-blue-300 transition-colors">
-                <p className="font-bold text-gray-900">{item.a}</p>
-                <p className="text-sm text-gray-500 mt-1">{item.b}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      {/* ===== QUIÉN DECIDE LAS REGLAS ===== */}
-      <Section background="white">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
-            ¿Quién decide las reglas?
-          </h2>
-          <p className="text-center text-2xl font-bold text-gray-900 mb-8">La comunidad.</p>
-
-          <p className="text-center text-gray-600 text-lg mb-10 max-w-3xl mx-auto">
-            Pero antes de hablar de mecanismos democráticos, hay que aclarar{' '}
-            <strong>qué cosas</strong> tendría que decidir la comunidad:
-          </p>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-10">
-            {[
-              'Cuánto y cuándo emitir CU',
-              'Cuándo destruir CU',
-              'Qué condiciones habilitan acceso a recursos',
+              'Qué se invierte y con qué criterios',
               'Qué proporción de rendimientos se reinvierte',
-              'Qué proporción se pone a disposición de miembros',
-              'Qué proyectos financiar',
-              'Cómo funcionan los gremios',
-              'Qué reglas de convivencia existen',
-              'Cómo modificar el protocolo',
-              'Cómo resolver disputas',
+              'Qué proporción se reserva',
+              'Qué proporción se distribuye',
+              'Reglas de acceso a los recursos distribuibles',
+              'Cómo se obtienen y circulan las CU',
+              'Cómo funciona la gobernanza',
+              'Qué proyectos se financian',
+              'Cómo se resuelven disputas',
             ].map((item) => (
               <div key={item} className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center text-sm font-medium text-gray-700">
                 {item}
               </div>
             ))}
           </div>
-
-          <h3 className="text-2xl font-semibold text-gray-900 text-center mb-4">
-            Un ejemplo concreto
-          </h3>
-          <p className="text-center text-gray-600 mb-4">
-            Supongamos que debemos decidir cuál debería ser el umbral para acceder a una unidad de recursos.
+          <p className="text-center text-gray-600">
+            Estas decisiones no se resuelven desde arriba: son el objeto de los mecanismos de
+            gobernanza que la propia comunidad estudiará y adoptará.
           </p>
-          <div className="grid grid-cols-5 gap-2 mb-6 max-w-2xl mx-auto">
-            {['90 CU', '100 CU', '120 CU', '150 CU', '200 CU'].map((v) => (
-              <div key={v} className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center font-bold text-blue-800">
-                {v}
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-gray-600 mb-6">
-            La comunidad puede utilizar distintos mecanismos para obtener una decisión:
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-10 max-w-3xl mx-auto">
-            {[
-              'Mediana', 'Promedio recortado', 'Votación',
-              'Consenso', 'Mecanismos ponderados', 'Democracia líquida',
-              'Mercado', 'Otros experimentos',
-            ].map((item) => (
-              <div key={item} className="bg-white border border-gray-200 rounded-lg p-3 text-center text-sm font-medium text-gray-700">
-                {item}
-              </div>
-            ))}
-          </div>
-
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
-            <p className="text-lg text-gray-800">
-              No afirmamos que un promedio simple sea la solución. La idea importante es:{' '}
-              <strong>el fundador no debería poder decidir arbitrariamente cuánto vale participar
-              de la comunidad</strong>. Las reglas económicas fundamentales deben poder ser gobernadas
-              por quienes forman parte de ella.
-            </p>
-          </div>
         </div>
       </Section>
 
@@ -785,255 +754,203 @@ export default function LandingPage() {
       <Section background="gray">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
-            Las comunidades necesitan organización
+            Los gremios son la capa de ejecución
           </h2>
-          <p className="text-center text-gray-600 text-lg mb-10 max-w-3xl mx-auto">
-            Los gremios son agrupaciones de personas alrededor de capacidades, disciplinas o problemas.
-            No son únicamente categorías profesionales: un gremio puede surgir alrededor de cualquier
-            actividad que la comunidad considere relevante.
+          <p className="text-center text-gray-600 text-lg mb-12 max-w-3xl mx-auto">
+            Nos agrupamos por profesión o problema concreto. Cada gremio tiene objetivos inmediatos
+            que resolver.
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-10">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[
-              '⚖️ Gremio Jurídico',
-              '💼 Gremio Financiero',
-              '💻 Gremio de Tecnología',
-              '👥 Gremio de Sociología',
-              '🎓 Gremio de Educación',
-              '🏭 Gremio de Fabricación',
-            ].map((item) => (
-              <div key={item} className="bg-white border border-gray-200 rounded-lg p-4 text-center font-medium text-gray-800 hover:border-blue-300 hover:shadow-sm transition-all">
-                {item}
+              { icon: '⚖️', titulo: 'Gremio Jurídico', objetivo: 'Diseñar la estructura legal del patrimonio.' },
+              { icon: '📈', titulo: 'Gremio Financiero', objetivo: 'Proponer criterios de inversión, riesgo y reinversión.' },
+              { icon: '📊', titulo: 'Gremio Económico', objetivo: 'Modelar CU y distribución.' },
+              { icon: '💻', titulo: 'Gremio Tecnológico', objetivo: 'Construir identidad, registro de CU y transparencia.' },
+              { icon: '👥', titulo: 'Gremio Sociológico', objetivo: 'Analizar incentivos, poder y efectos sociales del sistema.' },
+            ].map((g) => (
+              <div key={g.titulo} className="bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-sm transition-all">
+                <div className="text-3xl mb-2">{g.icon}</div>
+                <h3 className="font-bold text-gray-900">{g.titulo}</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Objetivo inmediato: <span className="font-medium text-gray-800">{g.objetivo}</span>
+                </p>
+              </div>
+            ))}
+
+            {otherBuilders.map((category) => (
+              <Link
+                key={category}
+                href={`/register?category=${category.toLowerCase()}`}
+                className="group bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 hover:bg-blue-50/50 transition-all flex flex-col items-center justify-center min-h-[160px]"
+              >
+                <span className="text-4xl mb-3 opacity-60 group-hover:opacity-100">✚</span>
+                <h3 className="font-semibold text-gray-900 text-lg">{category}</h3>
+                <p className="text-sm text-gray-500 mt-2">
+                  Aportá desde tu disciplina: todavía no está detallada.
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* ===== QUÉ QUEREMOS CONSTRUIR PRIMERO ===== */}
+      <Section background="white">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-10">
+            Qué queremos construir primero
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {foundingSteps.map((step, i) => (
+              <div key={step.title} className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:border-blue-300 transition-colors">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">{step.icon}</span>
+                  <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                    {i + 1}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                <p className="text-gray-600 text-sm">{step.text}</p>
               </div>
             ))}
           </div>
-
-          <div className="bg-white border border-gray-200 rounded-xl p-6 mb-10">
-            <p className="font-semibold text-gray-900 mb-4">Sus funciones pueden incluir:</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {[
-                'Intercambiar conocimiento',
-                'Recibir solicitudes',
-                'Discutir problemas',
-                'Desarrollar estándares',
-                'Crear propuestas',
-                'Realizar proyectos',
-                'Asesorar a otros gremios',
-                'Investigar preguntas abiertas',
-              ].map((item) => (
-                <div key={item} className="text-sm text-gray-700 flex items-center gap-2">
-                  <span className="text-green-500">✓</span>{item}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-gray-900 rounded-2xl p-8 text-white text-center">
-            <p className="text-gray-400 mb-4">Y los gremios colaboran entre sí:</p>
-            <p className="text-xl font-bold mb-2">
-              DERECHO <span className="text-gray-400">+</span> FINANZAS{' '}
-              <span className="text-gray-400">+</span> ECONOMÍA
-            </p>
-            <p className="text-blue-300 mt-4 text-lg">
-              ↓ «Diseñar una estructura viable para el patrimonio colectivo»
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-900 text-sm mt-8">
+            <p>
+              La selección concreta de instrumentos financieros NO se define aquí: la determinará el
+              equipo financiero y jurídico una vez constituida la estructura.
             </p>
           </div>
         </div>
       </Section>
 
-      {/* ===== MUCHAS COMUNIDADES ===== */}
-      <Section background="white">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
-            No tiene que existir una sola comunidad
+      {/* ===== ROADMAP ===== */}
+      <Section background="gray">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">
+            El roadmap
           </h2>
-          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-10">
-            No queremos que una única organización defina las reglas económicas para todo el mundo.
-            Podrían existir muchas comunidades experimentales.
-          </p>
+          <ol className="space-y-4">
+            {roadmap.map((r) => (
+              <li key={r.etapa} className="flex flex-col sm:flex-row sm:items-start gap-4 bg-white border border-gray-200 rounded-xl p-5">
+                <span className="sm:w-28 flex-shrink-0 text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg text-center sm:mt-1 h-fit">
+                  {r.etapa}
+                </span>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-gray-900">{r.titulo}</h3>
+                  <p className="text-gray-700 text-sm mt-1">{r.actores}</p>
+                  <p className="text-sm mt-2">
+                    <span className="font-semibold text-green-700">Resultado: </span>
+                    <span className="text-gray-600">{r.resultado}</span>
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </Section>
 
-          <TwoColumnLayout
-            left={{
-              title: 'COMUNIDAD A',
-              icon: '🏛️',
-              color: 'blue',
-              children: (
-                <ul className="space-y-2 text-gray-700 text-sm">
-                  <li>• sus propias CU</li>
-                  <li>• sus reglas</li>
-                  <li>• patrimonio propio</li>
-                  <li>• su cultura y gremios</li>
-                  <li>• su umbral de acceso</li>
-                </ul>
-              ),
-            }}
-            right={{
-              title: 'COMUNIDAD B',
-              icon: '🏛️',
-              color: 'purple',
-              children: (
-                <ul className="space-y-2 text-gray-700 text-sm">
-                  <li>• otras CU</li>
-                  <li>• otras reglas</li>
-                  <li>• otro patrimonio</li>
-                  <li>• otro mecanismo democrático</li>
-                  <li>• su propio camino</li>
-                </ul>
-              ),
-            }}
-          />
-
-          <div className="mt-8 bg-gray-50 border border-gray-200 rounded-xl p-6">
-            <p className="text-gray-800 mb-3">
-              Las comunidades podrían posteriormente intercambiar servicios, recursos y unidades
-              entre ellas. Esto podría generar relaciones de intercambio similares conceptualmente a:
-            </p>
-            <p className="text-center text-xl font-bold text-gray-900 mb-3">
-              MONEDA A ↔ MONEDA B
-            </p>
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-900">
-              <p>
-                Pero NO afirmamos que CU sean monedas financieras ni que exista convertibilidad real.
-                Es solamente una hipótesis futura de interoperabilidad.
+      {/* ===== EL IDEAL SIN PODER ===== */}
+      <Section background="dark">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
+            El ideal sin poder no sirve. El poder sin ideal tampoco.
+          </h2>
+          <div className="text-left space-y-5 max-w-3xl mx-auto">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <p className="text-xl font-semibold text-blue-300 mb-2">«El ideal sin poder no sirve»</p>
+              <p className="text-gray-300">
+                Una comunidad puede tener principios extraordinarios, pero sin patrimonio depende de
+                recursos ajenos.
               </p>
             </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* ===== CAPITAL ===== */}
-      <Section background="gray">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
-            ¿Por qué alguien aportaría capital?
-          </h2>
-          <p className="text-center text-gray-600 text-lg mb-10 max-w-3xl mx-auto">
-            Decimos que necesitamos patrimonio colectivo, pero ¿cómo entra el capital de forma
-            legítima y sostenible? No inventamos todavía una promesa financiera porque la estructura
-            jurídica y económica no está definida.
-          </p>
-
-          <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
-            <p className="font-semibold text-gray-900 mb-4">
-              Para que exista patrimonio colectivo necesitamos estudiar formas legítimas y sostenibles de captar capital:
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {[
-                'Inversionistas', 'Donantes', 'Instituciones',
-                'Vehículos financieros', 'Cooperativas', 'Sin fines de lucro',
-                'Derecho societario', 'Impuestos', 'Fondos',
-                'Estructuras híbridas',
-              ].map((item) => (
-                <div key={item} className="text-sm text-gray-700 bg-gray-50 rounded-lg p-2 text-center">
-                  {item}
-                </div>
-              ))}
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <p className="text-xl font-semibold text-blue-300 mb-2">«El poder sin ideal tampoco»</p>
+              <p className="text-gray-300">
+                El capital sin una estructura de propósito termina reproduciendo exclusivamente los
+                incentivos existentes.
+              </p>
             </div>
-          </div>
-
-          <div className="bg-gray-900 rounded-xl p-8 text-white mb-8">
-            <p className="text-center text-blue-300 font-semibold text-lg mb-3">Pregunta para inversores:</p>
-            <p className="text-center text-xl">
-              ¿Podemos construir un vehículo que permita que capital privado contribuya a crear un
-              patrimonio productivo de largo plazo y al mismo tiempo preserve la misión del sistema?
+            <p className="text-center text-xl text-white font-medium mt-6">
+              Queremos combinar ambos: propósito común + propiedad productiva.
             </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/register?category=inversion"
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors text-center"
-            >
-              QUIERO DISCUTIR ESTA PREGUNTA
-            </Link>
-            <Link
-              href="#construir"
-              className="border-2 border-gray-700 text-gray-900 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors text-center"
-            >
-              VER LOS PERFILES QUE BUSCAMOS
-            </Link>
           </div>
         </div>
       </Section>
 
-      {/* ===== LO QUE EXISTE HOY Y LO QUE TODAVÍA NO ===== */}
+      {/* ===== NO PROMETER RETORNOS / LÍMITE ACTUAL ===== */}
       <Section background="white">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-10 text-red-700">
-            Esto todavía no existe
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
+            Hasta acá no prometemos nada
           </h2>
+          <div className="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-6 mb-8">
+            <p className="text-gray-800">
+              Aunque queremos crear un patrimonio real, no estamos presentando una oferta de
+              inversión ni prometiendo rentabilidad, dividendos, retorno garantizado, propiedad
+              proporcional, rescate ni convertibilidad de CU. Todo eso requiere antes un vehículo
+              jurídico definido.
+            </p>
+            <p className="text-gray-800 mt-3">
+              Esta landing explica la arquitectura que queremos construir y capta colaboradores e
+              interés de potenciales aportantes.
+            </p>
+          </div>
 
-          <TwoColumnLayout
-            left={{
-              title: 'HOY: estamos construyendo',
-              icon: '🔨',
-              color: 'green',
-              children: (
-                <ul className="space-y-2 text-gray-700">
-                  <li>✓ Una primera comunidad</li>
-                  <li>✓ Registro de colaboradores</li>
-                  <li>✓ Gremios iniciales</li>
-                  <li>✓ Proyectos de investigación</li>
-                  <li>✓ Arquitectura conceptual</li>
-                </ul>
-              ),
-            }}
-            right={{
-              title: 'MAÑANA, SI FUNCIONA',
-              icon: '🔮',
-              color: 'blue',
-              children: (
-                <p className="text-gray-700 text-sm">
-                  Podríamos experimentar con:
-                </p>
-              ),
-            }}
-          />
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+              <h3 className="font-bold text-gray-900 mb-3">Lo que ya existe hoy</h3>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li>✓ Una primera comunidad</li>
+                <li>✓ Registro de colaboradores</li>
+                <li>✓ Gremios iniciales</li>
+                <li>✓ Arquitectura conceptual</li>
+              </ul>
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <h3 className="font-bold text-gray-900 mb-3">Lo que estamos diseñando</h3>
+              <ul className="space-y-2 text-sm text-gray-800">
+                <li>• El vehículo jurídico del patrimonio</li>
+                <li>• La primera cartera de activos</li>
+                <li>• El sistema de CU</li>
+                <li>• El primer experimento de distribución</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </Section>
 
-          <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+      {/* ===== FASE 2: VISIÓN POST-SINGULARIDAD ===== */}
+      <Section background="gray">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-sm uppercase tracking-wider text-blue-600 font-semibold text-center mb-3">
+            Fase posterior
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">
+            Más adelante: la visión de largo plazo
+          </h2>
+          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-8">
+            Primero patrimonio real y un primer experimento. Después, y solo después, el sistema
+            podría evolucionar hacia capas más complejas:
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
             {[
-              'CU', 'Mercado interno', 'Gobernanza',
-              'Patrimonio real', 'Mecanismos de acceso a recursos', 'Interoperabilidad',
+              'Más miembros y más capital',
+              'Nuevos activos productivos',
+              'Gobernanza más sofisticada',
+              'Múltiples comunidades',
+              'Interoperabilidad entre comunidades',
+              'Experimentos sobre qué valor tiene el trabajo humano',
             ].map((item) => (
-              <div key={item} className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center font-medium text-blue-800">
+              <div key={item} className="bg-white border border-gray-200 rounded-lg p-4 text-center text-sm font-medium text-gray-700">
                 {item}
               </div>
             ))}
           </div>
-
-          <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg mt-8">
-            <p className="text-gray-800">
-              No estamos manejando dinero ni entregando CU en este momento. No tenemos todas las
-              respuestas. Precisamente por eso estamos buscando a las personas capaces de
-              ayudarnos a descubrirlas.
-            </p>
-          </div>
-        </div>
-      </Section>
-
-      {/* ===== QUÉ ESTAMOS CONSTRUYENDO AHORA ===== */}
-      <Section background="gray">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
-            ¿Qué estamos construyendo ahora?
-          </h2>
-          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-10">
-            Primera comunidad + investigación. Si el concepto funciona, después experimentaremos
-            con CU, gobernanza y patrimonio real.
+          <p className="text-center text-gray-600">
+            La singularidad es el contexto, no el punto de partida. El proyecto comienza hoy, con la
+            economía que ya existe.
           </p>
-          <div className="grid gap-4 md:grid-cols-3">
-            {[
-              { icon: '👥', title: 'Comunidad', text: 'Reunir personas dispuestas a construir y experimentar esta hipótesis.' },
-              { icon: '📚', title: 'Investigación', text: 'Economistas, abogados, sociólogos y tecnólogos estudiando las preguntas abiertas.' },
-              { icon: '🔬', title: 'Experimentos', text: 'Probar mecanismos pequeños antes de cualquiera de mayor escala.' },
-            ].map((item) => (
-              <div key={item.title} className="bg-white border border-gray-200 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
-                <div className="text-4xl mb-3">{item.icon}</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.text}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </Section>
 
@@ -1044,22 +961,22 @@ export default function LandingPage() {
             Buscamos constructores
           </h2>
           <p className="text-center text-gray-600 text-lg mb-12 max-w-3xl mx-auto">
-            No estamos buscando empleados. Estamos buscando personas capaces de aportar
-            conocimiento, trabajo, crítica, capital o infraestructura. Cada perfil explica qué
-            preguntas necesitamos resolver y en qué proyectos podrías participar.
+            No buscamos empleados ni solo entusiastas. Buscamos personas capaces de resolver los
+            problemas concretos que el primer patrimonio necesita: diseño jurídico, estrategia
+            financiera, modelado económico, infraestructura tecnológica y análisis social.
           </p>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {builders.map((b) => (
+            {guilds.map((g) => (
               <ProfessionalCard
-                key={b.category}
-                category={b.category}
-                icon={b.icon}
-                description={b.description}
-                whyNeeded={b.whyNeeded}
-                questions={b.questions}
-                projects={b.projects}
-                href={b.href}
+                key={g.category}
+                category={g.category}
+                icon={g.icon}
+                description={g.description}
+                whyNeeded={g.whyNeeded}
+                questions={g.questions}
+                projects={g.projects}
+                href={g.href}
               />
             ))}
 
@@ -1077,46 +994,34 @@ export default function LandingPage() {
               </Link>
             ))}
           </div>
-        </div>
-      </Section>
 
-      {/* ===== OBJETIVO DE COMPRENSIÓN ===== */}
-      <Section background="gray">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            ¿Entenderías esta idea para explicársela a otra persona?
-          </h2>
-          <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
-            <p className="text-gray-300 text-sm mb-4">Así podría resumirse:</p>
-            <div className="bg-gray-50 border-l-4 border-blue-500 rounded-r-lg p-6 text-gray-700 leading-relaxed">
-              Están pensando qué pasa si la automatización reduce mucho la necesidad de empleo.
-              En vez de intentar frenar la tecnología, quieren crear comunidades que acumulen
-              patrimonio productivo. Dentro de esas comunidades las personas podrían intercambiar
-              colaboración mediante unidades llamadas CU. Esas unidades servirían para organizar
-              intercambios y registrar participación. Si el patrimonio produce recursos reales, la
-              propia comunidad podría establecer mecanismos mediante los cuales cierto nivel de
-              participación habilite acceso a parte de esos recursos. Todavía no saben exactamente
-              cómo hacerlo y están reuniendo economistas, abogados, sociólogos, tecnólogos e
-              inversores para diseñarlo y probarlo.
-            </div>
-            <p className="text-center text-gray-500 text-sm mt-4">
-              Si esta página no te permite llegar fácilmente a esa explicación, todavía está demasiado abstracta.
+          <div id="capital" className="mt-14 bg-gray-900 rounded-2xl p-8 text-white text-center">
+            <h3 className="text-2xl font-bold mb-3">¿Te interesa aportar capital?</h3>
+            <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+              Una vez definida una estructura jurídicamente viable, buscaremos aportantes e
+              instituciones dispuestos a formar el primer patrimonio. Todavía no recibimos dinero:
+              registramos tu interés.
             </p>
+            <Link
+              href="/register?category=inversion"
+              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              ME INTERESA APORTAR CAPITAL
+            </Link>
           </div>
         </div>
       </Section>
 
       {/* ===== INVITACIÓN FINAL ===== */}
-      <Section background="dark">
-        <div className="max-w-4xl mx-auto">
-          <KeyPhrase
-            text="El ideal sin poder no sirve. El poder sin ideal tampoco."
-            variant="center"
-          />
-          <p className="text-center text-gray-300 text-lg mb-10 max-w-3xl mx-auto">
-            <strong>El ideal</strong> es una comunidad donde el progreso tecnológico amplíe la
-            autonomía humana. <strong>El poder</strong> es el capital, la infraestructura y las
-            instituciones para hacerlo posible. Necesitamos construir ambos.
+      <Section background="gray">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+            Empecemos construyendo capital.
+          </h2>
+          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            Necesitamos especialistas para diseñar el vehículo, constructores para edificar la
+            infraestructura y personas con interés de aportar capital. Empezamos con lo que ya
+            existe, hoy.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -1126,16 +1031,16 @@ export default function LandingPage() {
               QUIERO CONTRIBUIR
             </Link>
             <Link
-              href="/login"
-              className="bg-transparent border-2 border-gray-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors text-center"
+              href="/register?category=inversion"
+              className="bg-gray-900 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors text-center"
             >
-              YA SOY PARTE
+              ME INTERESA APORTAR CAPITAL
             </Link>
             <Link
-              href="/projects"
-              className="bg-transparent border-2 border-gray-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors text-center"
+              href="/login"
+              className="bg-transparent border-2 border-gray-700 text-gray-900 px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors text-center"
             >
-              VER PROYECTOS
+              YA SOY PARTE
             </Link>
           </div>
         </div>
@@ -1144,8 +1049,8 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-10 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 text-center">
-<p className="font-medium text-gray-300">
-            Comunidad Post Singularidad - Explorando la transición económica frente a la automatización
+          <p className="font-medium text-gray-300">
+            Comunidad Post Singularidad - Patrimonio común de inversión
           </p>
           <p className="text-sm mt-3">
             «El ideal sin poder no sirve. El poder sin ideal tampoco.»
