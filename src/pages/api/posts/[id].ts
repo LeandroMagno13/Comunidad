@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   switch (method) {
     case 'GET':
-      return getPost(req, res, id);
+      return getPost(res, id, user);
     case 'POST':
       return addComment(req, res, id, user);
     case 'PATCH':
@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-async function getPost(_req: NextApiRequest, res: NextApiResponse, id: string) {
+async function getPost(res: NextApiResponse, id: string, user: any) {
   const post = await db.post.findUnique({
     where: { id },
     include: {
@@ -51,6 +51,12 @@ async function getPost(_req: NextApiRequest, res: NextApiResponse, id: string) {
     },
   });
   if (!post) return res.status(404).json({ error: 'Publicación no encontrada' });
+
+  // Contenido oculto/suspendido: solo el autor o el Super Admin puede verlo
+  if (post.status !== 'visible' && post.authorId !== user.id && user.role !== 'SUPER_ADMIN') {
+    return res.status(404).json({ error: 'Publicación no encontrada' });
+  }
+
   return res.status(200).json(post);
 }
 

@@ -85,7 +85,7 @@ export async function getSessionUserById(userId: string) {
       },
     },
   });
-  if (!user || user.status === 'banned') return null;
+  if (!user || user.status === 'banned' || user.status === 'deactivated') return null;
   return user;
 }
 
@@ -95,7 +95,7 @@ export async function getUserFromRequest(req: NextApiRequest) {
   const payload = await verifyToken(token);
   if (!payload || !payload.userId) return null;
   const user = await db.user.findUnique({ where: { id: payload.userId }, include: { profile: true } });
-  if (!user || user.status === 'banned') return null;
+  if (!user || user.status === 'banned' || user.status === 'deactivated') return null;
   return user;
 }
 

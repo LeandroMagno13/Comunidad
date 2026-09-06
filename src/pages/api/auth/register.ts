@@ -20,7 +20,7 @@ export default async function handler(
 
 async function register(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { email, password, name, profession, country, bio, expertise, interests } = req.body;
+    const { email, password, name, profession, country, bio, expertise, interests, adminCode } = req.body;
 
     if (!email || !password || !name) {
       return res.status(400).json({ error: 'Email, contraseña y nombre son obligatorios' });
@@ -41,12 +41,19 @@ async function register(req: NextApiRequest, res: NextApiResponse) {
 
     const hashedPassword = await bcrypt.hash(password, parseInt(process.env.BCRYPT_ROUNDS || '12'));
 
-    // Bootstrap seguro de Super Admin: solo cuando el email coincide con
-    // ADMIN_BOOTSTRAP_EMAIL y todavía no existe ningún SUPER_ADMIN.
+    // Bootstrap seguro de Super Admin:
+    // - El email debe coincidir exactamente (normalizado: minúsculas sin espacios) con ADMIN_BOOTSTRAP_EMAIL.
+    // - Solo aplica si todavía NO existe ningún SUPER_ADMIN.
+    // - Si ADMIN_BOOTSTRAP_CODE está definido, además se exige ese código en el registro:
+    //   evita que una cuenta se convierta en admin accidentalmente o que alguien
+    //   reclame el email del operador antes de que se registre.
     const bootstrapEmail = process.env.ADMIN_BOOTSTRAP_EMAIL?.trim().toLowerCase();
+    const bootstrapCode = process.env.ADMIN_BOOTSTRAP_CODE?.trim();
     const adminCount = await db.user.count({ where: { role: 'SUPER_ADMIN' } });
-    const isBootstrap = bootstrapEmail ? normalizedEmail === bootstrapEmail : false;
-    const role = isBootstrap && adminCount === 0 ? 'SUPER_ADMIN' : 'USER';
+    const emailMatches = bootstrapEmail ? normalizedEmail === bootstrapEmail : false;
+    const codeMatches = bootstrapCode ? adminCode?.trim() === bootstrapCode : true;
+    const isBootstrap = emailMatches && codeMatches && adminCount === 0;
+    const role = isBootstrap ? 'SUPER_ADMIN' : 'USER';
 
     const user = await db.user.create({
       data: {
