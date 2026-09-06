@@ -51,7 +51,7 @@ export default function RegisterPage() {
             Crear cuenta
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Comunidad de Capital Humano - Únete a los constructores
+            Comunidad Post Singularidad - Únete a los constructores
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

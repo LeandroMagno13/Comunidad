@@ -9,7 +9,7 @@ export default function LandingPage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <h1 className="text-xl font-bold text-gray-900">
-                Comunidad de Capital Humano
+                Comunidad Post Singularidad
               </h1>
             </div>
             <nav className="flex items-center space-x-4">
@@ -325,7 +325,7 @@ export default function LandingPage() {
       <footer className="bg-gray-800 text-gray-400 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <p>
-            Comunidad de Capital Humano - Explorando la transición económica frente a la automatización
+            Comunidad Post Singularidad - Explorando la transición económica frente a la automatización
           </p>
           <p className="text-sm mt-2">
             "El ideal sin poder no sirve. El poder sin ideal tampoco."

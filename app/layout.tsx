@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Comunidad de Capital Humano',
+  title: 'Comunidad Post Singularidad',
   description: 'Explorando la transición económica frente a la automatización y la IA. Construyendo colectivamente capital productivo para autonomía económica.',
   keywords: ['capital humano', 'automatización', 'IA', 'economía', 'comunidad', 'cooperación', 'capital productivo'],
-  authors: [{ name: 'Comunidad de Capital Humano' }],
+  authors: [{ name: 'Comunidad Post Singularidad' }],
   openGraph: {
-    title: 'Comunidad de Capital Humano',
+    title: 'Comunidad Post Singularidad',
     description: '¿Qué pasa cuando el trabajo deja de ser necesario? Estamos explorando una respuesta: construir colectivamente el capital que permita participar de la productividad.',
     type: 'website',
     locale: 'es_ES',

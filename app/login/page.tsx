@@ -7,7 +7,7 @@ export default function LoginPage() {
             Iniciar sesión
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Comunidad de Capital Humano
+            Comunidad Post Singularidad
           </p>
         </div>
         <form className="mt-8 space-y-6" action="/api/auth/login" method="POST">
