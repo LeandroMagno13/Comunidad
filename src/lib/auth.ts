@@ -5,13 +5,29 @@ import { db } from '@/src/lib/db';
 
 export const TOKEN_COOKIE = 'cps_token';
 
-const secret = () => {
-  const s = process.env.JWT_SECRET || 'comunidad-post-singularidad-secret';
-  if (s.length < 32) {
-    throw new Error('JWT_SECRET must be at least 32 characters');
+const DEV_JWT_SECRET = 'comunidad-post-singularidad-dev-secret';
+
+// En producción JWT_SECRET es obligatorio: sin él, no se generan ni validan
+// sesiones. El fallback es exclusivo de desarrollo. El secreto nunca se loguea.
+function getJwtSecret(): string {
+  const secretValue = process.env.JWT_SECRET;
+  if (secretValue) {
+    if (secretValue.length < 32) {
+      throw new Error('JWT_SECRET must be at least 32 characters long');
+    }
+    return secretValue;
   }
-  return new TextEncoder().encode(s);
-};
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'JWT_SECRET is not configured. Session handling is disabled in production.'
+    );
+  }
+  return DEV_JWT_SECRET;
+}
+
+function secretEncoder() {
+  return new TextEncoder().encode(getJwtSecret());
+}
 
 export async function signToken(payload: {
   userId: string;
@@ -22,12 +38,13 @@ export async function signToken(payload: {
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('7d')
-    .sign(secret());
+    .sign(secretEncoder());
 }
 
 export async function verifyToken(token: string) {
+  const key = secretEncoder();
   try {
-    const { payload } = await jwtVerify(token, secret());
+    const { payload } = await jwtVerify(token, key);
     return payload as { userId: string; email: string; role: string };
   } catch {
     return null;

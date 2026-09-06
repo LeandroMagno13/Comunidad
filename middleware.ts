@@ -4,14 +4,28 @@ import { jwtVerify } from 'jose';
 
 const TOKEN_COOKIE = 'cps_token';
 
+function getJwtSecretKey(): Uint8Array {
+  const secretValue = process.env.JWT_SECRET;
+  if (secretValue) {
+    if (secretValue.length < 32) {
+      throw new Error('JWT_SECRET must be at least 32 characters long');
+    }
+    return new TextEncoder().encode(secretValue);
+  }
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'JWT_SECRET is not configured. Session handling is disabled in production.'
+    );
+  }
+  return new TextEncoder().encode('comunidad-post-singularidad-dev-secret');
+}
+
 async function getSession(request: NextRequest) {
   const token = request.cookies.get(TOKEN_COOKIE)?.value;
   if (!token) return null;
+  const key = getJwtSecretKey();
   try {
-    const secret = new TextEncoder().encode(
-      process.env.JWT_SECRET || 'comunidad-post-singularidad-secret'
-    );
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, key);
     const data = payload as { userId?: string; role?: string };
     if (!data.userId) return null;
     return { userId: data.userId, role: data.role || 'USER' };
