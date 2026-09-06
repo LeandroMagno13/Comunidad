@@ -1,62 +1,883 @@
-19:56:03.472 Running build in Washington, D.C., USA (East) – iad1
-19:56:03.473 Build machine configuration: 2 cores, 8 GB
-19:56:03.592 Cloning github.com/LeandroMagno13/Comunidad (Branch: main, Commit: 0a7d1a4)
-19:56:03.593 Previous build caches not available.
-19:56:03.998 Cloning completed: 406.000ms
-19:56:04.277 Running "vercel build"
-19:56:04.342 Vercel CLI 59.11.7
-19:56:04.577 Installing dependencies...
-19:56:32.374 npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
-19:56:33.101 npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
-19:56:33.884 npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
-19:56:33.899 npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
-19:56:34.004 npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
-19:56:34.732 npm warn deprecated glob@10.3.10: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
-19:56:36.052 npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
-19:56:40.351 npm warn deprecated next@14.2.3: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.
-19:56:42.898 
-19:56:42.898 added 429 packages in 38s
-19:56:42.899 
-19:56:42.899 158 packages are looking for funding
-19:56:42.899   run `npm fund` for details
-19:56:42.902 npm warn allow-scripts 4 packages have install scripts not yet covered by allowScripts:
-19:56:42.902 npm warn allow-scripts   @prisma/client@5.22.0 (postinstall: node scripts/postinstall.js)
-19:56:42.903 npm warn allow-scripts   prisma@5.22.0 (preinstall: node scripts/preinstall-entry.js)
-19:56:42.903 npm warn allow-scripts   @prisma/engines@5.22.0 (postinstall: node scripts/postinstall.js)
-19:56:42.903 npm warn allow-scripts   unrs-resolver@1.12.2 (postinstall: node postinstall.js)
-19:56:42.903 npm warn allow-scripts
-19:56:42.903 npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
-19:56:42.951 Detected Next.js version: 14.2.3
-19:56:42.960 Running "npm run build"
-19:56:43.109 
-19:56:43.109 > comunidad-capital-humano@0.1.0 build
-19:56:43.109 > next build
-19:56:43.110 
-19:56:44.086 Attention: Next.js now collects completely anonymous telemetry regarding usage.
-19:56:44.087 This information is used to shape Next.js' roadmap and prioritize features.
-19:56:44.087 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-19:56:44.087 https://nextjs.org/telemetry
-19:56:44.087 
-19:56:44.203   ▲ Next.js 14.2.3
-19:56:44.204 
-19:56:44.318    Creating an optimized production build ...
-19:56:47.464 Failed to compile.
-19:56:47.465 
-19:56:47.466 ./src/pages/api/auth/login.ts
-19:56:47.466 Module not found: Can't resolve '@/src/lib/db'
-19:56:47.466 
-19:56:47.466 https://nextjs.org/docs/messages/module-not-found
-19:56:47.466 
-19:56:47.466 ./src/pages/api/auth/register.ts
-19:56:47.467 Module not found: Can't resolve '@/src/lib/db'
-19:56:47.467 
-19:56:47.467 https://nextjs.org/docs/messages/module-not-found
-19:56:47.467 
-19:56:47.467 ./src/pages/api/users.ts
-19:56:47.468 Module not found: Package path ./jwt is not exported from package /vercel/path0/node_modules/jose (see exports field in /vercel/path0/node_modules/jose/package.json)
-19:56:47.468 
-19:56:47.468 https://nextjs.org/docs/messages/module-not-found
-19:56:47.468 
-19:56:47.476 
-19:56:47.476 > Build failed because of webpack errors
-19:56:47.513 Error: Command "npm run build" exited with 1
+Quiero modificar profundamente la landing actual de “Comunidad Post Singularidad”.
+
+NO quiero solamente mejorar estilos ni agregar un tooltip explicando “CU”.
+
+El problema actual es conceptual: la página introduce términos como CU, participación comunitaria, acceso a recursos y patrimonio colectivo sin explicar suficientemente cómo se relacionan entre sí.
+
+Necesito que reconstruyas la narrativa para que una persona que llega por primera vez pueda comprender:
+
+cuál es el problema;
+qué transición económica estamos imaginando;
+por qué necesitamos construir capital;
+qué función cumple la comunidad;
+qué son las CU;
+para qué sirven;
+cómo se obtienen;
+cómo circulan;
+cómo se relacionan con los recursos materiales;
+qué papel tiene la democracia;
+por qué existirían gremios;
+por qué podrían existir múltiples comunidades;
+qué partes son hipótesis todavía abiertas;
+qué necesitamos construir AHORA.
+
+No presentar CU como una criptomoneda, token especulativo, acción, salario ni moneda con convertibilidad garantizada.
+
+IDEA CENTRAL QUE TIENE QUE ENTENDER EL VISITANTE
+
+El proyecto parte de una hipótesis:
+
+Si la automatización consigue producir una proporción cada vez mayor de los bienes y servicios que necesitamos con cada vez menos trabajo humano, aparece un problema.
+
+Nuestra economía actual conecta aproximadamente:
+
+TRABAJO
+↓
+INGRESO
+↓
+ACCESO A RECURSOS
+
+Pero si disminuye la cantidad de trabajo humano económicamente necesario, esa conexión puede volverse cada vez más inestable.
+
+La pregunta entonces no es solamente:
+
+“¿Qué trabajos desaparecerán?”
+
+La pregunta más profunda es:
+
+¿Cómo accede una persona a recursos en una economía que necesita cada vez menos de su trabajo para producirlos?
+
+Esta pregunta debe aparecer muy temprano en la landing.
+
+LA TRANSICIÓN QUE ESTAMOS EXPLORANDO
+
+Mostrar visualmente:
+
+ECONOMÍA ACTUAL
+
+TRABAJO HUMANO
+↓
+SALARIO
+↓
+ACCESO A RECURSOS
+
+Y luego:
+
+PROBLEMA DE LA AUTOMATIZACIÓN
+
+MÁQUINAS + IA
+↓
+MAYOR PRODUCTIVIDAD
+↓
+MENOR NECESIDAD DE TRABAJO HUMANO
+↓
+INCERTIDUMBRE SOBRE EL INGRESO
+
+Y finalmente nuestra hipótesis:
+
+LO QUE QUEREMOS EXPLORAR
+
+CAPITAL PRODUCTIVO COLECTIVO
+↓
+PRODUCTIVIDAD
+↓
+RECURSOS
+
+
+
+
+COMUNIDAD HUMANA
+↓
+COLABORACIÓN
+↓
+PARTICIPACIÓN
+
+↓
+
+NUEVO MECANISMO DE ACCESO A RECURSOS
+
+No afirmar que ya hemos demostrado que funciona.
+
+Decir que estamos intentando construir y experimentar este mecanismo.
+
+EXPLICAR POR QUÉ EL CAPITAL ES INDISPENSABLE
+
+Debe quedar clarísimo que colaborar entre personas NO crea por sí solo los recursos materiales que queremos distribuir.
+
+Una comunidad puede compartir conocimiento, tiempo, ayuda y habilidades.
+
+Pero para generar capacidad económica real necesita también poseer activos productivos.
+
+Por eso existen dos motores diferentes:
+
+MOTOR HUMANO
+
+Personas que colaboran entre ellas.
+
+MOTOR MATERIAL
+
+Capital que posee activos capaces de producir rendimiento.
+
+La propuesta intenta conectarlos.
+
+Usar una frase como:
+
+La comunidad organiza el valor humano. El patrimonio genera capacidad material.
+
+Otra frase importante:
+
+Las CU no crean la riqueza. Organizan la participación alrededor de una riqueza que debe existir realmente.
+
+NUEVA SECCIÓN OBLIGATORIA:
+¿QUÉ SON LAS CU?
+
+Esta sección debe aparecer ANTES de cualquier gráfico que utilice las siglas CU.
+
+Texto conceptual:
+
+¿Qué son las CU?
+
+CU significa provisionalmente Community Units.
+
+Son unidades internas que permiten registrar e intercambiar colaboración dentro de una comunidad.
+
+No representan cuánto vale una persona.
+
+No son acciones del patrimonio colectivo.
+
+No significan que alguien sea dueño de una determinada cantidad de dinero.
+
+No prometen una conversión fija a pesos, dólares o cualquier otra moneda.
+
+Su función sería otra:
+
+permitir que las personas intercambien capacidades entre ellas y construir un registro económico de participación dentro de la comunidad.
+
+EXPLICARLO CON UN EJEMPLO CONCRETO
+
+Crear una sección visual denominada:
+
+Una CU se entiende mejor con un ejemplo
+
+Ejemplo:
+
+Ana necesita desarrollar una pequeña herramienta web.
+
+Publica una solicitud:
+
+“Necesito ayuda para crear este formulario. Ofrezco 30 CU.”
+
+Martín sabe programarlo.
+
+Acepta.
+
+Realiza el trabajo.
+
+Ana transfiere 30 CU a Martín.
+
+Mostrar gráficamente:
+
+ANA
+Tiene una necesidad
+↓
+OFRECE 30 CU
+↓
+MARTÍN
+Aporta una capacidad
+↓
+RECIBE 30 CU
+
+Las CU no fueron el producto.
+
+El producto fue la colaboración entre Ana y Martín.
+
+Las CU permitieron expresar e intercambiar valor dentro de la comunidad.
+
+Luego Martín podría gastar esas CU para pedir otra cosa que él necesite:
+
+MARTÍN
+↓
+“Necesito ayuda de un contador”
+↓
+OFRECE 20 CU
+↓
+OTRO MIEMBRO LAS RECIBE
+
+Así las CU circulan.
+
+ACLARACIÓN MUY IMPORTANTE:
+CU NO ES “PAGO POR TRABAJAR PARA LA COMUNIDAD”
+
+No queremos crear simplemente otro empleo disfrazado.
+
+La comunidad debería permitir valorar muchas clases de contribuciones humanas.
+
+Por ejemplo:
+
+programar;
+reparar;
+enseñar;
+investigar;
+diseñar;
+organizar;
+mediar;
+cuidar;
+acompañar;
+escuchar;
+crear;
+resolver conflictos;
+documentar conocimiento;
+ayudar a otra persona;
+construir herramientas para la comunidad.
+
+La automatización podría incluso cambiar radicalmente el precio relativo de estas cosas.
+
+Quizás en algún momento programar sea abundante porque las IA lo hacen casi gratis mientras que una hora de atención humana genuina resulte escasa.
+
+No debemos decidir eso desde arriba.
+
+Queremos que las interacciones entre personas ayuden a descubrir qué continúa teniendo valor humano.
+
+AHORA EXPLICAR LA SEGUNDA FUNCIÓN DE LAS CU
+
+Este es el punto que actualmente falta casi completamente.
+
+Las CU no solamente podrían servir para intercambiar colaboración.
+
+La hipótesis es que también puedan funcionar como mecanismo de acceso al rendimiento producido por el patrimonio colectivo.
+
+Pero explicar esto con muchísimo cuidado.
+
+No decir:
+
+“1 CU = X dólares.”
+
+No decir:
+
+“las CU son convertibles.”
+
+No decir:
+
+“ganás dinero trabajando”.
+
+Explicarlo así:
+
+A medida que una persona participa y acumula CU, podría alcanzar determinados umbrales de participación que le permitan acceder a una porción de los recursos disponibles generados por el patrimonio colectivo.
+
+Visual:
+
+COLABORACIÓN
+↓
+CU
+↓
+ACUMULACIÓN / PARTICIPACIÓN
+↓
+UMBRAL DE ACCESO
+↓
+RECURSOS DISPONIBLES DEL PATRIMONIO
+
+EJEMPLO DE ACCESO A RECURSOS
+
+Usar un ejemplo puramente ilustrativo y aclarar que los números NO son definitivos.
+
+Supongamos que una comunidad determina experimentalmente:
+
+100 CU = 1 unidad de acceso a recursos
+
+Una persona participa en diferentes intercambios y llega a 100 CU.
+
+Eso podría habilitar una unidad de acceso a los recursos que el patrimonio de esa comunidad pueda efectivamente distribuir.
+
+IMPORTANTE:
+
+No significa que 100 CU “valgan” una cantidad fija de dinero.
+
+Significa que la comunidad decidió utilizar ese nivel de participación como condición para liberar una determinada unidad de recursos.
+
+La disponibilidad real depende siempre del patrimonio y de los rendimientos reales existentes.
+
+Mostrar:
+
+PATRIMONIO PRODUCTIVO
+↓
+GENERA 1.000 UNIDADES DE RECURSOS
+
+COMUNIDAD
+↓
+DETERMINA REGLAS DE ACCESO
+
+PERSONA
+↓
+ALCANZA UMBRAL DE PARTICIPACIÓN
+
+↓
+
+ACCEDE A UNA UNIDAD DE RECURSOS
+
+EXPLICAR LOS DOS CIRCUITOS NUEVAMENTE, PERO AHORA CON SENTIDO
+
+Una vez explicadas las CU, recién entonces mostrar el gráfico de dos circuitos.
+
+CIRCUITO HUMANO
+
+PERSONAS
+↓
+NECESIDADES + CAPACIDADES
+↓
+INTERCAMBIOS
+↓
+CU
+↓
+PARTICIPACIÓN
+
+CIRCUITO PRODUCTIVO
+
+APORTES / CAPITAL
+↓
+PATRIMONIO COLECTIVO
+↓
+INVERSIÓN
+↓
+PRODUCTIVIDAD
+↓
+RENDIMIENTOS
+↓
+RECURSOS DISPONIBLES
+
+Y ambos se encuentran:
+
+PARTICIPACIÓN EN CU
++
+RECURSOS REALES DISPONIBLES
++
+REGLAS DE LA COMUNIDAD
+
+↓
+
+ACCESO A RECURSOS
+
+Esta debería ser una de las visualizaciones centrales de toda la página.
+
+ACLARAR QUÉ ES UNA “UNIDAD DE RECURSOS”
+
+Podemos usar provisionalmente el término UR o simplemente “Unidad de Recursos”, pero no abusar de nuevas siglas.
+
+Una Unidad de Recursos es una abstracción para representar una determinada cantidad de capacidad material que el patrimonio puede distribuir.
+
+Todavía NO sabemos cuál debería ser su definición final.
+
+Podría representar dinero distribuible.
+
+Podría representar acceso a bienes o servicios.
+
+Podría evolucionar hacia otros mecanismos.
+
+Es una pregunta abierta.
+
+El sitio debe distinguir claramente:
+
+CU = participación/intercambio humano.
+
+RECURSOS = capacidad económica real generada por el patrimonio.
+
+¿DE DÓNDE SALEN LAS CU?
+
+Agregar una sección específica porque actualmente esto tampoco está explicado.
+
+Diferenciar:
+
+Transferencia
+
+Las CU ya existen y pasan de una persona a otra.
+
+Ejemplo:
+
+Ana → 30 CU → Martín.
+
+No cambia la cantidad total de CU.
+
+Emisión
+
+La comunidad crea nuevas CU.
+
+Todavía debemos investigar bajo qué condiciones debería ocurrir.
+
+Destrucción
+
+CU salen de circulación bajo determinadas reglas.
+
+Todavía debemos investigar cuándo o por qué.
+
+Esto permite introducir una pregunta fundamental:
+
+¿Cómo evitamos que una economía de CU genere inflación, concentración o comportamientos perversos?
+
+Eso debe formar parte del trabajo de economistas y especialistas financieros.
+
+QUIÉN DECIDE CUÁNTAS CU HACEN FALTA PARA ACCEDER A RECURSOS
+
+Actualmente la página salta demasiado rápido a “la comunidad decide las reglas”.
+
+Crear un ejemplo concreto.
+
+Supongamos que debemos decidir cuál debería ser el umbral para acceder a una unidad de recursos.
+
+Miembros proponen:
+
+90 CU
+100 CU
+120 CU
+150 CU
+200 CU
+
+La comunidad puede utilizar distintos mecanismos para obtener una decisión:
+
+mediana;
+promedio recortado;
+votación;
+consenso;
+mecanismos ponderados;
+democracia líquida;
+mercado;
+otros experimentos.
+
+No afirmar que un promedio simple sea la solución.
+
+La idea importante es:
+
+El fundador no debería poder decidir arbitrariamente cuánto vale participar de la comunidad.
+
+Las reglas económicas fundamentales deben poder ser gobernadas por quienes forman parte de ella.
+
+EXPLICAR MEJOR “DEMOCRACIA”
+
+No mostrar solamente una lista de palabras como:
+
+Votación
+Consenso
+Delegación
+etc.
+
+Eso actualmente parece un catálogo de mecanismos.
+
+Primero explicar QUÉ COSAS tendría que decidir la comunidad.
+
+Por ejemplo:
+
+cuánto y cuándo emitir CU;
+cuándo destruir CU;
+qué condiciones habilitan acceso a recursos;
+qué proporción de los rendimientos se reinvierte;
+qué proporción puede ponerse a disposición de miembros;
+qué proyectos financiar;
+cómo funcionan los gremios;
+qué reglas de convivencia existen;
+cómo modificar el protocolo;
+cómo resolver disputas.
+
+Después explicar que todavía estamos investigando qué mecanismos democráticos utilizar para cada decisión.
+
+No necesariamente todas las decisiones tienen que resolverse de la misma manera.
+
+EXPLICAR LOS GREMIOS
+
+Actualmente los gremios prácticamente aparecen mencionados pero no explicados.
+
+Agregar una sección:
+
+Las comunidades necesitan organización
+
+Los gremios son agrupaciones de personas alrededor de capacidades, disciplinas o problemas.
+
+Ejemplos:
+
+Gremio Jurídico
+Gremio Financiero
+Gremio de Tecnología
+Gremio de Sociología
+Gremio de Educación
+Gremio de Fabricación
+
+Pero no son únicamente categorías profesionales.
+
+Un gremio puede surgir alrededor de cualquier actividad que la comunidad considere relevante.
+
+Sus funciones pueden incluir:
+
+intercambiar conocimiento;
+recibir solicitudes;
+discutir problemas;
+desarrollar estándares;
+crear propuestas;
+realizar proyectos;
+asesorar a otros gremios;
+investigar preguntas abiertas.
+
+Mostrar además colaboraciones:
+
+DERECHO
++
+FINANZAS
++
+ECONOMÍA
+
+↓
+
+“Diseñar una estructura viable para el patrimonio colectivo”
+
+Esto ayuda a visualizar para qué estamos captando colaboradores AHORA.
+
+MULTIPLICIDAD DE COMUNIDADES
+
+Explicar mucho mejor esta idea.
+
+No queremos necesariamente que una única organización defina las reglas económicas para todo el mundo.
+
+Podrían existir muchas comunidades experimentales.
+
+COMUNIDAD A
+
+sus propias CU;
+sus reglas;
+patrimonio;
+cultura;
+gremios;
+umbral de acceso.
+
+COMUNIDAD B
+
+otras CU;
+otras reglas;
+otro patrimonio;
+otro mecanismo democrático.
+
+Las comunidades podrían posteriormente intercambiar servicios, recursos y unidades entre ellas.
+
+Esto podría generar relaciones de intercambio similares conceptualmente a:
+
+MONEDA A ↔ MONEDA B
+
+Pero NO afirmar todavía que CU sean monedas financieras ni que exista convertibilidad real.
+
+Es una hipótesis futura de interoperabilidad.
+
+AGREGAR UNA SECCIÓN MUY IMPORTANTE:
+¿POR QUÉ ALGUIEN APORTARÍA CAPITAL?
+
+Actualmente decimos que necesitamos capital pero no explicamos suficientemente cómo entra el inversor en la visión.
+
+No inventar todavía una promesa financiera porque la estructura jurídica y económica no está definida.
+
+Explicar:
+
+Para que exista patrimonio colectivo necesitamos estudiar formas legítimas y sostenibles de captar capital.
+
+Podrían existir distintas clases de aportantes, inversionistas, donantes, instituciones o vehículos financieros.
+
+Pero necesitamos que expertos en:
+
+inversión;
+mercados;
+regulación;
+derecho societario;
+impuestos;
+fondos;
+cooperativas;
+organizaciones sin fines de lucro;
+estructuras híbridas;
+
+nos ayuden a determinar qué arquitectura es viable.
+
+Pregunta para inversores:
+
+¿Podemos construir un vehículo que permita que capital privado contribuya a crear un patrimonio productivo de largo plazo y al mismo tiempo preserve la misión del sistema?
+
+No prometer rentabilidad ni participación hasta resolver legalmente el modelo.
+
+CAMBIAR “BUSCAMOS CONSTRUCTORES”
+
+La sección ya es buena conceptualmente, pero debe convertirse en una puerta de entrada intelectual.
+
+Cada tarjeta profesional debe ser clickeable y abrir una página o modal detallado.
+
+No mandar inmediatamente al formulario de registro.
+
+Por ejemplo:
+
+SOCIOLOGÍA
+↓
+“¿Por qué te necesitamos?”
+↓
+explicación específica
+↓
+“Preguntas que necesitamos resolver”
+↓
+“Proyectos donde podrías participar”
+↓
+QUIERO CONTRIBUIR
+
+EJEMPLO: SOCIOLOGÍA
+
+Título:
+
+Si sos sociólogo, necesitamos que encuentres los problemas que los tecnólogos probablemente no veamos.
+
+Texto:
+
+Estamos planteando una posible transición desde una sociedad donde empleo, ingreso, identidad y estatus están fuertemente conectados hacia otra donde el trabajo humano podría dejar de ser económicamente necesario en muchas actividades.
+
+Eso genera preguntas que no son técnicas:
+
+¿Qué reemplaza al trabajo como espacio de integración social?
+
+¿Qué sucede con el sentido de propósito?
+
+¿Cómo se construye prestigio sin profesión?
+
+¿Cómo evitamos nuevas castas?
+
+¿Qué incentivos produce una economía basada en colaboración?
+
+¿Qué sucede con quienes no quieren participar?
+
+¿Cómo surgen relaciones de poder dentro de los gremios?
+
+¿Cómo evitamos que reputación se transforme en control social?
+
+Queremos que nos ayudes a estudiar esas preguntas.
+
+EJEMPLO: ECONOMÍA
+
+Necesitamos investigar:
+
+oferta monetaria de CU;
+inflación;
+velocidad de circulación;
+formación de precios;
+concentración;
+incentivos;
+comportamiento estratégico;
+mecanismos de acceso a recursos;
+relación entre patrimonio y CU;
+sostenibilidad;
+posibles ataques económicos al sistema.
+
+No necesitamos que confirmes que nuestra idea funciona.
+
+Necesitamos que intentes romperla.
+
+EJEMPLO: DERECHO
+
+Necesitamos determinar qué cosas de esta idea:
+
+ya son posibles;
+requieren estructuras separadas;
+están reguladas;
+podrían considerarse actividad financiera;
+requieren autorización;
+directamente no pueden hacerse como las imaginamos.
+
+Investigar separación entre:
+
+patrimonio;
+miembros;
+gobernanza;
+beneficiarios;
+aportantes;
+inversionistas;
+distribución de recursos.
+EJEMPLO: INVERSIÓN / FINANZAS
+
+Pregunta central:
+
+¿Cómo transformamos una comunidad con buenas ideas en una institución que posea capacidad económica real?
+
+Necesitamos estudiar:
+
+formación de patrimonio;
+inversión de largo plazo;
+diversificación;
+riesgo;
+liquidez;
+reinversión;
+modelos de aportación;
+vehículos de inversión;
+transparencia;
+auditoría;
+protección del patrimonio;
+incentivos para quienes aportan capital.
+EJEMPLO: TECNOLOGÍA
+
+No necesitamos solamente desarrollar una web.
+
+Necesitamos eventualmente infraestructura para:
+
+identidad;
+perfiles;
+gremios;
+solicitudes;
+intercambio de CU;
+reputación;
+gobernanza;
+proyectos;
+auditoría;
+transparencia;
+interoperabilidad entre comunidades.
+
+Pero NO implementar todo ahora.
+
+SECCIÓN:
+LO QUE EXISTE HOY Y LO QUE TODAVÍA NO EXISTE
+
+Separar claramente.
+
+HOY
+
+Estamos construyendo:
+
+comunidad;
+registro de colaboradores;
+gremios iniciales;
+proyectos de investigación;
+arquitectura conceptual.
+MAÑANA, SI FUNCIONA
+
+Podríamos experimentar con:
+
+CU;
+mercado interno;
+gobernanza;
+patrimonio real;
+mecanismos de acceso a recursos;
+interoperabilidad.
+
+Esto evita que el visitante crea que ya estamos manejando dinero o entregando CU.
+
+NUEVA NARRATIVA COMPLETA DE LA LANDING
+
+Reordenar la página de esta manera:
+
+HERO
+¿Qué pasa cuando el trabajo deja de ser necesario?
+EL PROBLEMA
+Trabajo → ingreso → recursos y qué cambia con automatización.
+NUESTRA HIPÓTESIS
+No detener la automatización: ampliar el acceso a su productividad.
+EL PODER MATERIAL
+Por qué necesitamos patrimonio colectivo.
+DOS MOTORES
+Comunidad humana + capital productivo.
+QUÉ SON LAS CU
+Definición clara.
+EJEMPLO REAL
+Ana ofrece 30 CU a Martín.
+POR QUÉ QUERRÍAS CU
+Intercambio + participación + eventual acceso a recursos.
+CÓMO SE ACCEDE A RECURSOS
+Umbrales y patrimonio real.
+DE DÓNDE SALEN LAS CU
+Transferencia, emisión, destrucción.
+QUÉ COSAS PUEDEN TENER VALOR
+Oferta/demanda humana.
+QUIÉN DECIDE LAS REGLAS
+Democracia aplicada a decisiones concretas.
+GREMIOS
+Organización de capacidades y conocimiento.
+MUCHAS COMUNIDADES
+Experimentación e interoperabilidad.
+CAPITAL
+Cómo necesitamos estudiar su formación.
+ESTO TODAVÍA NO EXISTE
+Hipótesis abiertas.
+QUÉ ESTAMOS CONSTRUYENDO AHORA
+Primera comunidad + investigación.
+BUSCAMOS CONSTRUCTORES
+Perfiles profesionales.
+INVITACIÓN FINAL.
+CAMBIAR EL HERO LIGERAMENTE
+
+Mantener:
+
+¿Qué pasa cuando el trabajo deja de ser necesario?
+
+Pero agregar inmediatamente debajo una frase que conecte el problema con la solución:
+
+Durante siglos vinculamos trabajo, ingreso y acceso a recursos.
+Si la automatización rompe gradualmente ese vínculo, necesitamos experimentar con otro.
+
+Y luego:
+
+Nuestra hipótesis: construir comunidades que posean capital productivo y permitan que las personas participen de la riqueza que ese capital genera.
+
+CTA:
+
+ENTENDER CÓMO PODRÍA FUNCIONAR
+
+CONSTRUIRLO CON NOSOTROS
+
+FRASE CENTRAL DEL PROYECTO
+
+Mantener:
+
+El ideal sin poder no sirve. El poder sin ideal tampoco.
+
+Pero darle significado inmediatamente:
+
+El ideal es construir una comunidad donde el progreso tecnológico amplíe la autonomía humana.
+
+El poder es poseer el capital, la infraestructura y las instituciones necesarias para hacerlo posible.
+
+EVITAR
+
+No usar lenguaje que haga parecer al proyecto:
+
+una criptomoneda;
+un esquema de inversión;
+una promesa de rentabilidad;
+una organización comunista;
+una organización anticapitalista;
+una campaña contra empresas;
+una renta básica ya implementada;
+una plataforma donde “hacés tareas por puntos”;
+una gamificación trivial.
+
+CU es solamente una pieza de una arquitectura mucho mayor.
+
+OBJETIVO DE COMPRENSIÓN
+
+Después de leer la landing completa, una persona debería poder explicársela a otra aproximadamente así:
+
+“Están pensando qué pasa si la automatización reduce mucho la necesidad de empleo. En vez de intentar frenar la tecnología, quieren crear comunidades que acumulen patrimonio productivo. Dentro de esas comunidades las personas podrían intercambiar colaboración mediante unidades llamadas CU. Esas unidades servirían para organizar intercambios y registrar participación. Si el patrimonio produce recursos reales, la propia comunidad podría establecer mecanismos mediante los cuales cierto nivel de participación habilite acceso a parte de esos recursos. Todavía no saben exactamente cómo hacerlo y están reuniendo economistas, abogados, sociólogos, tecnólogos e inversores para diseñarlo y probarlo.”
+
+Si la landing no permite llegar fácilmente a esta explicación, todavía está demasiado abstracta.
+
+IMPORTANTE SOBRE EL DESARROLLO
+
+Conservar el login, registro y backend existentes.
+
+No romper funcionalidades actuales.
+
+Modificar estructura, navegación, copy y componentes visuales.
+
+Crear componentes reutilizables para las explicaciones.
+
+Las tarjetas profesionales deben tener contenido específico antes de enviar al usuario al registro.
+
+Priorizar comprensión sobre efectos visuales.
+
+Usar diagramas simples y animaciones discretas si ayudan a comprender los flujos.
+
+No saturar la landing con bloques enormes de texto: convertir estos conceptos en:
+
+diagramas;
+ejemplos;
+tarjetas;
+pequeños escenarios;
+preguntas;
+comparaciones antes/después.
+
+Pero NO sacrificar contenido conceptual por minimalismo.
+
+Esta landing no está vendiendo una app.
+
+Está intentando explicar una nueva hipótesis económica.

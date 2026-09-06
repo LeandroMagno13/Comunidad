@@ -1,0 +1,32 @@
+Abrí postcss.config.js.
+Reemplacé la configuración vacía:
+module.exports = {
+  plugins: [],
+};
+por:
+
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+Verifiqué que tailwindcss y autoprefixer estén instalados en las dependencias.
+Reconstruí el proyecto con:
+pnpm exec next build
+Reinicié el servidor de desarrollo:
+pnpm dev
+Comprobé la aplicación en el navegador.
+También, cuando apareció el error Cannot find module './742.js', el problema era un bundle interno corrupto de Next.js. Se solucionó reconstruyendo la aplicación y reiniciando el servidor, sin modificar el código de la página.
+
+Puedes darle al coder estas instrucciones:
+
+Revisa postcss.config.js y asegúrate de que Tailwind y Autoprefixer estén configurados así:
+
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+Verifica que tailwindcss, postcss y autoprefixer estén instalados. Después ejecuta pnpm exec next build y reinicia el servidor con pnpm dev. Si aparece Cannot find module './742.js', detén y vuelve a iniciar el servidor y reconstruye el proyecto.
