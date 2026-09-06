@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "start": "next start",
     "lint": "next lint",
-    "db:push": "prisma generate && prisma db push --skip-generate"
+    "db:push": "prisma generate && prisma db push --skip-generate",
+    "vercel-build": "node env-check.js && prisma generate && next build"
   },
   "dependencies": {
     "next": "14.2.3",
