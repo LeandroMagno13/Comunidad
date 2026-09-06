@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { db } from '@/src/lib/db';
+import { getUserFromRequest } from '@/src/lib/auth';
 
-const prisma = new PrismaClient();
-
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
   switch (method) {
@@ -16,44 +16,45 @@ export default async function handler(req, res) {
   }
 }
 
-async function getCategories(req, res) {
+async function getCategories(_req: NextApiRequest, res: NextApiResponse) {
   try {
-    const categories = await prisma.category.findMany({
+    const categories = await db.category.findMany({
       include: {
-        users: {
-          include: {
-            profile: true,
-          },
-        },
+        users: { include: { profile: true } },
       },
     });
     return res.status(200).json(categories);
   } catch (error) {
     console.error('Error fetching categories:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 }
 
-async function createCategory(req, res) {
+async function createCategory(req: NextApiRequest, res: NextApiResponse) {
   try {
+    const user = await getUserFromRequest(req);
+    if (!user) {
+      return res.status(401).json({ error: 'No autenticado' });
+    }
+
     const { name, description, icon, color } = req.body;
 
     if (!name) {
-      return res.status(400).json({ error: 'Category name is required' });
+      return res.status(400).json({ error: 'El nombre es obligatorio' });
     }
 
-    const category = await prisma.category.create({
+    const category = await db.category.create({
       data: {
-        name,
-        description,
-        icon,
-        color,
+        name: String(name).trim().slice(0, 80),
+        description: description ? String(description).trim() : null,
+        icon: icon ? String(icon).trim() : null,
+        color: color ? String(color).trim() : null,
       },
     });
 
     return res.status(201).json(category);
   } catch (error) {
     console.error('Error creating category:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 }

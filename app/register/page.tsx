@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -10,10 +12,14 @@ export default function RegisterPage() {
     profession: '',
     country: '',
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setError('');
+    setLoading(true);
+
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -22,17 +28,19 @@ export default function RegisterPage() {
         },
         body: JSON.stringify(formData),
       });
-      
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
-        console.log('Registration successful:', data);
-        // Redirect to login or dashboard
-      } else {
-        const error = await response.json();
-        console.error('Registration failed:', error);
+        router.push('/profile');
+        router.refresh();
+        return;
       }
-    } catch (error) {
-      console.error('Error:', error);
+
+      setError(data.error || 'Error al crear la cuenta');
+      setLoading(false);
+    } catch {
+      setError('Error de conexión. Intenta de nuevo.');
+      setLoading(false);
     }
   };
 
@@ -54,6 +62,13 @@ export default function RegisterPage() {
             Comunidad Post Singularidad - Únete a los constructores
           </p>
         </div>
+
+        {error && (
+          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -136,9 +151,10 @@ export default function RegisterPage() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
-              Crear cuenta
+              {loading ? 'Creando cuenta…' : 'Crear cuenta'}
             </button>
           </div>
         </form>

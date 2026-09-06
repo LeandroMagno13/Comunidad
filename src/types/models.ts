@@ -1,8 +1,14 @@
+export type UserRole = 'USER' | 'SUPER_ADMIN';
+
 export type User = {
   id: string;
   email: string;
   name: string;
   password: string;
+  role: UserRole;
+  status: 'active' | 'banned' | 'deactivated';
+  lastLoginAt?: Date | null;
+  avatarUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
   profile?: Profile;
@@ -53,9 +59,12 @@ export type Guild = {
   name: string;
   description: string;
   purpose?: string;
+  creatorId?: string | null;
+  status: 'active' | 'archived';
   members?: GuildMembership[];
   projects?: Project[];
   discussions?: Discussion[];
+  posts?: Post[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -65,6 +74,7 @@ export type GuildMembership = {
   userId: string;
   guildId: string;
   role: 'member' | 'admin' | 'moderator';
+  status: 'pending' | 'active';
   joinedAt: Date;
   user?: User;
   guild?: Guild;
@@ -153,4 +163,90 @@ export type AdminNote = {
   content: string;
   createdAt: Date;
   user?: User;
+};
+
+export type Conversation = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  participants?: ConversationParticipant[];
+  messages?: Message[];
+};
+
+export type ConversationParticipant = {
+  id: string;
+  conversationId: string;
+  userId: string;
+  lastReadAt?: Date | null;
+  createdAt: Date;
+  conversation?: Conversation;
+  user?: User;
+};
+
+export type Message = {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  content: string;
+  readAt?: Date | null;
+  createdAt: Date;
+  conversation?: Conversation;
+  sender?: User;
+};
+
+export type PostStatus = 'visible' | 'hidden' | 'blocked' | 'deleted';
+
+export type Post = {
+  id: string;
+  authorId: string;
+  guildId?: string | null;
+  title?: string | null;
+  content: string;
+  status: PostStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  author?: User;
+  guild?: Guild;
+  comments?: Comment[];
+  _count?: { comments: number };
+};
+
+export type Comment = {
+  id: string;
+  postId: string;
+  authorId: string;
+  parentId?: string | null;
+  content: string;
+  status: PostStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  post?: Post;
+  author?: User;
+  parent?: Comment;
+  replies?: Comment[];
+};
+
+export type Notification = {
+  id: string;
+  userId: string;
+  type: 'message' | 'post_reply' | 'comment_reply' | 'guild_request' | 'guild_approved' | 'system';
+  title: string;
+  content: string;
+  link?: string | null;
+  readAt?: Date | null;
+  createdAt: Date;
+  user?: User;
+};
+
+export type Report = {
+  id: string;
+  reportedById: string;
+  postId?: string | null;
+  commentId?: string | null;
+  reason: string;
+  status: 'pending' | 'reviewed' | 'dismissed';
+  createdAt: Date;
+  reporter?: User;
+  post?: Post;
+  comment?: Comment;
 };

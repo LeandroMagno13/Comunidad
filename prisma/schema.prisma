@@ -2,28 +2,44 @@ generator client {
   provider = "prisma-client-js"
 }
 
- datasource db {
+datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
- model User {
-  id         String      @id @default(cuid())
-  email      String      @unique
-  password   String
-  name       String
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  profile    Profile?
-  skills     Skill[]
-  categories Category[]
-  guildMemberships GuildMembership[]
-  contributions Contribution[]
+model User {
+  id                         String                    @id @default(cuid())
+  email                      String                    @unique
+  password                   String
+  name                       String
+  role                       String                    @default("USER")
+  status                     String                    @default("active")
+  lastLoginAt                DateTime?
+  avatarUrl                  String?
+  createdAt                  DateTime                  @default(now())
+  updatedAt                  DateTime                  @updatedAt
+  profile                    Profile?
+  skills                     Skill[]
+  categories                 Category[]
+  guildMemberships           GuildMembership[]
+  guildsCreated              Guild[]                   @relation("GuildCreator")
+  contributions              Contribution[]
+  interests                  Interest[]
+  conversationsAsParticipant ConversationParticipant[]
+  sentMessages               Message[]
+  posts                      Post[]
+  comments                   Comment[]
+  notifications              Notification[]
+  reports                    Report[]
+  adminNotes                 AdminNote[]
+  contributedProjects        Project[]
+  discussions                Discussion[]
+  replies                    Reply[]
 }
 
- model Profile {
-  id           String     @id @default(cuid())
-  userId       String     @unique
+model Profile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
   profession   String?
   country      String?
   bio          String?
@@ -33,47 +49,53 @@ generator client {
   linkedinUrl  String?
   githubUrl    String?
   websiteUrl   String?
-  status       String     @default("registered")
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  user         User       @relation(fields: [userId], references: [id])
+  status       String   @default("registered")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id])
 }
 
- model Skill {
-  id          String   @id @default(cuid())
-  name        String
+model Skill {
+  id          String  @id @default(cuid())
+  name        String  @unique
   description String?
   category    String?
   level       String?
   users       User[]
 }
 
- model Category {
-  id          String   @id @default(cuid())
+model Category {
+  id          String     @id @default(cuid())
   name        String
   description String?
   icon        String?
   color       String?
   users       User[]
+  interests   Interest[]
 }
 
- model Guild {
-  id          String         @id @default(cuid())
+model Guild {
+  id          String            @id @default(cuid())
   name        String
   description String
   purpose     String?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  creatorId   String?
+  status      String            @default("active")
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  creator     User?             @relation("GuildCreator", fields: [creatorId], references: [id])
   members     GuildMembership[]
   projects    Project[]
   discussions Discussion[]
+  posts       Post[]
 }
 
- model GuildMembership {
+model GuildMembership {
   id       String   @id @default(cuid())
   userId   String
   guildId  String
   role     String   @default("member")
+  status   String   @default("pending")
   joinedAt DateTime @default(now())
   user     User     @relation(fields: [userId], references: [id])
   guild    Guild    @relation(fields: [guildId], references: [id])
@@ -81,60 +103,60 @@ generator client {
   @@unique([userId, guildId])
 }
 
- model Project {
-  id           String     @id @default(cuid())
-  title        String
-  description  String
-  objectives   String?
-  status       String     @default("investigation")
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  contributors User[]
+model Project {
+  id               String   @id @default(cuid())
+  title            String
+  description      String
+  objectives       String?
+  status           String   @default("investigation")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  contributors     User[]
   responsibilities Json?
-  guilds       Guild[]    @relation(fields: [guildIds], references: [id])
-  guildIds     String[]
+  guilds           Guild[]
+  tasks            Task[]
 }
 
- model Task {
-  id          String     @id @default(cuid())
-  title       String
-  description String
-  status      String     @default("pending")
-  assignedTo  String?
-  dueDate     DateTime?
-  priority    String     @default("medium")
-  projectId   String
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  project     Project    @relation(fields: [projectId], references: [id])
-}
-
- model Discussion {
+model Task {
   id          String    @id @default(cuid())
   title       String
-    content     String
-  guildId     String?
-  authorId    String
-  tags        String[]
+  description String
+  status      String    @default("pending")
+  assignedTo  String?
+  dueDate     DateTime?
+  priority    String    @default("medium")
+  projectId   String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  guild       Guild?    @relation(fields: [guildId], references: [id])
-  author      User      @relation(fields: [authorId], references: [id])
-  replies     Reply[]
+  project     Project   @relation(fields: [projectId], references: [id])
 }
 
- model Reply {
-  id            String   @id @default(cuid())
-  content       String
-  discussionId  String
-  authorId      String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  discussion    Discussion @relation(fields: [discussionId], references: [id])
-  author        User      @relation(fields: [authorId], references: [id])
+model Discussion {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  guildId   String?
+  authorId  String
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  guild     Guild?   @relation(fields: [guildId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id])
+  replies   Reply[]
 }
 
- model Contribution {
+model Reply {
+  id           String     @id @default(cuid())
+  content      String
+  discussionId String
+  authorId     String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  discussion   Discussion @relation(fields: [discussionId], references: [id])
+  author       User       @relation(fields: [authorId], references: [id])
+}
+
+model Contribution {
   id          String   @id @default(cuid())
   userId      String
   type        String
@@ -146,22 +168,109 @@ generator client {
   user        User     @relation(fields: [userId], references: [id])
 }
 
- model Interest {
-  id          String   @id @default(cuid())
-  userId      String
-  categoryId  String
-  level       String
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id])
-  category    Category @relation(fields: [categoryId], references: [id])
+model Interest {
+  id         String   @id @default(cuid())
+  userId     String
+  categoryId String
+  level      String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
 
   @@unique([userId, categoryId])
 }
 
- model AdminNote {
-  id         String   @id @default(cuid())
-  userId     String
-  content    String
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
+model AdminNote {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Conversation {
+  id           String                    @id @default(cuid())
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id             String       @id @default(cuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@unique([conversationId, userId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id])
+}
+
+model Post {
+  id        String    @id @default(cuid())
+  authorId  String
+  guildId   String?
+  title     String?
+  content   String
+  status    String    @default("visible")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  author    User      @relation(fields: [authorId], references: [id])
+  guild     Guild?    @relation(fields: [guildId], references: [id])
+  comments  Comment[]
+  reports   Report[]
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  postId    String
+  authorId  String
+  parentId  String?
+  content   String
+  status    String    @default("visible")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User      @relation(fields: [authorId], references: [id])
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  reports   Report[]
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  content   String
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+}
+
+model Report {
+  id           String   @id @default(cuid())
+  reportedById String
+  postId       String?
+  commentId    String?
+  reason       String
+  status       String   @default("pending")
+  createdAt    DateTime @default(now())
+  reporter     User     @relation(fields: [reportedById], references: [id])
+  post         Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment      Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
 }
