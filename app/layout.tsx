@@ -3,15 +3,57 @@ import Navbar from '@/src/components/Navbar';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Comunidad Post Singularidad',
-  description: 'Explorando la transición económica frente a la automatización y la IA. Construyendo colectivamente capital productivo para autonomía económica.',
-  keywords: ['capital humano', 'automatización', 'IA', 'economía', 'comunidad', 'cooperación', 'capital productivo'],
+  metadataBase: new URL('https://comunidad-i86g.vercel.app'),
+  title: 'Comunidad Post Singularidad | Propiedad Colectiva frente a la IA',
+  description:
+    'Laboratorio de investigación para construir un patrimonio productivo colectivo. Una alternativa a la Renta Básica Universal frente al desplazamiento laboral por la Inteligencia Artificial.',
+  keywords: [
+    'Inteligencia artificial',
+    'desempleo tecnológico',
+    'reemplazo laboral IA',
+    'alternativas renta básica universal',
+    'Universal Basic Assets',
+    'UBI',
+    'propiedad colectiva',
+    'post-singularidad',
+    'capital productivo',
+    'futuro del trabajo',
+  ],
   authors: [{ name: 'Comunidad Post Singularidad' }],
   openGraph: {
-    title: 'Comunidad Post Singularidad',
-    description: '¿Qué pasa cuando el trabajo deja de ser necesario? Estamos explorando una respuesta: construir colectivamente el capital que permita participar de la productividad.',
+    title: 'Comunidad Post Singularidad | Capital frente a la Automatización',
+    description:
+      'No esperes a que la IA desplace el trabajo. Construyamos juntos un patrimonio común de inversión y experimentemos con la distribución post-escasez.',
+    url: 'https://comunidad-i86g.vercel.app/',
+    siteName: 'Comunidad Post Singularidad',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Comunidad Post Singularidad',
+      },
+    ],
+    locale: 'es_AR',
     type: 'website',
-    locale: 'es_ES',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Comunidad Post Singularidad | Propiedad Colectiva',
+    description:
+      'Frente al avance de la inteligencia artificial, construir capital productivo es la mejor defensa. Sumate al laboratorio institucional.',
+    images: ['/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
@@ -25,6 +67,26 @@ export default function RootLayout({
       <body className="antialiased">
         <Navbar />
         {children}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Comunidad Post Singularidad',
+              url: 'https://comunidad-i86g.vercel.app/',
+              description:
+                'Comunidad e instituto de investigación orientado a resolver el desempleo tecnológico causado por la inteligencia artificial mediante la construcción de propiedad colectiva y activos básicos (Universal Basic Assets).',
+              knowsAbout: [
+                'Technological Unemployment',
+                'Artificial Intelligence',
+                'Universal Basic Income',
+                'Collective Ownership',
+                'Post-Scarcity Economy',
+              ],
+            }),
+          }}
+        />
       </body>
     </html>
   );
