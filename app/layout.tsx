@@ -26,14 +26,6 @@ export const metadata: Metadata = {
       'No esperes a que la IA desplace el trabajo. Construyamos juntos un patrimonio común de inversión y experimentemos con la distribución post-escasez.',
     url: 'https://comunidad-i86g.vercel.app/',
     siteName: 'Comunidad Post Singularidad',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Comunidad Post Singularidad',
-      },
-    ],
     locale: 'es_AR',
     type: 'website',
   },
@@ -42,7 +34,7 @@ export const metadata: Metadata = {
     title: 'Comunidad Post Singularidad | Propiedad Colectiva',
     description:
       'Frente al avance de la inteligencia artificial, construir capital productivo es la mejor defensa. Sumate al laboratorio institucional.',
-    images: ['/og-image.jpg'],
+    images: ['/opengraph-image'],
   },
   robots: {
     index: true,
