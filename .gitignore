@@ -22,3 +22,8 @@ out/
 *.swp
 *~
 *.tsbuildinfo
+.vercel
+.env*
+# Secretos operativos / manual de retoma (no versionar)
+retomar-para-un-coder.md
+Lee.txt

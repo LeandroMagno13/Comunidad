@@ -7,11 +7,28 @@ import TwoColumnLayout from '../src/components/ui/TwoColumnLayout';
 
 const guilds = [
   {
+    category: 'GREMIOS / CONSTRUCCIÓN COMUNITARIA',
+    icon: '🧭',
+    description: 'Investigar y experimentar con la propia organización.',
+    whyNeeded:
+      'Estudiar la gobernanza, la resolución de conflictos y la evolución del sistema, sin convertirse en un órgano burocrático. Es el primer gremio del laboratorio y su backlog define las fricciones prioritarias a investigar.',
+    questions: [
+      '¿Cómo se gobierna la comunidad sin burocracia?',
+      '¿Cómo se resuelven los conflictos internos?',
+      '¿Cómo evoluciona el sistema con datos reales?',
+    ],
+    projects: [
+      'Conducir el backlog de investigación del laboratorio',
+      'Diseñar los primeros mecanismos de gobernanza experimental',
+    ],
+    href: '/register?category=construccion-comunitaria',
+  },
+  {
     category: 'GREMIOS / DERECHO',
     icon: '⚖️',
     description: 'Diseñar la estructura legal del patrimonio.',
     whyNeeded:
-      'Determinar qué vehículo jurídico permite recibir capital, invertirlo, conservar patrimonio, reinvertir rendimientos, distribuir recursos y mantener reglas de gobernanza. Puede ser un fondo, fideicomiso, sociedad, cooperativa o estructura híbrida.',
+      'Determinar qué vehículo jurídico permitiría recibir capital, invertirlo, conservar patrimonio, reinvertir rendimientos, distribuir recursos y mantener reglas de gobernanza. Puede ser un fondo, fideicomiso, sociedad, cooperativa o estructura híbrida.',
     questions: [
       '¿Qué vehículo legal permite todo esto sin violar regulaciones?',
       '¿Qué cosas requieren autorización o estructuras separadas?',
@@ -20,7 +37,7 @@ const guilds = [
     ],
     projects: [
       'Diseñar la arquitectura jurídica del patrimonio común de inversión',
-      'Mapear regulaciones relevantes para la captación de capital',
+      'Determinar cuándo y cómo podría recibirse capital sin captación no autorizada',
     ],
     href: '/register?category=derecho',
   },
@@ -114,9 +131,9 @@ const roadmap = [
   },
   {
     etapa: 'ETAPA 2',
-    titulo: 'Formar el patrimonio',
-    actores: 'Captar los primeros aportes bajo la estructura correspondiente.',
-    resultado: 'Capital real.',
+    titulo: 'Diseñar la arquitectura definitiva',
+    actores: 'Especialistas jurídicos, financieros y de gobernanza. Sin captación de fondos todavía.',
+    resultado: 'Una estructura viable. Solo después se estudia cómo formarla.',
   },
   {
     etapa: 'ETAPA 3',
@@ -198,8 +215,10 @@ export default function LandingPage() {
             llegar tarde.
           </p>
           <p className="text-lg sm:text-xl text-blue-300 font-medium mb-10 max-w-3xl mx-auto leading-relaxed">
-            Queremos empezar antes: construir un patrimonio común, invertirlo en activos reales y
-            experimentar con una forma comunitaria de distribuir parte de sus rendimientos.
+            Hoy es un laboratorio comunitario para investigar cómo construir propiedad productiva
+            colectiva y mecanismos de participación frente a una economía cada vez más automatizada.
+            Queremos empezar antes: investigar y diseñar cómo construir un patrimonio productivo
+            colectivo, y experimentar modelos de participación comunitaria.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -209,10 +228,10 @@ export default function LandingPage() {
               ENTENDER EL MODELO
             </Link>
             <Link
-              href="#capital"
+              href="#laboratorio"
               className="bg-transparent border-2 border-gray-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors"
             >
-              AYUDAR A CONSTRUIR EL PRIMER PATRIMONIO
+              PARTICIPAR DEL LABORATORIO
             </Link>
           </div>
         </div>
@@ -222,9 +241,9 @@ export default function LandingPage() {
       <section className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <p className="text-center text-gray-500 text-sm uppercase tracking-wider font-semibold mb-6">
-            Hay dos formas de sumarte desde el comienzo
+            Sumate desde el comienzo
           </p>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="mx-auto max-w-2xl">
             <div className="rounded-xl border border-blue-200 bg-blue-50 p-6 text-center">
               <div className="text-3xl mb-2">🧠</div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">CAPITAL INTELECTUAL</h3>
@@ -239,23 +258,10 @@ export default function LandingPage() {
                 QUIERO APORTAR CONOCIMIENTO
               </Link>
             </div>
-            <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center">
-              <div className="text-3xl mb-2">💼</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">CAPITAL FINANCIERO</h3>
-              <p className="text-gray-700 text-sm mb-4">
-                Personas e instituciones dispuestas eventualmente a aportar capital al patrimonio,
-                una vez definida una estructura jurídicamente viable.
-              </p>
-              <Link
-                href="/register?category=inversion"
-                className="inline-block bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
-              >
-                ME INTERESA APORTAR CAPITAL
-              </Link>
-            </div>
           </div>
           <p className="text-center text-xs text-gray-500 mt-4">
-            Todavía no recibimos dinero: registramos interés hasta definir el vehículo legal.
+            En esta etapa el proyecto es un laboratorio de investigación: buscamos capital
+            intelectual para diseñar el sistema. No recibimos fondos.
           </p>
         </div>
       </section>
@@ -390,63 +396,87 @@ export default function LandingPage() {
                 Nuestro primer objetivo es más concreto:
               </p>
               <p className="text-lg text-gray-800 mt-3">
-                Construir un <strong>patrimonio común de inversión</strong> en activos existentes y
-                estudiar cómo distribuir parte de sus rendimientos entre quienes participan de la
+                Investigar cómo construir un <strong>patrimonio común de inversión</strong> en activos
+                existentes y cómo distribuir parte de sus rendimientos entre quienes participan de la
                 comunidad.
               </p>
             </div>
           </div>
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-900 text-sm">
             <p>
-              <strong>Nota:</strong> todavía no afirmamos qué estructura jurídica concreta tendrá ese
-              patrimonio. Puede requerir un fondo, fideicomiso, sociedad, cooperativa, estructura
-              híbrida u otro vehículo. Lo llamamos «patrimonio común de inversión» en sentido
-              conceptual hasta que especialistas jurídicos determinen la estructura apropiada.
+              <strong>Nota sobre la estructura jurídica:</strong> muchas de las ideas que
+              planteamos tienen antecedentes en el movimiento cooperativo: propiedad colectiva,
+              participación de los miembros, acumulación de patrimonio común, reinversión,
+              distribución de excedentes, organización democrática y estructuras internas de
+              participación. Por eso no buscamos necesariamente inventar una forma jurídica nueva.
+              Una posibilidad real es que el modelo pueda implementarse mediante una cooperativa o
+              una estructura cooperativa adaptada a sus objetivos, aunque todavía no lo damos por
+              resuelto.
+            </p>
+            <p className="mt-3">
+              La pregunta que intentamos responder no es cómo inventar otra forma de organización,
+              sino si las estructuras que ya existen permiten implementar el modelo que planteamos.
+              Nuestro punto diferencial es que el patrimonio común no estaría pensado principalmente
+              para que sus miembros trabajen colectivamente en una misma actividad productiva, sino
+              para acumular y administrar capital productivo y otros activos, invertirlos y generar
+              rendimientos que puedan beneficiar a la comunidad. Lo vemos como una cadena:
+              patrimonio colectivo, inversión, productividad y rendimientos, reinversión más recursos
+              distribuibles, y participación comunitaria. Es la hipótesis económica del proyecto, no
+              una promesa de rentabilidad.
+            </p>
+            <p className="mt-3">
+              Esa larga experiencia cooperativa es parte de lo que queremos estudiar: el proyecto
+              podría terminar usando una estructura cooperativa ya existente, una adaptación de ella
+              o una combinación con otros vehículos jurídicos. La innovación, si finalmente existe,
+              debería estar en el modelo económico, la arquitectura de participación, la relación
+              entre patrimonio y comunidad y su funcionamiento internacional, no en cambiarle el
+              nombre a una cooperativa. La comunidad tampoco está pensada como algo limitado a un
+              único país: el modelo conceptual puede ser común e internacional, mientras que su
+              implementación jurídica tendrá que adaptarse a cada jurisdicción y puede requerir
+              entidades locales, cooperativas o sociedades independientes, vehículos de inversión u
+              otras estructuras vinculadas que determinen especialistas.
+            </p>
+            <p className="mt-3">
+              Por ahora no estamos constituyendo un fondo, ni ofreciendo una inversión, ni
+              prometiendo una rentabilidad, ni afirmando que las CU sean valores negociables, ni
+              definiendo todavía cómo se distribuirán los rendimientos. La estructura definitiva
+              requiere análisis jurídico, financiero, fiscal y regulatorio, y seguimos llamando
+              «patrimonio común de inversión» a esta idea en sentido conceptual hasta que
+              especialistas determinen la estructura apropiada. Hoy el proyecto es un laboratorio de
+              investigación institucional: no se recibirán fondos hasta que el Gremio de Derecho
+              defina esa estructura.
             </p>
           </div>
         </div>
       </Section>
 
-      {/* ===== UN EJEMPLO CON NÚMEROS ===== */}
+      {/* ===== LA TEORÍA DE LOS RECURSOS DISTRIBUIBLES ===== */}
       <Section background="white" id="modelo">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-3">
-            Un ejemplo con números
+            La teoría de los recursos distribuibles
           </h2>
           <p className="text-center text-xs font-semibold uppercase tracking-wide text-red-600 mb-8">
-            Ejemplo conceptual. No representa una promesa de rentabilidad ni un modelo financiero definitivo.
+            Concepto en estudio. No representa cifras reales, proyecciones ni una promesa de rentabilidad.
           </p>
 
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
-            <p className="text-gray-700 mb-4 text-center">
-              100 personas construyen progresivamente un patrimonio común. El patrimonio alcanza:
-            </p>
-            <p className="text-center text-4xl font-bold text-gray-900 mb-4">USD 100.000</p>
-            <p className="text-gray-600 text-center text-sm">
-              Ese capital se invierte de manera diversificada en activos existentes.
-            </p>
-          </div>
-
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
-            <p className="text-gray-700 mb-4 text-center">
-              Supongamos, exclusivamente como ejemplo, que durante cierto período genera rendimiento neto disponible de:
-            </p>
-            <p className="text-center text-4xl font-bold text-blue-700 mb-4">USD 8.000</p>
-            <p className="text-gray-600 text-center text-sm mb-6">
-              La comunidad podría decidir:
+            <p className="text-gray-700 text-center mb-4">
+              Si un patrimonio común generara rendimientos reales, la comunidad tendría que decidir
+              qué hacer con ellos. En abstracto, esa decisión tiene tres destinos posibles:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-green-700">USD 5.000</p>
-                <p className="text-sm text-gray-600 mt-1">Reinvertir</p>
+                <p className="text-xl font-bold text-green-700 mb-1">Reinvertir</p>
+                <p className="text-sm text-gray-600">Una porción vuelve al patrimonio para que siga creciendo.</p>
               </div>
               <div className="bg-white border border-amber-200 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-amber-700">USD 1.000</p>
-                <p className="text-sm text-gray-600 mt-1">Reservar</p>
+                <p className="text-xl font-bold text-amber-700 mb-1">Reservar</p>
+                <p className="text-sm text-gray-600">Otra se conserva ante imprevistos o futuras decisiones.</p>
               </div>
               <div className="bg-white border border-blue-200 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-blue-700">USD 2.000</p>
-                <p className="text-sm text-gray-600 mt-1">A disposición de los participantes</p>
+                <p className="text-xl font-bold text-blue-700 mb-1">Distribuir</p>
+                <p className="text-sm text-gray-600">Otra podría destinarse a recursos disponibles según las reglas de acceso que defina la comunidad.</p>
               </div>
             </div>
           </div>
@@ -454,20 +484,18 @@ export default function LandingPage() {
           <div className="text-center mb-8">
             <Diagram
               steps={[
-                { label: 'USD 2.000' },
-                { label: '↓', type: 'arrow' },
                 { label: 'RECURSOS DISTRIBUIBLES' },
                 { label: '↓', type: 'arrow' },
                 { label: 'REGLAS DE ACCESO' },
                 { label: '↓', type: 'arrow' },
-                { label: 'CU' },
+                { label: 'PARTICIPACIÓN (CU)' },
                 { label: '↓', type: 'arrow' },
                 { label: 'PARTICIPANTES', type: 'highlight' },
               ]}
             />
           </div>
 
-          <KeyPhrase text="La innovación no es que una inversión pueda generar rendimientos. Eso ya existe. La innovación es cómo construir colectivamente ese patrimonio y cómo relacionar sus rendimientos con la participación humana en la comunidad." />
+          <KeyPhrase text="La pregunta de esta fase no es cuánto se reparte, sino cómo se decide: qué proporción se reinvierte, cuánto se reserva y bajo qué reglas de participación algo podría estar disponible para la comunidad. Eso todavía se está investigando, no prometiendo." />
         </div>
       </Section>
 
@@ -551,6 +579,15 @@ export default function LandingPage() {
               Las <strong>CU</strong> serían una unidad interna para representar esa participación.
               Se obtendrían mediante intercambios y contribuciones entre miembros, y podrían utilizarse
               como uno de los mecanismos que determinan acceso a parte de los rendimientos disponibles.
+            </p>
+          </div>
+
+          <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-900 text-sm">
+            <p>
+              <strong>Importante:</strong> las CU no otorgan ningún derecho automático ni contractual
+              sobre el patrimonio ni sobre recursos futuros. Son un mecanismo experimental de
+              participación interna (Capa 2), separado de toda distribución económica directa
+              (Capa 4), que en esta etapa solo se investiga y diseña.
             </p>
           </div>
 
@@ -763,7 +800,8 @@ export default function LandingPage() {
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[
-              { icon: '⚖️', titulo: 'Gremio Jurídico', objetivo: 'Diseñar la estructura legal del patrimonio.' },
+              { icon: '🧭', titulo: 'Gremio de Construcción Comunitaria', objetivo: 'Investigar y experimentar con la propia organización: gobernanza, resolución de conflictos y evolución del sistema.' },
+              { icon: '⚖️', titulo: 'Gremio Jurídico', objetivo: 'Investigar la estructura legal viable; no se reciben fondos hasta definirla.' },
               { icon: '📈', titulo: 'Gremio Financiero', objetivo: 'Proponer criterios de inversión, riesgo y reinversión.' },
               { icon: '📊', titulo: 'Gremio Económico', objetivo: 'Modelar CU y distribución.' },
               { icon: '💻', titulo: 'Gremio Tecnológico', objetivo: 'Construir identidad, registro de CU y transparencia.' },
@@ -791,6 +829,85 @@ export default function LandingPage() {
                 </p>
               </Link>
             ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* ===== LAS 4 CAPAS ===== */}
+      <Section background="white">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-sm uppercase tracking-wider text-blue-600 font-semibold text-center mb-3">
+            Modelo conceptual
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">
+            Cuatro capas, una sola comunidad real
+          </h2>
+          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-8">
+            Esta arquitectura nos ayuda a separar lo social, lo experimental y lo que todavía es
+            solo investigación, sin mezclar planos.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+              <div className="text-3xl mb-2">👥</div>
+              <h3 className="font-bold text-gray-900">Capa 1 · Comunidad</h3>
+              <p className="text-sm text-gray-700 mt-1">Personas, perfiles, gremios, publicaciones, conversaciones, gobernanza y reglas comunitarias.</p>
+            </div>
+            <div className="rounded-xl border border-green-200 bg-green-50 p-5">
+              <div className="text-3xl mb-2">🧢</div>
+              <h3 className="font-bold text-gray-900">Capa 2 · Participación (CU)</h3>
+              <p className="text-sm text-gray-700 mt-1">Un mecanismo experimental de participación interna. No es dinero, cripto ni participación patrimonial.</p>
+            </div>
+            <div className="rounded-xl border border-gray-300 bg-gray-50 p-5">
+              <div className="text-3xl mb-2">🏛️</div>
+              <h3 className="font-bold text-gray-900">Capa 3 · Patrimonio</h3>
+              <p className="text-sm text-gray-700 mt-1">Conceptual: investigación sobre cómo una comunidad podría acumular y administrar propiedad productiva colectiva. Hoy no existe patrimonio real.</p>
+            </div>
+            <div className="rounded-xl border border-amber-300 bg-amber-50 p-5">
+              <div className="text-3xl mb-2">🧪</div>
+              <h3 className="font-bold text-gray-900">Capa 4 · Distribución</h3>
+              <p className="text-sm text-gray-700 mt-1">Investigación sobre cómo podrían usarse recursos generados. No existe mecanismo económico real.</p>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* ===== PRIMER GREMIO / LABORATORIO ===== */}
+      <Section background="gray" id="laboratorio">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-sm uppercase tracking-wider text-blue-600 font-semibold text-center mb-3">
+            Primer gremio
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">
+            Gremio de Construcción Comunitaria
+          </h2>
+          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-8">
+            Es el primer espacio encargado de investigar y experimentar con la propia organización:
+            estudia la gobernanza, la resolución de conflictos y la evolución del sistema, sin
+            convertirse en un órgano burocrático.
+          </p>
+
+          <div className="bg-white border border-gray-200 rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-2xl">🧾</span>
+              <h3 className="text-lg font-bold text-gray-900">Backlog de investigación</h3>
+            </div>
+            <ul className="space-y-2 text-sm text-gray-700">
+              {[
+                'Regulación: ¿cómo construir patrimonio colectivo sin violar regulaciones financieras?',
+                'Escala: ¿cómo acumular patrimonio suficiente para un impacto real?',
+                'Validación de participación: ¿cómo validar contribuciones sin fraude de CU?',
+                'Infraestructura: ¿cómo financiar la tecnología sin confundirlo con patrimonio colectivo?',
+                'Propósito: ¿cómo evitar gamificar trabajo precario?',
+                'Liquidez y salida: ¿cómo se gestionará la entrada y salida de participantes en el patrimonio?',
+                'Gobernanza de la distribución: ¿cómo evitar que el corto plazo capture la estrategia?',
+                'Ejecución empresarial: ¿cómo desarrollar proyectos que generen excedentes reales?',
+              ].map((friccion) => (
+                <li key={friccion} className="flex gap-2">
+                  <span className="text-blue-600">•</span>
+                  <span>{friccion}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </Section>
@@ -892,8 +1009,8 @@ export default function LandingPage() {
               jurídico definido.
             </p>
             <p className="text-gray-800 mt-3">
-              Esta landing explica la arquitectura que queremos construir y capta colaboradores e
-              interés de potenciales aportantes.
+              Esta landing explica la arquitectura que queremos investigar y convoca a quienes
+              quieran estudiar, diseñar y construir el laboratorio.
             </p>
           </div>
 
@@ -962,8 +1079,9 @@ export default function LandingPage() {
           </h2>
           <p className="text-center text-gray-600 text-lg mb-12 max-w-3xl mx-auto">
             No buscamos empleados ni solo entusiastas. Buscamos personas capaces de resolver los
-            problemas concretos que el primer patrimonio necesita: diseño jurídico, estrategia
-            financiera, modelado económico, infraestructura tecnológica y análisis social.
+            problemas concretos que el diseño del sistema necesita: cuestión jurídica,
+            criterios financieros para un futuro patrimonio, modelado económico, infraestructura
+            tecnológica y análisis social.
           </p>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -995,18 +1113,18 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div id="capital" className="mt-14 bg-gray-900 rounded-2xl p-8 text-white text-center">
-            <h3 className="text-2xl font-bold mb-3">¿Te interesa aportar capital?</h3>
+          <div className="mt-14 bg-gray-900 rounded-2xl p-8 text-white text-center">
+            <h3 className="text-2xl font-bold mb-3">¿Cómo participar del laboratorio?</h3>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-              Una vez definida una estructura jurídicamente viable, buscaremos aportantes e
-              instituciones dispuestos a formar el primer patrimonio. Todavía no recibimos dinero:
-              registramos tu interés.
+              Sumate a un gremio, colaborá en la comunidad y ayudá a diseñar el sistema. En esta
+              etapa no se reciben fondos: primero definimos, junto al Gremio de Derecho, la
+              estructura jurídica y los marcos aplicables.
             </p>
             <Link
-              href="/register?category=inversion"
+              href="/register"
               className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors"
             >
-              ME INTERESA APORTAR CAPITAL
+              SUMARME AL LABORATORIO
             </Link>
           </div>
         </div>
@@ -1019,9 +1137,9 @@ export default function LandingPage() {
             Empecemos construyendo capital.
           </h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Necesitamos especialistas para diseñar el vehículo, constructores para edificar la
-            infraestructura y personas con interés de aportar capital. Empezamos con lo que ya
-            existe, hoy.
+            Necesitamos especialistas que ayuden a diseñar el vehículo, constructores para edificar la
+            infraestructura y personas dispuestas a investigar y experimentar con la comunidad.
+            Empezamos con lo que ya existe, hoy.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -1031,10 +1149,10 @@ export default function LandingPage() {
               QUIERO CONTRIBUIR
             </Link>
             <Link
-              href="/register?category=inversion"
+              href="#construir"
               className="bg-gray-900 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors text-center"
             >
-              ME INTERESA APORTAR CAPITAL
+              CONOCER LOS GREMIOS
             </Link>
             <Link
               href="/login"
