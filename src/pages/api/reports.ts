@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
-import { getUserFromRequest } from '@/src/lib/auth';
+import { getUserFromRequest, isModerator } from '@/src/lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function listReports(_req: NextApiRequest, res: NextApiResponse, user: any) {
-  if (user.role !== 'SUPER_ADMIN') {
+  if (!isModerator(user)) {
     return res.status(403).json({ error: 'No tienes permisos para ver reportes' });
   }
 

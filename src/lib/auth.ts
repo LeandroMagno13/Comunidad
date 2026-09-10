@@ -130,6 +130,18 @@ export function publicUser(user: any) {
   };
 }
 
-export function isAdmin(user: any) {
+export const STAFF_ROLES: string[] = ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'];
+
+export function isSuperAdmin(user: any) {
   return user?.role === 'SUPER_ADMIN';
+}
+
+// Admin = gestiona usuarios y gremios, además de moderar
+export function isAdmin(user: any) {
+  return user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
+}
+
+// Moderador = puede moderar contenido y reportes (Super Admin, Admin, Moderador)
+export function isModerator(user: any) {
+  return isAdmin(user) || user?.role === 'MODERATOR';
 }

@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
 const TOKEN_COOKIE = 'cps_token';
+const STAFF_ROLES = ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'];
 
 function getJwtSecretKey(): Uint8Array {
   const secretValue = process.env.JWT_SECRET;
@@ -50,7 +51,7 @@ export async function middleware(request: NextRequest) {
       const url = new URL('/login', request.url);
       return NextResponse.redirect(url);
     }
-    if (session.role !== 'SUPER_ADMIN') {
+    if (!STAFF_ROLES.includes(session.role || '')) {
       const url = new URL('/', request.url);
       return NextResponse.redirect(url);
     }

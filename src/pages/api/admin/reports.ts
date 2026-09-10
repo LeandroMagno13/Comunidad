@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
-import { getUserFromRequest } from '@/src/lib/auth';
+import { getUserFromRequest, isModerator } from '@/src/lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
   if (!user) {
     return res.status(401).json({ error: 'No autenticado' });
   }
-  if (user.role !== 'SUPER_ADMIN') {
-    return res.status(403).json({ error: 'Solo el Super Admin puede moderar reportes' });
+  if (!isModerator(user)) {
+    return res.status(403).json({ error: 'Solo Super Admin, Admin o Moderador pueden gestionar reportes' });
   }
 
   const { method } = req;
@@ -24,15 +24,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-async function listReports(_req: NextApiRequest, res: NextApiResponse) {
+async function listReports(req: NextApiRequest, res: NextApiResponse) {
+  const { status } = req.query;
+
   const reports = await db.report.findMany({
+    where: status ? { status: status as string } : undefined,
     include: {
       reporter: true,
       post: { include: { author: true } },
       comment: { include: { author: true } },
     },
     orderBy: { createdAt: 'desc' },
-    take: 100,
+    take: 200,
   });
   return res.status(200).json(reports);
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import AuthStatus from '../src/components/AuthStatus';
 import Section from '../src/components/ui/Section';
 import Diagram from '../src/components/ui/Diagram';
 import ProfessionalCard from '../src/components/ui/ProfessionalCard';
@@ -189,9 +190,7 @@ export default function LandingPage() {
               </h1>
             </Link>
             <nav className="flex items-center space-x-4">
-              <Link href="/login" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Iniciar sesión
-              </Link>
+              <AuthStatus />
               <Link
                 href="/register"
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
@@ -226,6 +225,12 @@ export default function LandingPage() {
               className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors"
             >
               ENTENDER EL MODELO
+            </Link>
+            <Link
+              href="/principios"
+              className="bg-transparent border-2 border-gray-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors"
+            >
+              NUESTROS PRINCIPIOS
             </Link>
             <Link
               href="#laboratorio"

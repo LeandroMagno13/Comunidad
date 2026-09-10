@@ -1,14 +1,25 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
-import { getUserFromRequest } from '@/src/lib/auth';
+import { getUserFromRequest, isAdmin } from '@/src/lib/auth';
+
+const VALID_ROLES = ['USER', 'MODERATOR', 'ADMIN', 'SUPER_ADMIN'];
+const VALID_STATUSES = ['active', 'banned', 'deactivated'];
+
+// Qué roles puede asignar cada rol del staff
+const CAN_ASSIGN: Record<string, string[]> = {
+  SUPER_ADMIN: ['USER', 'MODERATOR', 'ADMIN', 'SUPER_ADMIN'],
+  ADMIN: ['USER', 'MODERATOR'],
+};
+
+const ROLE_LEVEL: Record<string, number> = { USER: 0, MODERATOR: 1, ADMIN: 2, SUPER_ADMIN: 3 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
   if (!user) {
     return res.status(401).json({ error: 'No autenticado' });
   }
-  if (user.role !== 'SUPER_ADMIN') {
-    return res.status(403).json({ error: 'Solo el Super Admin puede gestionar usuarios' });
+  if (!isAdmin(user)) {
+    return res.status(403).json({ error: 'Solo Super Admin o Admin pueden gestionar usuarios' });
   }
 
   const { method } = req;
@@ -76,27 +87,52 @@ async function updateUser(req: NextApiRequest, res: NextApiResponse, requester: 
   if (!id) {
     return res.status(400).json({ error: 'Falta el usuario' });
   }
+  if (!status && !role) {
+    return res.status(400).json({ error: 'Nada que actualizar' });
+  }
 
   const target = await db.user.findUnique({ where: { id } });
   if (!target) {
     return res.status(404).json({ error: 'Usuario no encontrado' });
   }
 
+  const isSelf = requester.id === target.id;
+
+  // Protección de la propia cuenta
+  if (isSelf && status && status !== 'active') {
+    return res.status(400).json({ error: 'No puedes desactivar ni bloquear tu propia cuenta' });
+  }
+  if (isSelf && role && role !== requester.role) {
+    return res.status(400).json({ error: 'No puedes cambiar tu propio rol' });
+  }
+
+  // Nadie puede bloquear a un Super Admin
   if (target.role === 'SUPER_ADMIN' && status && status !== 'active') {
-    return res.status(400).json({ error: 'No puedes bloquear a otro Super Admin' });
-  }
-  if (requester.id === target.id && role && role !== 'SUPER_ADMIN' && requester.role === 'SUPER_ADMIN') {
-    return res.status(400).json({ error: 'No puedes degradarte a ti mismo' });
+    return res.status(400).json({ error: 'No puedes bloquear a un Super Admin' });
   }
 
-  const validRoles = ['USER', 'SUPER_ADMIN'];
-  const validStatuses = ['active', 'banned', 'deactivated'];
-
-  if (role && !validRoles.includes(role)) {
+  // Validación de valores
+  if (role && !VALID_ROLES.includes(role)) {
     return res.status(400).json({ error: 'Rol inválido' });
   }
-  if (status && !validStatuses.includes(status)) {
+  if (status && !VALID_STATUSES.includes(status)) {
     return res.status(400).json({ error: 'Estado inválido' });
+  }
+
+  const requesterLevel = ROLE_LEVEL[requester.role] ?? 0;
+  const targetLevel = ROLE_LEVEL[target.role] ?? 0;
+
+  // Un Admin no puede tocar a otros Admin ni a Super Admins
+  if (requester.role !== 'SUPER_ADMIN' && targetLevel >= requesterLevel) {
+    return res.status(403).json({ error: 'No puedes modificar a un usuario con rol igual o superior al tuyo' });
+  }
+
+  // Qué rol se puede asignar según el rol del que pide
+  if (requester.role === 'ADMIN' && role && !(CAN_ASSIGN.ADMIN || []).includes(role)) {
+    return res.status(403).json({ error: 'Solo el Super Admin puede asignar ese rol' });
+  }
+  if (requester.role === 'SUPER_ADMIN' && role && !(CAN_ASSIGN.SUPER_ADMIN || []).includes(role)) {
+    return res.status(400).json({ error: 'Rol inválido' });
   }
 
   const updated = await db.user.update({

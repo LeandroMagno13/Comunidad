@@ -136,7 +136,14 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-2xl px-4 py-10">
       <h1 className="text-2xl font-bold text-gray-900">Mi perfil</h1>
       <p className="mt-1 text-sm text-gray-600">
-        {user?.email} · {user?.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Miembro'}
+        {user?.email} ·{' '}
+        {user?.role === 'SUPER_ADMIN'
+          ? 'Super Admin'
+          : user?.role === 'ADMIN'
+          ? 'Admin'
+          : user?.role === 'MODERATOR'
+          ? 'Moderador'
+          : 'Miembro'}
       </p>
 
       {error && <div className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</div>}

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
+const NAV_STAFF_ROLES = ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'];
+
 type Me = {
   user?: {
     name: string;
@@ -100,7 +102,7 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {user?.role === 'SUPER_ADMIN' && (
+          {user?.role && NAV_STAFF_ROLES.includes(user.role) && (
             <Link
               href="/admin"
               className={
@@ -194,7 +196,7 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
-            {user?.role === 'SUPER_ADMIN' && (
+            {user?.role && NAV_STAFF_ROLES.includes(user.role) && (
               <Link href="/admin" onClick={() => setMobileOpen(false)} className="text-sm text-slate-700">
                 Admin
               </Link>

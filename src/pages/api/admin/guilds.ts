@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
-import { getUserFromRequest } from '@/src/lib/auth';
+import { getUserFromRequest, isAdmin } from '@/src/lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
   if (!user) {
     return res.status(401).json({ error: 'No autenticado' });
   }
-  if (user.role !== 'SUPER_ADMIN') {
-    return res.status(403).json({ error: 'Solo el Super Admin puede gestionar gremios' });
+  if (!isAdmin(user)) {
+    return res.status(403).json({ error: 'Solo Super Admin o Admin pueden gestionar gremios' });
   }
 
   const { method } = req;

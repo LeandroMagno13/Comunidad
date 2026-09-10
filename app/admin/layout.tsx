@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getSessionUser } from '@/src/lib/auth';
+import { getSessionUser, STAFF_ROLES } from '@/src/lib/auth';
 
 export default async function AdminLayout({
   children,
@@ -7,7 +7,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const user = await getSessionUser();
-  if (!user || user.role !== 'SUPER_ADMIN') {
+  if (!user || !STAFF_ROLES.includes(user.role)) {
     redirect('/');
   }
   return <>{children}</>;

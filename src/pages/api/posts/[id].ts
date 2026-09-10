@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
-import { getUserFromRequest, isAdmin } from '@/src/lib/auth';
+import { getUserFromRequest, isAdmin, isModerator } from '@/src/lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
@@ -52,8 +52,8 @@ async function getPost(res: NextApiResponse, id: string, user: any) {
   });
   if (!post) return res.status(404).json({ error: 'Publicación no encontrada' });
 
-  // Contenido oculto/suspendido: solo el autor o el Super Admin puede verlo
-  if (post.status !== 'visible' && post.authorId !== user.id && user.role !== 'SUPER_ADMIN') {
+  // Contenido oculto/suspendido: solo el autor o quien modera puede verlo
+  if (post.status !== 'visible' && post.authorId !== user.id && !isModerator(user)) {
     return res.status(404).json({ error: 'Publicación no encontrada' });
   }
 
