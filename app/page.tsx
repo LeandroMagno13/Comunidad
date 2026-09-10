@@ -370,6 +370,40 @@ export default function LandingPage() {
         </div>
       </Section>
 
+      {/* ===== ANTES DE SEGUIR / PRINCIPIOS ===== */}
+      <Section background="white">
+        <div className="max-w-3xl mx-auto">
+          <div className="rounded-2xl border border-blue-200 bg-blue-50 p-8 sm:p-10">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Antes de seguir</h2>
+            <div className="space-y-4 text-gray-700 leading-relaxed mb-6">
+              <p>
+                Comunidad Post Singularidad no propone una forma determinada de vivir, pensar u
+                organizar la economía.
+              </p>
+              <p>
+                La participación es voluntaria. La propiedad privada, los proyectos personales y las
+                actividades externas a la comunidad continúan siendo independientes de ella.
+              </p>
+              <p>
+                Dentro de la comunidad pueden coexistir ideas económicas y formas de organización
+                diferentes, siempre que respeten los derechos de los demás y los acuerdos aceptados
+                voluntariamente.
+              </p>
+            </div>
+            <p className="text-xl font-semibold text-blue-800 mb-6">
+              No partimos de una ideología. Partimos de una pregunta.
+            </p>
+            <Link
+              href="/principios"
+              className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-6 py-3 text-sm font-semibold text-white hover:bg-sky-700 transition-colors"
+            >
+              Conocer nuestros principios
+              <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        </div>
+      </Section>
+
       {/* ===== EMPEZAMOS CON ALGO QUE YA FUNCIONA ===== */}
       <Section background="gray">
         <div className="max-w-4xl mx-auto">
@@ -1177,6 +1211,7 @@ export default function LandingPage() {
             <Link href="/login" className="hover:text-gray-200 transition-colors">Iniciar sesión</Link>
             <Link href="/register" className="hover:text-gray-200 transition-colors">Registrarse</Link>
             <Link href="/guilds" className="hover:text-gray-200 transition-colors">Gremios</Link>
+            <Link href="/principios" className="hover:text-gray-200 transition-colors">Principios</Link>
             <Link href="/projects" className="hover:text-gray-200 transition-colors">Proyectos</Link>
           </div>
         </div>

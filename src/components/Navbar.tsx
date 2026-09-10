@@ -68,12 +68,14 @@ export default function Navbar() {
         { href: '/', label: 'Inicio' },
         { href: '/community', label: 'Comunidad' },
         { href: '/guilds', label: 'Gremios' },
+        { href: '/principios', label: 'Principios' },
         { href: '/messages', label: 'Mensajes' },
         { href: '/profile', label: 'Perfil' },
       ]
     : [
         { href: '/', label: 'Inicio' },
         { href: '/guilds', label: 'Gremios' },
+        { href: '/principios', label: 'Principios' },
       ];
 
   return (
