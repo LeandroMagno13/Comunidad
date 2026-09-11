@@ -8,19 +8,30 @@ type PostItem = {
   id: string;
   title?: string | null;
   content: string;
-  status: string;
+  type: string;
+  cuOffer?: number | null;
+  requestStatus?: string | null;
   createdAt: string;
-  author: { id: string; name: string; profile?: { profession?: string | null } | null };
+  author: { id: string; name: string; profile?: { profession?: string | null } | null; cuAccount?: { balance: number } | null };
   guild?: { id: string; name: string } | null;
   guildId?: string | null;
   _count?: { comments: number };
 };
+
+const REQUEST_LABEL = {
+  open: 'Solicitud abierta',
+  on_going: 'Solicitud en curso',
+  completed: 'Solicitud completada',
+  cancelled: 'Solicitud cancelada',
+} as Record<string, string>;
 
 export default function CommunityPage() {
   const router = useRouter();
   const [posts, setPosts] = useState<PostItem[] | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [postType, setPostType] = useState('update');
+  const [cuOffer, setCuOffer] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -49,6 +60,8 @@ export default function CommunityPage() {
         title: title || null,
         content,
         guildId: null,
+        type: postType,
+        cuOffer: postType === 'request' ? cuOffer : null,
       }),
     });
     const data = await res.json();
@@ -59,6 +72,8 @@ export default function CommunityPage() {
     }
     setTitle('');
     setContent('');
+    setCuOffer('');
+    setPostType('update');
     setLoading(false);
     await load();
   }
@@ -71,12 +86,45 @@ export default function CommunityPage() {
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-2xl font-bold text-gray-900">Comunidad</h1>
       <p className="mt-1 text-sm text-gray-600">
-        Muro de la comunidad. Publica tu participación, ideas o preguntas. Cuida el contenido: está sujeto a moderación.
+        Muro de la comunidad. Publicá tu participación: información para compartir o solicitudes
+        concretas con CU de por medio. Cuida el contenido: está sujeto a moderación.
       </p>
 
       <form onSubmit={createPost} className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex rounded-md border border-gray-200 p-0.5">
+            <button
+              type="button"
+              onClick={() => setPostType('update')}
+              className={`rounded px-3 py-1 text-xs font-medium ${
+                postType === 'update' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              Informativa
+            </button>
+            <button
+              type="button"
+              onClick={() => setPostType('request')}
+              className={`rounded px-3 py-1 text-xs font-medium ${
+                postType === 'request' ? 'bg-amber-500 text-white' : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              Solicitud con CU
+            </button>
+          </div>
+          {postType === 'request' && (
+            <input
+              type="number"
+              min={1}
+              className="w-28 rounded-md border border-gray-200 px-3 py-1.5 text-sm"
+              placeholder="CU a ofrecer"
+              value={cuOffer}
+              onChange={(e) => setCuOffer(e.target.value)}
+            />
+          )}
+        </div>
         <input
-          className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm font-medium"
+          className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm font-medium"
           placeholder="Título (opcional)"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -84,7 +132,11 @@ export default function CommunityPage() {
         />
         <textarea
           className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-          placeholder="¿Qué quieres compartir con la comunidad?"
+          placeholder={
+            postType === 'request'
+              ? '¿Qué necesitás? Describí brevemente la tarea y las CU que ofrecerás por completarla.'
+              : '¿Qué quieres compartir con la comunidad?'
+          }
           rows={4}
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -108,37 +160,68 @@ export default function CommunityPage() {
             Aún no hay publicaciones. ¡Sé el primero en contribuir!
           </p>
         ) : (
-          posts.map((post) => (
-            <article key={post.id} className="rounded-lg border border-gray-200 bg-white p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="font-medium text-gray-900">{post.author.name}</span>
-                  {post.author.profile?.profession && (
-                    <span className="text-gray-500">· {post.author.profile.profession}</span>
-                  )}
-                  {post.guild && (
-                    <Link href={`/guilds/${post.guild.id}`} className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                      {post.guild.name}
-                    </Link>
+          posts.map((post) => {
+            const isRequest = post.type === 'request';
+            return (
+              <Link key={post.id} href={`/community/${post.id}`} className="block rounded-lg border border-gray-200 bg-white p-4 hover:border-blue-300 hover:shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="font-medium text-gray-900">{post.author.name}</span>
+                    {post.author.profile?.profession && (
+                      <span className="text-gray-500">· {post.author.profile.profession}</span>
+                    )}
+                    {isRequest && (
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          post.requestStatus === 'completed'
+                            ? 'bg-green-100 text-green-700'
+                            : post.requestStatus === 'on_going'
+                            ? 'bg-blue-100 text-blue-700'
+                            : post.requestStatus === 'cancelled'
+                            ? 'bg-gray-100 text-gray-500'
+                            : 'bg-amber-100 text-amber-700'
+                        }`}
+                      >
+                        {REQUEST_LABEL[post.requestStatus || 'open'] || post.requestStatus}
+                      </span>
+                    )}
+                    {isRequest && post.cuOffer != null && post.requestStatus !== 'completed' && (
+                      <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
+                        {post.cuOffer} CU
+                      </span>
+                    )}
+                    {!isRequest && (
+                      <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-medium text-teal-700">
+                        Informativa
+                      </span>
+                    )}
+                    {post.guild && (
+                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
+                        {post.guild.name}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs text-gray-400">
+                    {new Date(post.createdAt).toLocaleString('es', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
+                {post.title && <h2 className="mt-2 text-lg font-semibold text-gray-900">{post.title}</h2>}
+                <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-sm text-gray-600">{post.content}</p>
+                <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+                  <span className="text-blue-600 hover:underline">
+                    {post._count?.comments || 0} comentarios · ver publicación completa →
+                  </span>
+                  {post.author.cuAccount && (
+                    <span className="text-gray-400">{post.author.cuAccount.balance} CU</span>
                   )}
                 </div>
-                <span className="text-xs text-gray-400">
-                  {new Date(post.createdAt).toLocaleString('es', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </span>
-              </div>
-              {post.title && <h2 className="mt-2 text-lg font-semibold text-gray-900">{post.title}</h2>}
-              <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">{post.content}</p>
-              <div className="mt-3 text-xs text-gray-500">
-                <Link href={`/community/${post.id}`} className="text-blue-600 hover:underline">
-                  {post._count?.comments || 0} comentarios
-                </Link>
-              </div>
-            </article>
-          ))
+              </Link>
+            );
+          })
         )}
       </div>
     </div>

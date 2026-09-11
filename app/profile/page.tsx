@@ -24,6 +24,16 @@ type Me = {
   } | null;
 };
 
+type CuTransactionItem = {
+  id: string;
+  type: string;
+  amount: number;
+  description?: string | null;
+  createdAt: string;
+  fromUser?: { id: string; name: string } | null;
+  toUser?: { id: string; name: string } | null;
+};
+
 export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<Me['user'] | null | undefined>(undefined);
@@ -46,6 +56,11 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState('');
   const [passMsg, setPassMsg] = useState('');
 
+  const [cu, setCu] = useState<{ account: any; transactions: CuTransactionItem[] } | null>(null);
+  const [liberationEstimate, setLiberationEstimate] = useState('');
+  const [cuMsg, setCuMsg] = useState('');
+  const [cuMsgOk, setCuMsgOk] = useState(false);
+
   useEffect(() => {
     fetch('/api/auth/me')
       .then((r) => (r.ok ? r.json() : null))
@@ -67,7 +82,35 @@ export default function ProfilePage() {
         setWebsiteUrl(data.user.profile?.websiteUrl || '');
       })
       .catch(() => router.push('/login'));
+    loadCu();
   }, [router]);
+
+  async function loadCu() {
+    const res = await fetch('/api/cu/account');
+    if (!res.ok) return;
+    const data = await res.json();
+    setCu(data);
+    setLiberationEstimate(data.account?.liberationEstimate != null ? String(data.account.liberationEstimate) : '');
+  }
+
+  async function saveLiberationEstimate(e: React.FormEvent) {
+    e.preventDefault();
+    setCuMsg('');
+    const res = await fetch('/api/cu/account', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ liberationEstimate: liberationEstimate === '' ? null : Number(liberationEstimate) }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setCuMsgOk(false);
+      setCuMsg(data.error || 'Error al guardar');
+      return;
+    }
+    setCuMsgOk(true);
+    setCuMsg('Estimación guardada');
+    await loadCu();
+  }
 
   async function saveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -208,6 +251,109 @@ export default function ProfilePage() {
           {loading ? 'Guardando…' : 'Guardar cambios'}
         </button>
       </form>
+
+      <div className="mt-10 border-t border-gray-200 pt-6">
+        <h2 className="text-lg font-semibold text-gray-900">Mis CU (participación)</h2>
+        <p className="mt-1 text-xs text-gray-500">
+          Las CU son la unidad experimental de participación de la comunidad. No son dinero,
+          no tienen conversión monetaria y no representan patrimonio. Se obtienen participando
+          y se gastan ofreciéndolas en solicitudes.
+        </p>
+
+        {cu ? (
+          <div className="mt-4 rounded-lg border border-indigo-200 bg-indigo-50 p-4">
+            <div className="flex flex-wrap items-end gap-6">
+              <div>
+                <p className="text-xs font-medium text-indigo-700">Saldo actual</p>
+                <p className="text-3xl font-bold text-indigo-900">{cu.account.balance} CU</p>
+              </div>
+              <div className="text-sm text-indigo-700">
+                <p>Total recibidas: {cu.account.totalIssued}</p>
+                <p>Total consumidas: {cu.account.totalConsumed}</p>
+              </div>
+            </div>
+            <form onSubmit={saveLiberationEstimate} className="mt-4 flex flex-wrap items-end gap-2">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-indigo-800">
+                  ¿Cuántas CU creés que deberían asociarse a capital real liberado?
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className="w-32 rounded-md border border-indigo-200 px-3 py-1.5 text-sm"
+                  placeholder="Estimación"
+                  value={liberationEstimate}
+                  onChange={(e) => setLiberationEstimate(e.target.value)}
+                />
+              </div>
+              <button className="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">
+                Guardar estimación
+              </button>
+            </form>
+            <p className="mt-2 text-[11px] text-indigo-600">
+              Esta estimación no determina el valor monetario de las CU ni representa una participación
+              sobre el patrimonio. Es un dato experimental de percepción colectiva. Se combina
+              (promedio/mediana/ponderado) con la de los demás miembros y no alimenta al controlador de oferta.
+            </p>
+            {cuMsg && (
+              <p className={`mt-2 text-sm ${cuMsgOk ? 'text-green-700' : 'text-red-700'}`}>{cuMsg}</p>
+            )}
+
+            <div className="mt-5">
+              <h3 className="text-sm font-semibold text-indigo-900">Movimientos recientes</h3>
+              {cu.transactions.length === 0 ? (
+                <p className="mt-2 text-xs text-indigo-600">Todavía no hay movimientos.</p>
+              ) : (
+                <ul className="mt-2 divide-y divide-indigo-100">
+                  {cu.transactions.map((t) => {
+                    let sign = '';
+                    let label = t.description || t.type;
+                    if (t.type === 'issued') {
+                      sign = '+';
+                      label = t.description || 'CU recibidas (emisión)';
+                    } else if (t.type === 'transfer') {
+                      if (t.fromUser?.id === cu?.account.userId) {
+                        sign = '-';
+                        label = t.toUser ? `Transferidas a ${t.toUser.name}` : 'Transferidas';
+                      } else {
+                        sign = '+';
+                        label = t.fromUser ? `Recibidas de ${t.fromUser.name}` : 'Recibidas';
+                      }
+                    } else if (t.type === 'consume') {
+                      sign = '-';
+                      label = t.description || 'CU consumidas';
+                    } else if (t.type === 'adjustment') {
+                      if (t.toUser?.id === cu?.account.userId) {
+                        sign = '+';
+                        label = t.description || 'Ajuste histórico';
+                      } else {
+                        sign = '-';
+                        label = t.description || 'Ajuste histórico';
+                      }
+                    }
+                    return (
+                      <li key={t.id} className="flex items-center justify-between py-2 text-sm">
+                        <div>
+                          <p className="font-medium text-indigo-900">{label}</p>
+                          <p className="text-[11px] text-indigo-500">
+                            {new Date(t.createdAt).toLocaleString('es', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                        <span className={`font-semibold ${sign === '+' ? 'text-green-700' : 'text-indigo-800'}`}>
+                          {sign}
+                          {t.amount} CU
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-gray-500">Cargando tu cuenta de CU…</p>
+        )}
+      </div>
 
       <div className="mt-10 border-t border-gray-200 pt-6">
         <h2 className="text-lg font-semibold text-gray-900">Cambiar contraseña</h2>

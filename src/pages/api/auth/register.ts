@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { signToken, TOKEN_COOKIE } from '@/src/lib/auth';
+import { getNewUserGrant, issueCu } from '@/src/lib/cu';
 
 export default async function handler(
   req: NextApiRequest,
@@ -75,6 +76,14 @@ async function register(req: NextApiRequest, res: NextApiResponse) {
     });
 
     const token = await signToken({ userId: user.id, email: user.email, role: user.role });
+
+    // CU de bienvenida (política experimental parametrizada, no fija)
+    const grant = await getNewUserGrant();
+    if (grant.enabled && grant.amount > 0) {
+      await issueCu(user.id, grant.amount, `CU de bienvenida (política experimental: ${grant.amount} CU)`, {
+        refType: 'system',
+      });
+    }
 
     res.setHeader('Set-Cookie', `${TOKEN_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`);
 

@@ -35,6 +35,10 @@ model User {
   contributedProjects        Project[]
   discussions                Discussion[]
   replies                    Reply[]
+  cuAccount                  CuAccount?
+  cuTransactionsSent         CuTransaction[] @relation("CuFromUser")
+  cuTransactionsReceived     CuTransaction[] @relation("CuToUser")
+  postsModerated             Post[]          @relation("PostFulfiller")
 }
 
 model Profile {
@@ -220,18 +224,23 @@ model Message {
 }
 
 model Post {
-  id        String    @id @default(cuid())
-  authorId  String
-  guildId   String?
-  title     String?
-  content   String
-  status    String    @default("visible")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  author    User      @relation(fields: [authorId], references: [id])
-  guild     Guild?    @relation(fields: [guildId], references: [id])
-  comments  Comment[]
-  reports   Report[]
+  id             String    @id @default(cuid())
+  authorId       String
+  guildId        String?
+  title          String?
+  content        String
+  type           String    @default("update")
+  cuOffer        Int?
+  requestStatus  String?
+  fulfillUserId  String?
+  status         String    @default("visible")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  author         User     @relation(fields: [authorId], references: [id])
+  guild          Guild?   @relation(fields: [guildId], references: [id])
+  fulfilledBy    User?    @relation("PostFulfiller", fields: [fulfillUserId], references: [id])
+  comments       Comment[]
+  reports        Report[]
 }
 
 model Comment {
@@ -273,4 +282,87 @@ model Report {
   reporter     User     @relation(fields: [reportedById], references: [id])
   post         Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   comment      Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+}
+
+// ============ ECONOMÍA CU (experimental, Capa 2) ============
+// Un CU es una unidad interna de participación/"stamina".
+// No es dinero, no tiene conversión monetaria y no representa patrimonio.
+
+model CuAccount {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  balance            Int      @default(0)
+  totalIssued        Int      @default(0)
+  totalConsumed      Int      @default(0)
+  liberationEstimate Int? // estimación del usuario: CU que cree que deberían "liberar" capital real (promediada por la comunidad)
+  milestoneReachedAt DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id])
+}
+
+model CuTransaction {
+  id          String    @id @default(cuid())
+  type        String // issued | transfer | consume | adjustment
+  amount      Int // siempre > 0; el signo depende de type y de los flujos
+  fromUserId  String?
+  toUserId    String?
+  description String?
+  refType     String? // request, system, ...
+  refId       String?
+  createdAt   DateTime  @default(now())
+  fromUser    User?     @relation("CuFromUser", fields: [fromUserId], references: [id])
+  toUser      User?     @relation("CuToUser", fields: [toUserId], references: [id])
+}
+
+// Canasta representativa = SET POINT contra el cual se compara el estado real.
+model CuBasket {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  targetCu    Int             @default(100) // set point
+  observedCu  Int             @default(100) // valor observado (editable en la etapa de simulación)
+  observedMethod String       @default("manual") // metodología para calcular el observado: manual | auto (TODO parametrizable)
+  periodDays  Int             @default(30)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  items       CuBasketItem[]
+}
+
+model CuBasketItem {
+  id          String   @id @default(cuid())
+  basketId    String
+  name        String
+  weight      Float    @default(1)
+  description String?
+  basket      CuBasket @relation(fields: [basketId], references: [id], onDelete: Cascade)
+}
+
+// Configuración del controlador PID y políticas de la economía CU (fila única: id="singleton")
+model CuConfig {
+  id                 String  @id @default("singleton")
+  kp                 Float   @default(0.5)
+  ki                 Float   @default(0.1)
+  kd                 Float   @default(0.05)
+  outputMin          Float   @default(-100)
+  outputMax          Float   @default(100)
+  periodDays         Int     @default(30)
+  milestoneCu        Int     @default(100) // aviso de meta al alcanzar este saldo
+  newUserGrantEnabled Boolean @default(true) // política de bienvenida (simulación)
+  newUserGrantCu     Int     @default(20) // cantidad base en equilibrio (0 = sin base)
+  newUserSensitivity Float   @default(1) // qué tan fuerte baja/sube la asignación según escasez/abundancia
+  // Capa SupplyPolicy: la señal PID NO es emisión. La política decide.
+  expansionGain      Float   @default(0) // cuánto escala la emisión ante señal positiva (0 = la política no emite automáticamente)
+  contractionGain    Float   @default(0) // cuánto reduce la emisión ante señal negativa
+  reserveShare       Float   @default(0.3) // proporción de emisión destinada a reserva
+  newUserShare       Float   @default(0.5) // proporción destinada a nuevos usuarios
+  historicalShare    Float   @default(0.2) // proporción destinada a usuarios históricos (sujeta a ajuste auditable)
+  maxEmissionPerCycle Int   @default(1000) // límite anti-shock
+  // Ajustes históricos: SIEMPRE gratuitas, registradas y auditablemente separadas del PID.
+  adjustmentEnabled  Boolean @default(false) // deshabilitado por defecto: no hay reglas de confiscación automática
+  adjustmentMode     String  @default("none") // none | flat | proportional | manual
+  adjustmentCap      Int     @default(0) // si > 0, límite de |CU| por ajuste por usuario y por evento
+  enabled            Boolean @default(true) // si el control de lazo cerrado está activo
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }

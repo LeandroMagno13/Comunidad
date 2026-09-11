@@ -16,10 +16,21 @@ type PostDetail = {
   id: string;
   title?: string | null;
   content: string;
-  author: { id: string; name: string };
+  type: string;
+  cuOffer?: number | null;
+  requestStatus?: string | null;
+  author: { id: string; name: string; cuAccount?: { balance: number } | null };
+  fulfilledBy?: { id: string; name: string } | null;
   guild?: { id: string; name: string } | null;
   createdAt: string;
   comments: CommentItem[];
+};
+
+const REQUEST_LABEL: Record<string, string> = {
+  open: 'Solicitud abierta',
+  on_going: 'Solicitud en curso',
+  completed: 'Solicitud completada',
+  cancelled: 'Solicitud cancelada',
 };
 
 export default function PostDetailPage() {
@@ -33,6 +44,8 @@ export default function PostDetailPage() {
   const [reporting, setReporting] = useState(false);
   const [reportMsg, setReportMsg] = useState('');
   const [currentUserId, setCurrentUserId] = useState('');
+  const [actionMsg, setActionMsg] = useState('');
+  const [actionMsgOk, setActionMsgOk] = useState(false);
 
   async function load() {
     const res = await fetch(`/api/posts/${params?.id}`);
@@ -95,6 +108,24 @@ export default function PostDetailPage() {
     setTimeout(() => setReportMsg(''), 4000);
   }
 
+  async function requestAction(action: string) {
+    setActionMsg('');
+    const res = await fetch(`/api/posts/${params?.id}/offer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setActionMsgOk(false);
+      setActionMsg(data.error || 'Error al procesar la solicitud');
+      return;
+    }
+    setActionMsgOk(true);
+    setActionMsg(action === 'accept' ? 'Te anotaste para realizar la tarea.' : action === 'complete' ? '¡Tarea confirmada! Las CU se transfirieron.' : 'Solicitud actualizada.');
+    await load();
+  }
+
   if (!post) {
     return <div className="px-4 py-10 text-center text-sm text-gray-500">Cargando…</div>;
   }
@@ -138,10 +169,35 @@ export default function PostDetailPage() {
       </Link>
 
       <article className="mt-4 rounded-lg border border-gray-200 bg-white p-6">
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="font-medium text-gray-900">{post.author.name}</span>
+          {post.type === 'request' && (
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                post.requestStatus === 'completed'
+                  ? 'bg-green-100 text-green-700'
+                  : post.requestStatus === 'on_going'
+                  ? 'bg-blue-100 text-blue-700'
+                  : post.requestStatus === 'cancelled'
+                  ? 'bg-gray-100 text-gray-500'
+                  : 'bg-amber-100 text-amber-700'
+              }`}
+            >
+              {REQUEST_LABEL[post.requestStatus || 'open'] || post.requestStatus}
+            </span>
+          )}
+          {post.type === 'request' && post.cuOffer != null && (
+            <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
+              {post.cuOffer} CU
+            </span>
+          )}
+          {post.type !== 'request' && (
+            <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-medium text-teal-700">
+              Informativa
+            </span>
+          )}
           {post.guild && (
-            <Link href={`/guilds/${post.guild.id}`} className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+            <Link href={`/guilds/${post.guild.id}`} className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
               {post.guild.name}
             </Link>
           )}
@@ -157,6 +213,73 @@ export default function PostDetailPage() {
         </div>
         {post.title && <h1 className="mt-2 text-xl font-bold text-gray-900">{post.title}</h1>}
         <p className="mt-3 whitespace-pre-wrap text-gray-800">{post.content}</p>
+
+        {post.type === 'request' && (
+          <div className="mt-4 rounded-md bg-indigo-50 p-4">
+            <p className="text-sm font-semibold text-indigo-900">
+              {post.cuOffer != null ? `${post.cuOffer} CU` : ''} · Intercambio entre usuarios
+            </p>
+            <p className="mt-1 text-xs text-indigo-700">
+              {post.author.name} ofrece {post.cuOffer ?? 0} CU a quien realice la tarea. Cuando
+              ambos confirmen el trabajo, las CU se transfieren automáticamente. Las CU no son
+              dinero: representan participación en la comunidad.
+            </p>
+
+            {(post.requestStatus === 'open' || post.requestStatus === 'on_going') && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {currentUserId === post.author.id ? (
+                  <>
+                    {post.requestStatus === 'on_going' && post.fulfilledBy && (
+                      <>
+                        <span className="text-xs font-medium text-indigo-700">
+                          Se encarga: {post.fulfilledBy.name}
+                        </span>
+                        <button
+                          onClick={() => requestAction('complete')}
+                          className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+                        >
+                          Confirmar tarea y transferir {post.cuOffer} CU
+                        </button>
+                      </>
+                    )}
+                    <button
+                      onClick={() => requestAction('cancel')}
+                      className="rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50"
+                    >
+                      Cancelar solicitud
+                    </button>
+                  </>
+                ) : post.requestStatus === 'open' ? (
+                  <button
+                    onClick={() => requestAction('accept')}
+                    className="rounded-md bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600"
+                  >
+                    Me hago cargo de la tarea
+                  </button>
+                ) : post.fulfilledBy?.id === currentUserId ? (
+                  <button
+                    onClick={() => requestAction('cancel')}
+                    className="rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50"
+                  >
+                    Dejar de encargarme
+                  </button>
+                ) : (
+                  <span className="text-xs text-gray-500">Ya hay alguien encargándose de esta tarea.</span>
+                )}
+              </div>
+            )}
+
+            {actionMsg && (
+              <p className={`mt-2 text-sm ${actionMsgOk ? 'text-green-700' : 'text-red-700'}`}>{actionMsg}</p>
+            )}
+
+            {post.requestStatus === 'completed' && post.fulfilledBy && (
+              <p className="mt-2 text-sm text-green-700">
+                Tarea completada y {post.cuOffer} CU transferidas a {post.fulfilledBy.name}.
+              </p>
+            )}
+          </div>
+        )}
       </article>
 
       <form onSubmit={report} className="mt-2 flex items-center gap-2">

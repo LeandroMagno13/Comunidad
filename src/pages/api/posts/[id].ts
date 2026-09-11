@@ -34,8 +34,9 @@ async function getPost(res: NextApiResponse, id: string, user: any) {
   const post = await db.post.findUnique({
     where: { id },
     include: {
-      author: { include: { profile: true } },
+      author: { include: { profile: true, cuAccount: true } },
       guild: true,
+      fulfilledBy: { select: { id: true, name: true } },
       _count: { select: { comments: true } },
       comments: {
         where: { status: 'visible' },

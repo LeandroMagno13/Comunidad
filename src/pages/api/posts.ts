@@ -30,8 +30,9 @@ async function listPosts(req: NextApiRequest, res: NextApiResponse) {
       ...(guildId ? { guildId: guildId as string } : {}),
     },
     include: {
-      author: { include: { profile: true } },
+      author: { include: { profile: true, cuAccount: true } },
       guild: true,
+      fulfilledBy: { select: { id: true, name: true } },
       _count: { select: { comments: true } },
       comments: {
         where: { status: 'visible' },
@@ -53,7 +54,8 @@ async function listPosts(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) {
-  const { title, content, guildId } = req.body;
+  const { title, content, guildId, type, cuOffer } = req.body;
+  const postType = type === 'request' ? 'request' : 'update';
 
   if (!content || !String(content).trim()) {
     return res.status(400).json({ error: 'La publicación no puede estar vacía' });
@@ -61,6 +63,14 @@ async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) 
 
   if (String(content).length > 10000) {
     return res.status(400).json({ error: 'La publicación es demasiado larga' });
+  }
+
+  let parsedOffer: number | null = null;
+  if (postType === 'request') {
+    parsedOffer = Number(cuOffer);
+    if (!Number.isInteger(parsedOffer) || parsedOffer <= 0) {
+      return res.status(400).json({ error: 'Una solicitud requiere ofrecer una cantidad de CU (entero positivo)' });
+    }
   }
 
   if (guildId) {
@@ -78,9 +88,12 @@ async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) 
       title: title ? String(title).trim().slice(0, 200) : null,
       content: String(content).trim(),
       guildId: guildId || null,
+      type: postType,
+      cuOffer: postType === 'request' ? parsedOffer : null,
+      requestStatus: postType === 'request' ? 'open' : null,
     },
     include: {
-      author: { include: { profile: true } },
+      author: { include: { profile: true, cuAccount: true } },
       _count: { select: { comments: true } },
     },
   });

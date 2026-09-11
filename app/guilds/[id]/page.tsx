@@ -15,9 +15,19 @@ type PostItem = {
   id: string;
   title?: string | null;
   content: string;
+  type: string;
+  cuOffer?: number | null;
+  requestStatus?: string | null;
   author: { name: string };
   createdAt: string;
   _count?: { comments: number };
+};
+
+const REQUEST_LABEL: Record<string, string> = {
+  open: 'Solicitud abierta',
+  on_going: 'Solicitud en curso',
+  completed: 'Solicitud completada',
+  cancelled: 'Solicitud cancelada',
 };
 
 export default function GuildDetailPage() {
@@ -30,6 +40,8 @@ export default function GuildDetailPage() {
   const [canModerate, setCanModerate] = useState(false);
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [postContent, setPostContent] = useState('');
+  const [postType, setPostType] = useState('update');
+  const [cuOffer, setCuOffer] = useState('');
   const [error, setError] = useState('');
 
   async function loadMembers() {
@@ -80,7 +92,7 @@ export default function GuildDetailPage() {
     const res = await fetch('/api/posts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: postContent, guildId }),
+      body: JSON.stringify({ content: postContent, guildId, type: postType, cuOffer: postType === 'request' ? cuOffer : null }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -88,6 +100,8 @@ export default function GuildDetailPage() {
       return;
     }
     setPostContent('');
+    setCuOffer('');
+    setPostType('update');
     await loadPosts();
   }
 
@@ -125,8 +139,40 @@ export default function GuildDetailPage() {
       {myStatus === 'active' && (
         <>
           <form onSubmit={createPost} className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex rounded-md border border-gray-200 p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setPostType('update')}
+                  className={`rounded px-3 py-1 text-xs font-medium ${
+                    postType === 'update' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  Informativa
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPostType('request')}
+                  className={`rounded px-3 py-1 text-xs font-medium ${
+                    postType === 'request' ? 'bg-amber-500 text-white' : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  Solicitud con CU
+                </button>
+              </div>
+              {postType === 'request' && (
+                <input
+                  type="number"
+                  min={1}
+                  className="w-28 rounded-md border border-gray-200 px-3 py-1.5 text-sm"
+                  placeholder="CU a ofrecer"
+                  value={cuOffer}
+                  onChange={(e) => setCuOffer(e.target.value)}
+                />
+              )}
+            </div>
             <textarea
-              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+              className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
               placeholder={`Publica en ${guild.name}…`}
               rows={3}
               value={postContent}
@@ -146,19 +192,49 @@ export default function GuildDetailPage() {
               <p className="text-sm text-gray-500">Aún no hay publicaciones en este gremio.</p>
             ) : (
               posts.map((p) => (
-                <div key={p.id} className="rounded-lg border border-gray-200 bg-white p-4">
+                <Link
+                  key={p.id}
+                  href={`/community/${p.id}`}
+                  className="block rounded-lg border border-gray-200 bg-white p-4 hover:border-blue-300 hover:shadow-sm"
+                >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-900">{p.author.name}</span>
+                    <div className="flex flex-wrap items-center gap-2 text-sm">
+                      <span className="font-medium text-gray-900">{p.author.name}</span>
+                      {p.type === 'request' ? (
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          p.requestStatus === 'completed'
+                            ? 'bg-green-100 text-green-700'
+                            : p.requestStatus === 'on_going'
+                            ? 'bg-blue-100 text-blue-700'
+                            : p.requestStatus === 'cancelled'
+                            ? 'bg-gray-100 text-gray-500'
+                            : 'bg-amber-100 text-amber-700'
+                        }`}>
+                          {REQUEST_LABEL[p.requestStatus || 'open'] || p.requestStatus}
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-medium text-teal-700">
+                          Informativa
+                        </span>
+                      )}
+                      {p.type === 'request' && p.cuOffer != null && p.requestStatus !== 'completed' && (
+                        <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
+                          {p.cuOffer} CU
+                        </span>
+                      )}
+                    </div>
                     <span className="text-xs text-gray-400">
                       {new Date(p.createdAt).toLocaleString('es', { day: '2-digit', month: 'short' })}
                     </span>
                   </div>
                   {p.title && <h3 className="mt-1 font-semibold text-gray-900">{p.title}</h3>}
-                  <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">{p.content}</p>
-                  <Link href={`/community/${p.id}`} className="mt-2 inline-block text-xs text-blue-600 hover:underline">
-                    {p._count?.comments || 0} comentarios
-                  </Link>
-                </div>
+                  <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-sm text-gray-600">{p.content}</p>
+                  <div className="mt-2 text-xs text-gray-500">
+                    <span className="text-blue-600 hover:underline">
+                      {p._count?.comments || 0} comentarios · ver publicación completa →
+                    </span>
+                  </div>
+                </Link>
               ))
             )}
           </div>
