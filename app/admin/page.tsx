@@ -1013,6 +1013,12 @@ export default function AdminPanel() {
             <button onClick={loadEconomy} className="mt-3 rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700">
               Medir ahora
             </button>
+            <a
+              href="/ensayo-de-stress"
+              className="ml-2 mt-3 inline-block rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
+            >
+              Ver informe completo: Ensayo de Stress →
+            </a>
           </div>
 
           {!eco ? (

@@ -1,0 +1,546 @@
+{
+  "version": 2,
+  "titulo": "Ensayo de Stress — Economía de CU",
+  "generado": "2026-09-11T11:21:04.568Z",
+  "meta": {
+    "corridas": 265,
+    "escenariosMinimos": 16,
+    "monteCarloRuns": 200,
+    "monteCarloCycles": 40,
+    "seedBase": 101,
+    "fecha": "2026-09-11"
+  },
+  "charts": {
+    "cuadricula": [
+      {
+        "id": "E01-equilibrio",
+        "label": "E1 · Equilibrio (pocos usuarios)",
+        "panel": "charts/E01-equilibrio.svg"
+      },
+      {
+        "id": "E02-equilibrio-grande",
+        "label": "E2 · Equilibrio grande (1.000+)",
+        "panel": "charts/E02-equilibrio-grande.svg"
+      },
+      {
+        "id": "E03-escasez-extrema",
+        "label": "E3 · Escasez extrema",
+        "panel": "charts/E03-escasez-extrema.svg"
+      },
+      {
+        "id": "E04-abundancia-extrema",
+        "label": "E4 · Abundancia extrema",
+        "panel": "charts/E04-abundancia-extrema.svg"
+      },
+      {
+        "id": "E05-crecimiento",
+        "label": "E5 · Crecimiento continuo",
+        "panel": "charts/E05-crecimiento.svg"
+      },
+      {
+        "id": "E06-shock-demanda",
+        "label": "E6 · Shock de demanda",
+        "panel": "charts/E06-shock-demanda.svg"
+      },
+      {
+        "id": "E07-shock-oferta",
+        "label": "E7 · Shock de oferta",
+        "panel": "charts/E07-shock-oferta.svg"
+      },
+      {
+        "id": "E08-shock-escasez",
+        "label": "E8 · Shock de escasez",
+        "panel": "charts/E08-shock-escasez.svg"
+      },
+      {
+        "id": "E09-shock-combinado",
+        "label": "E9 · Shock combinado (demanda+",
+        "panel": "charts/E09-shock-combinado.svg"
+      },
+      {
+        "id": "E10-alta-volatilidad",
+        "label": "E10 · Alta volatilidad",
+        "panel": "charts/E10-alta-volatilidad.svg"
+      },
+      {
+        "id": "E11-nuevos-usuarios-masivos",
+        "label": "E11 · Nuevos usuarios masivos",
+        "panel": "charts/E11-nuevos-usuarios-masivos.svg"
+      },
+      {
+        "id": "E12-concentracion",
+        "label": "E12 · Concentración inicial",
+        "panel": "charts/E12-concentracion.svg"
+      },
+      {
+        "id": "E13-consumo-extremo",
+        "label": "E13 · Consumo extremo",
+        "panel": "charts/E13-consumo-extremo.svg"
+      },
+      {
+        "id": "E14-transferencia-extrema",
+        "label": "E14 · Transferencia extrema",
+        "panel": "charts/E14-transferencia-extrema.svg"
+      },
+      {
+        "id": "E15-sistema-casi-vacio",
+        "label": "E15 · Sistema casi vacío",
+        "panel": "charts/E15-sistema-casi-vacio.svg"
+      },
+      {
+        "id": "E16-sistema-enorme",
+        "label": "E16 · Sistema enorme",
+        "panel": "charts/E16-sistema-enorme.svg"
+      }
+    ],
+    "overlays": [
+      {
+        "file": "charts/overlay-accessPct.svg",
+        "name": "Acceso a la canasta"
+      },
+      {
+        "file": "charts/overlay-avg.svg",
+        "name": "Saldo medio"
+      },
+      {
+        "file": "charts/overlay-emision-vs-consumo.svg",
+        "name": "Emisión vs consumo"
+      },
+      {
+        "file": "charts/overlay-error.svg",
+        "name": "Error del sistema"
+      },
+      {
+        "file": "charts/overlay-issued.svg",
+        "name": "Emisión"
+      },
+      {
+        "file": "charts/overlay-median.svg",
+        "name": "Saldo mediano"
+      },
+      {
+        "file": "charts/overlay-observed.svg",
+        "name": "Canasta observada vs set point"
+      },
+      {
+        "file": "charts/overlay-pidOutput.svg",
+        "name": "Señal PID"
+      },
+      {
+        "file": "charts/overlay-supply.svg",
+        "name": "Oferta total de CU"
+      },
+      {
+        "file": "charts/overlay-top10Share.svg",
+        "name": "Concentración (10%)"
+      },
+      {
+        "file": "charts/overlay-users.svg",
+        "name": "Usuarios"
+      },
+      {
+        "file": "charts/overlay-velocity.svg",
+        "name": "Velocidad"
+      }
+    ]
+  },
+  "datos": {
+    "summaryCsv": "data/summary.csv",
+    "monteCarloJson": "data/montecarlo.json",
+    "traces": [
+      {
+        "file": "data/trace-E01-equilibrio.csv",
+        "name": "E01-equilibrio"
+      },
+      {
+        "file": "data/trace-E02-equilibrio-grande.csv",
+        "name": "E02-equilibrio-grande"
+      },
+      {
+        "file": "data/trace-E03-escasez-extrema.csv",
+        "name": "E03-escasez-extrema"
+      },
+      {
+        "file": "data/trace-E04-abundancia-extrema.csv",
+        "name": "E04-abundancia-extrema"
+      },
+      {
+        "file": "data/trace-E05-crecimiento.csv",
+        "name": "E05-crecimiento"
+      },
+      {
+        "file": "data/trace-E06-shock-demanda.csv",
+        "name": "E06-shock-demanda"
+      },
+      {
+        "file": "data/trace-E07-shock-oferta.csv",
+        "name": "E07-shock-oferta"
+      },
+      {
+        "file": "data/trace-E08-shock-escasez.csv",
+        "name": "E08-shock-escasez"
+      },
+      {
+        "file": "data/trace-E09-shock-combinado.csv",
+        "name": "E09-shock-combinado"
+      },
+      {
+        "file": "data/trace-E10-alta-volatilidad.csv",
+        "name": "E10-alta-volatilidad"
+      },
+      {
+        "file": "data/trace-E11-nuevos-usuarios-masivos.csv",
+        "name": "E11-nuevos-usuarios-masivos"
+      },
+      {
+        "file": "data/trace-E12-concentracion.csv",
+        "name": "E12-concentracion"
+      },
+      {
+        "file": "data/trace-E13-consumo-extremo.csv",
+        "name": "E13-consumo-extremo"
+      },
+      {
+        "file": "data/trace-E14-transferencia-extrema.csv",
+        "name": "E14-transferencia-extrema"
+      },
+      {
+        "file": "data/trace-E15-sistema-casi-vacio.csv",
+        "name": "E15-sistema-casi-vacio"
+      },
+      {
+        "file": "data/trace-E16-sistema-enorme.csv",
+        "name": "E16-sistema-enorme"
+      }
+    ],
+    "reporte": "REPORTE.md",
+    "autoResumen": "_auto-summary.md"
+  },
+  "rondaA": 51,
+  "rondaB": 14,
+  "tablas": {
+    "escenarios": [
+      {
+        "id": "E01-equilibrio",
+        "label": "E1 · Equilibrio (pocos usuarios)",
+        "mae": 0.051,
+        "maxAbsError": 0.28,
+        "peakOver": 0.28,
+        "peakUnder": 0,
+        "recovery5": 0,
+        "osc": 0,
+        "meanAccessPct": 0.467,
+        "finalAccessPct": 0,
+        "finalGini": 70.4,
+        "finalTop10": 44.1,
+        "meanVelocity": 0.059,
+        "finalUsers": 50,
+        "finalSupply": 727.66,
+        "netSupply": -257.34,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E02-equilibrio-grande",
+        "label": "E2 · Equilibrio grande (1.000+)",
+        "mae": 0.179,
+        "maxAbsError": 0.4,
+        "peakOver": 0.4,
+        "peakUnder": 0,
+        "recovery5": 0,
+        "osc": 0,
+        "meanAccessPct": 1.19,
+        "finalAccessPct": 1.2,
+        "finalGini": 91,
+        "finalTop10": 89.3,
+        "meanVelocity": 0.069,
+        "finalUsers": 1000,
+        "finalSupply": 6663.84,
+        "netSupply": -13253.16,
+        "gananciaEmision": 0,
+        "estado": "estable"
+      },
+      {
+        "id": "E03-escasez-extrema",
+        "label": "E3 · Escasez extrema",
+        "mae": 0,
+        "maxAbsError": 0,
+        "peakOver": 0,
+        "peakUnder": 0,
+        "recovery5": 0,
+        "osc": 0,
+        "meanAccessPct": 0,
+        "finalAccessPct": 0,
+        "finalGini": 74.4,
+        "finalTop10": 49,
+        "meanVelocity": 0.051,
+        "finalUsers": 100,
+        "finalSupply": 200,
+        "netSupply": 0,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E04-abundancia-extrema",
+        "label": "E4 · Abundancia extrema",
+        "mae": 0.363,
+        "maxAbsError": 0.45,
+        "peakOver": 0.45,
+        "peakUnder": 0,
+        "recovery5": 0,
+        "osc": 0,
+        "meanAccessPct": 39.233,
+        "finalAccessPct": 12,
+        "finalGini": 88.7,
+        "finalTop10": 80.3,
+        "meanVelocity": 0.089,
+        "finalUsers": 100,
+        "finalSupply": 5610.62,
+        "netSupply": -42486.38,
+        "gananciaEmision": 0,
+        "estado": "estable"
+      },
+      {
+        "id": "E05-crecimiento",
+        "label": "E5 · Crecimiento continuo",
+        "mae": 0.2,
+        "maxAbsError": 0.92,
+        "peakOver": 0,
+        "peakUnder": 0.92,
+        "recovery5": 0,
+        "osc": 0,
+        "meanAccessPct": 0.98,
+        "finalAccessPct": 0.9,
+        "finalGini": 75.1,
+        "finalTop10": 53.5,
+        "meanVelocity": 0.063,
+        "finalUsers": 900,
+        "finalSupply": 10242.71,
+        "netSupply": 8057.71,
+        "gananciaEmision": 0,
+        "estado": "alerta"
+      },
+      {
+        "id": "E06-shock-demanda",
+        "label": "E6 · Shock de demanda",
+        "mae": 0.041,
+        "maxAbsError": 0.26,
+        "peakOver": 0.26,
+        "peakUnder": 0,
+        "recovery5": 0,
+        "osc": 0,
+        "meanAccessPct": 0.375,
+        "finalAccessPct": 0,
+        "finalGini": 74.6,
+        "finalTop10": 49,
+        "meanVelocity": 0.056,
+        "finalUsers": 100,
+        "finalSupply": 1435.53,
+        "netSupply": -549.47,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E07-shock-oferta",
+        "label": "E7 · Shock de oferta",
+        "mae": 0.328,
+        "maxAbsError": 3.18,
+        "peakOver": 0.72,
+        "peakUnder": 3.18,
+        "recovery5": 0,
+        "osc": 2,
+        "meanAccessPct": 1.95,
+        "finalAccessPct": 1,
+        "finalGini": 93.6,
+        "finalTop10": 90.3,
+        "meanVelocity": 0.082,
+        "finalUsers": 100,
+        "finalSupply": 298.64,
+        "netSupply": -1686.36,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E08-shock-escasez",
+        "label": "E8 · Shock de escasez",
+        "mae": 0.008,
+        "maxAbsError": 0.11,
+        "peakOver": 0.11,
+        "peakUnder": 0,
+        "recovery5": 0,
+        "osc": 0,
+        "meanAccessPct": 0.088,
+        "finalAccessPct": 0,
+        "finalGini": 73.1,
+        "finalTop10": 47,
+        "meanVelocity": 0.052,
+        "finalUsers": 100,
+        "finalSupply": 916.99,
+        "netSupply": -1068.01,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E09-shock-combinado",
+        "label": "E9 · Shock combinado (demanda+",
+        "mae": 0,
+        "maxAbsError": 0.008,
+        "peakOver": 0.11,
+        "peakUnder": 0.11,
+        "recovery5": 0.025,
+        "osc": 0,
+        "meanAccessPct": 0,
+        "finalAccessPct": 0,
+        "finalGini": 0,
+        "finalTop10": 73.1,
+        "meanVelocity": 57,
+        "finalUsers": 916.99,
+        "finalSupply": -1068.01,
+        "netSupply": 949,
+        "gananciaEmision": 20,
+        "estado": "critico"
+      },
+      {
+        "id": "E10-alta-volatilidad",
+        "label": "E10 · Alta volatilidad",
+        "mae": 0.153,
+        "maxAbsError": 2.88,
+        "peakOver": 0.28,
+        "peakUnder": 2.88,
+        "recovery5": 0,
+        "osc": 15,
+        "meanAccessPct": 1.324,
+        "finalAccessPct": 0.9,
+        "finalGini": 85,
+        "finalTop10": 66.7,
+        "meanVelocity": 0.123,
+        "finalUsers": 340,
+        "finalSupply": 2263.08,
+        "netSupply": 218.08,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E11-nuevos-usuarios-masivos",
+        "label": "E11 · Nuevos usuarios masivos",
+        "mae": 0.2,
+        "maxAbsError": 0.92,
+        "peakOver": 0.29,
+        "peakUnder": 0.92,
+        "recovery5": 0,
+        "osc": 20,
+        "meanAccessPct": 0.846,
+        "finalAccessPct": 1.2,
+        "finalGini": 78.8,
+        "finalTop10": 59.5,
+        "meanVelocity": 0.062,
+        "finalUsers": 260,
+        "finalSupply": 2769.06,
+        "netSupply": 784.06,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E12-concentracion",
+        "label": "E12 · Concentración inicial",
+        "mae": 0.175,
+        "maxAbsError": 0.98,
+        "peakOver": 0.98,
+        "peakUnder": 0,
+        "recovery5": 0,
+        "osc": 0,
+        "meanAccessPct": 1.167,
+        "finalAccessPct": 0,
+        "finalGini": 75.4,
+        "finalTop10": 50.2,
+        "meanVelocity": 0.07,
+        "finalUsers": 100,
+        "finalSupply": 746.2,
+        "netSupply": -1150.8,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E13-consumo-extremo",
+        "label": "E13 · Consumo extremo",
+        "mae": 0.141,
+        "maxAbsError": 1.22,
+        "peakOver": 1.22,
+        "peakUnder": 0,
+        "recovery5": 0,
+        "osc": 0,
+        "meanAccessPct": 0.538,
+        "finalAccessPct": 0,
+        "finalGini": 79.9,
+        "finalTop10": 58.8,
+        "meanVelocity": 0.066,
+        "finalUsers": 100,
+        "finalSupply": 660,
+        "netSupply": -1325,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E14-transferencia-extrema",
+        "label": "E14 · Transferencia extrema",
+        "mae": 0.105,
+        "maxAbsError": 0.48,
+        "peakOver": 0.3,
+        "peakUnder": 0.48,
+        "recovery5": 0,
+        "osc": 4,
+        "meanAccessPct": 2.038,
+        "finalAccessPct": 1.6,
+        "finalGini": 96.4,
+        "finalTop10": 100,
+        "meanVelocity": 2.063,
+        "finalUsers": 500,
+        "finalSupply": 1944.03,
+        "netSupply": -140.97,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E15-sistema-casi-vacio",
+        "label": "E15 · Sistema casi vacío",
+        "mae": 0.676,
+        "maxAbsError": 6.67,
+        "peakOver": 0,
+        "peakUnder": 6.67,
+        "recovery5": 60,
+        "osc": 0,
+        "meanAccessPct": 0,
+        "finalAccessPct": 0,
+        "finalGini": 28.1,
+        "finalTop10": 19.4,
+        "meanVelocity": 0.013,
+        "finalUsers": 65,
+        "finalSupply": 1213,
+        "netSupply": 1183,
+        "gananciaEmision": 0,
+        "estado": "critico"
+      },
+      {
+        "id": "E16-sistema-enorme",
+        "label": "E16 · Sistema enorme",
+        "mae": 0.076,
+        "maxAbsError": 0.2,
+        "peakOver": 0.06,
+        "peakUnder": 0.2,
+        "recovery5": 0,
+        "osc": 0,
+        "meanAccessPct": 1.14,
+        "finalAccessPct": 1.6,
+        "finalGini": 76.8,
+        "finalTop10": 56.3,
+        "meanVelocity": 0.064,
+        "finalUsers": 18000,
+        "finalSupply": 225982.99,
+        "netSupply": 22181.99,
+        "gananciaEmision": 0,
+        "estado": "estable"
+      }
+    ],
+    "barridos": 249
+  }
+}

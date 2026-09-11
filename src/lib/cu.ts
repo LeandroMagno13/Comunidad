@@ -376,15 +376,21 @@ export async function applyHistoricalAdjustment(userId: string, delta: number, r
 // En equilibrio (error≈0) puede existir una cantidad base; ante escasez relativa
 // la asignación se reduce (incluso a 0); ante abundancia puede aumentar.
 // ---------------------------------------------------------------------------
+// Fórmula pura de asignación a nuevos usuarios (reutilizada por getNewUserGrant
+// y por el harness de stress test para no duplicar la regla).
+export function computeNewUserGrant(cfg: { newUserGrantCu: number; newUserSensitivity: number }, error: number, setPoint: number): number {
+  const sp = setPoint || 1;
+  const ratio = Math.min(Math.max(error / sp, -1), 1);
+  return Math.max(0, Math.round(cfg.newUserGrantCu * (1 - ratio * cfg.newUserSensitivity)));
+}
+
 export async function getNewUserGrant() {
   const config = await ensureCuConfig();
   if (!config.enabled || !config.newUserGrantEnabled) {
     return { enabled: config.newUserGrantEnabled, amount: 0 };
   }
   const metrics = await getCuMetrics();
-  const setPoint = metrics.setPoint || 1;
-  const ratio = Math.min(Math.max(metrics.error / setPoint, -1), 1);
-  const amount = Math.max(0, Math.round(config.newUserGrantCu * (1 - ratio * config.newUserSensitivity)));
+  const amount = computeNewUserGrant(config, metrics.error, metrics.setPoint);
   return { enabled: config.newUserGrantEnabled, amount };
 }
 
