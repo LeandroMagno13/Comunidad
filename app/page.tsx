@@ -479,8 +479,8 @@ export default function LandingPage() {
               </p>
               <p className="text-lg text-gray-800 mt-3">
                 Investigar cómo construir un <strong>patrimonio común de inversión</strong> en activos
-                existentes y cómo distribuir parte de sus rendimientos entre quienes participan de la
-                comunidad.
+                existentes y cómo distribuir parte de sus rendimientos según las reglas que la propia
+                comunidad defina.
               </p>
             </div>
           </div>

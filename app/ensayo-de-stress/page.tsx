@@ -444,8 +444,9 @@ export default function EnsayoDeStress() {
           <h2 className="text-xl font-bold">RONDA B · propuestas (simuladas, no aplicadas)</h2>
           <p className="mt-2 max-w-3xl text-sm text-slate-300">
             Se exploraron variantes de política activa (ganancias 1 y 3, asimétrica, tope de emisión, cuotas a nuevos vs históricos). Resultado:
-            todas prácticamente idénticas — la señal del sensor es tan pequeña que la emisión base domina y la política no puede manifestarse. Antes
-            de activar la política en producción hay que sensibilizar el sensor y alinear el setpoint con la dotación real.
+            todas prácticamente idénticas — la señal del sensor es tan pequeña que la emisión base domina y la política no puede manifestarse. En
+            los términos de ese experimento, haber activado la política habría exigido sensibilizar el sensor y alinear el setpoint con la dotación
+            real. Eso, junto con los demás hallazgos, es parte de lo que llevó a descartar el PID en la RONDA C.
           </p>
           <div className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {[
@@ -473,7 +474,7 @@ export default function EnsayoDeStress() {
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-slate-600">
               <li>16 escenarios mínimos + barridos de población, dotación, crecimiento, demanda, oferta, PID y policy.</li>
               <li>200 corridas Monte Carlo con semilla reproducible (mulberry32, semilla 101).</li>
-              <li>El harness reutiliza el código real de producción (PidController, evaluateSupplyPolicy, computeNewUserGrant).</li>
+              <li>El harness reutiliza el código del experimento histórico RONDA A (PidController, evaluateSupplyPolicy, computeNewUserGrant).</li>
               <li>Para cada escenario: 30+ métricas de estabilidad, trazas ciclo a ciclo y gráficos SVG.</li>
             </ol>
           </div>
