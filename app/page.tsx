@@ -63,35 +63,35 @@ const guilds = [
   {
     category: 'GREMIOS / ECONOMÍA',
     icon: '📊',
-    description: 'Modelar CU y distribución.',
+    description: 'Modelar señales de participación y demanda.',
     whyNeeded:
-      'Modelar cómo las CU representan participación y cómo se relacionan con el acceso a los rendimientos distribuibles, sin generar inflación, concentración o comportamientos perversos.',
+      'Estudiar si señales de participación, demanda y acceso (CU) permiten detectar qué capacidades humanas continúan siendo necesarias bajo automatización creciente, sin vincularlas al patrimonio ni al dinero.',
     questions: [
-      '¿Cómo se obtienen y circulan las CU sin inflación?',
-      '¿Qué reglas de acceso a rendimientos son justas y sostenibles?',
-      '¿Cómo evitamos concentración y comportamiento estratégico?',
+      '¿Qué distingue demanda real de demanda artificial?',
+      '¿Cómo cambia la señal cuando aumenta la automatización?',
+      '¿Cómo evitar que una señal de participación termine pareciéndose a dinero?',
       '¿Qué datos debería producir el primer experimento?',
     ],
     projects: [
-      'Modelar un sistema limitado de participación comunitaria (CU)',
-      'Diseñar el primer experimento de distribución de rendimientos',
+      'Modelar señales de participación y capacidad humana (CU experimentales)',
+      'Diseñar el primer experimento de observación de capacidades',
     ],
     href: '/register?category=economia',
   },
   {
     category: 'GREMIOS / TECNOLOGÍA',
     icon: '💻',
-    description: 'Construir identidad, registro de CU y transparencia.',
+    description: 'Construir identidad, señales de participación y transparencia.',
     whyNeeded:
-      'Construir el sistema de identidad, registro, contabilidad de CU y transparencia que permita operar la comunidad y auditar el patrimonio. Sin implementar todo de golpe.',
+      'Construir el sistema de identidad, registro de señales de participación y transparencia que permita operar la comunidad y auditar el patrimonio. Sin implementar todo de golpe.',
     questions: [
       '¿Qué se necesita construir ahora y qué se pospone?',
-      '¿Cómo diseñamos un registro de CU transparente y auditable?',
+      '¿Cómo diseñamos un registro de señales transparente y auditable?',
       '¿Cómo garantizamos identidad sin control social?',
     ],
     projects: [
       'Mantener y evolucionar la plataforma actual',
-      'Prototipar el registro de participación y CU',
+      'Prototipar el registro de participación y señales',
     ],
     href: '/register?category=tecnologia',
   },
@@ -150,15 +150,15 @@ const roadmap = [
   },
   {
     etapa: 'ETAPA 5',
-    titulo: 'Probar CU',
+    titulo: 'Probar señales de capacidad (CU)',
     actores: 'Implementar un sistema limitado de participación comunitaria.',
-    resultado: 'Datos reales sobre circulación, incentivos y comportamiento.',
+    resultado: 'Datos reales sobre participación, demanda y capacidad humana.',
   },
   {
     etapa: 'ETAPA 6',
-    titulo: 'Conectar CU con rendimientos',
-    actores: 'Destinar experimentalmente una parte limitada de los rendimientos disponibles.',
-    resultado: 'Primer mecanismo real: CU → acceso a recursos.',
+    titulo: 'Separar los circuitos',
+    actores: 'Observar en paralelo señales (CU) y patrimonio, sin conexión automática entre ambos.',
+    resultado: 'Dos capas que se estudian por separado, sin conversión CU → recursos.',
   },
   {
     etapa: 'ETAPA 7',
@@ -174,7 +174,7 @@ const foundingSteps = [
   { icon: '🏛️', title: 'Primer patrimonio', text: 'Crear el vehículo real y comenzar a acumular capital.' },
   { icon: '📈', title: 'Primera cartera', text: 'Invertir inicialmente en activos tradicionales, líquidos, auditables y comprensibles.' },
   { icon: '💵', title: 'Primer rendimiento', text: 'Generar rendimiento financiero real.' },
-  { icon: '🧪', title: 'Primer experimento de distribución', text: 'Destinar una pequeña parte del rendimiento y experimentar con reglas de acceso asociadas a CU.' },
+  { icon: '🧪', title: 'Primer experimento de señales', text: 'Experimentar con señales de participación (CU) como información, separadas del patrimonio.' },
 ];
 
 export default function LandingPage() {
@@ -238,6 +238,49 @@ export default function LandingPage() {
             >
               PARTICIPAR DEL LABORATORIO
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== ESTADO DEL MODELO (Lee §15) ===== */}
+      <section className="bg-slate-50 border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="rounded-2xl border border-slate-300 bg-white shadow-sm overflow-hidden">
+            <div className="border-b border-slate-200 bg-slate-900 px-6 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm font-bold tracking-wide text-white">ESTADO DEL MODELO</p>
+                <span className="rounded-full border border-amber-400/60 bg-amber-400/10 px-3 py-1 text-xs font-bold text-amber-300">
+                  EXPERIMENTAL
+                </span>
+              </div>
+              <p className="mt-1 text-sm text-slate-300">
+                Versión experimental actual — <span className="font-bold text-white">Ronda C</span>
+              </p>
+            </div>
+            <dl className="grid gap-x-6 gap-y-3 px-6 py-5 sm:grid-cols-2">
+              <div>
+                <dt className="text-xs font-semibold text-slate-500">Objetivo</dt>
+                <dd className="mt-0.5 text-sm text-slate-800">
+                  Estudiar señales de demanda, participación y capacidad humana bajo automatización creciente.
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold text-slate-500">Patrimonio real</dt>
+                <dd className="mt-0.5 text-sm text-slate-800">Capa separada / experimental</dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold text-slate-500">CU</dt>
+                <dd className="mt-0.5 text-sm text-slate-800">Unidad interna experimental — no monetaria</dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold text-slate-500">PID</dt>
+                <dd className="mt-0.5 text-sm text-slate-800">Legacy / histórico — no utilizado por Ronda C</dd>
+              </div>
+            </dl>
+            <p className="border-t border-slate-200 bg-slate-50 px-6 py-3 text-xs text-slate-500">
+              Laboratorio experimental sobre participación, capacidades humanas, automatización y propiedad
+              colectiva del capital. Hipótesis, no dogma. Experimento, no doctrina. Resultados, no consignas.
+            </p>
           </div>
         </div>
       </section>
@@ -489,20 +532,62 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* ===== LA TEORÍA DE LOS RECURSOS DISTRIBUIBLES ===== */}
+      {/* ===== MODELO: DOS CIRCUITOS SEPARADOS ===== */}
       <Section background="white" id="modelo">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-3">
-            La teoría de los recursos distribuibles
+            El modelo experimental tiene dos circuitos separados
           </h2>
           <p className="text-center text-xs font-semibold uppercase tracking-wide text-red-600 mb-8">
             Concepto en estudio. No representa cifras reales, proyecciones ni una promesa de rentabilidad.
           </p>
 
+          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-8">
+            Investigamos dos capas por separado, sin darlas por conectadas: la capacidad material
+            (patrimonio) y las señales de capacidad humana (CU). Cada una tiene su propia cadena.
+          </p>
+
+          <div className="grid gap-6 md:grid-cols-2 mb-8">
+            <div className="rounded-2xl border border-gray-300 bg-gray-50 p-6">
+              <p className="text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Circuito material</p>
+              <Diagram
+                steps={[
+                  { label: 'PATRIMONIO REAL' },
+                  { label: '↓', type: 'arrow' },
+                  { label: 'CAPACIDAD DISTRIBUIBLE' },
+                  { label: '↓', type: 'arrow' },
+                  { label: 'RECURSOS DISPONIBLES', type: 'highlight' },
+                ]}
+              />
+              <p className="mt-3 text-xs leading-relaxed text-gray-600">
+                No todo el patrimonio puede distribuirse: una parte puede reinvertirse, mantenerse como
+                reserva, usarse para funcionamiento, quedar comprometida o no estar disponible. Por eso{' '}
+                <span className="font-semibold text-gray-800">PATRIMONIO ≠ RECURSOS DISPONIBLES</span>. Esta
+                parte es experimental y no representa una promesa de distribución real.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-sky-200 bg-sky-50 p-6">
+              <p className="text-xs font-bold tracking-wide text-sky-600 uppercase mb-2">Circuito de señales</p>
+              <Diagram
+                steps={[
+                  { label: 'DEMANDA + OFERTA HUMANA + AUTOMATIZACIÓN' },
+                  { label: '↓', type: 'arrow' },
+                  { label: 'SEÑALES DE CAPACIDAD' },
+                  { label: '↓', type: 'arrow' },
+                  { label: 'INFORMACIÓN PARA LA COMUNIDAD', type: 'highlight' },
+                ]}
+              />
+              <p className="mt-3 text-xs leading-relaxed text-sky-900">
+                Las CU pertenecen a este segundo circuito, no al primero. Son señales internas de
+                participación y demanda, no una porción de los activos ni un medio de pago.
+              </p>
+            </div>
+          </div>
+
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
             <p className="text-gray-700 text-center mb-4">
-              Si un patrimonio común generara rendimientos reales, la comunidad tendría que decidir
-              qué hacer con ellos. En abstracto, esa decisión tiene tres destinos posibles:
+              En el circuito material, si algún día existieran rendimientos reales, la comunidad tendría que
+              decidir qué hacer con ellos. En abstracto, esa decisión tiene tres destinos posibles:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
@@ -515,26 +600,22 @@ export default function LandingPage() {
               </div>
               <div className="bg-white border border-blue-200 rounded-lg p-4 text-center">
                 <p className="text-xl font-bold text-blue-700 mb-1">Distribuir</p>
-                <p className="text-sm text-gray-600">Otra podría destinarse a recursos disponibles según las reglas de acceso que defina la comunidad.</p>
+                <p className="text-sm text-gray-600">Otra podría destinarse a recursos disponibles según las reglas que la comunidad defina.</p>
               </div>
             </div>
           </div>
 
-          <div className="text-center mb-8">
-            <Diagram
-              steps={[
-                { label: 'RECURSOS DISTRIBUIBLES' },
-                { label: '↓', type: 'arrow' },
-                { label: 'REGLAS DE ACCESO' },
-                { label: '↓', type: 'arrow' },
-                { label: 'PARTICIPACIÓN (CU)' },
-                { label: '↓', type: 'arrow' },
-                { label: 'PARTICIPANTES', type: 'highlight' },
-              ]}
-            />
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-amber-900 text-sm">
+            <p>
+              <strong>Advertencia:</strong> esta aplicación no está implementando actualmente una moneda
+              comunitaria ni un sistema financiero. Los dos circuitos se estudian por separado y todavía no
+              se define precio de una CU, tipo de cambio, equivalencia con dinero, rentabilidad, dividendos,
+              retiros ni distribución monetaria. Esas cuestiones pertenecen a etapas posteriores y dependerían
+              además de una estructura jurídica y económica real que todavía no está definida.
+            </p>
           </div>
 
-          <KeyPhrase text="La pregunta de esta fase no es cuánto se reparte, sino cómo se decide: qué proporción se reinvierte, cuánto se reserva y bajo qué reglas de participación algo podría estar disponible para la comunidad. Eso todavía se está investigando, no prometiendo." />
+          <KeyPhrase text="La pregunta de esta fase no es cuánto se reparte ni cuánto valen las CU, sino qué señales son útiles y cómo se decide el resto. Eso todavía se está investigando, no prometiendo." />
         </div>
       </Section>
 
@@ -563,7 +644,7 @@ export default function LandingPage() {
               ),
             }}
             right={{
-              title: 'NUESTRA HIPÓTESIS',
+              title: 'NUESTRA HIPÓTESIS (circuito material)',
               icon: '🌱',
               color: 'blue',
               children: (
@@ -575,9 +656,7 @@ export default function LandingPage() {
                     { label: '↓', type: 'arrow' },
                     { label: 'UNA PARTE SE REINVIERTE' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'UNA PARTE PUEDE CONVERTIRSE EN RECURSOS DISPONIBLES' },
-                    { label: '↓', type: 'arrow' },
-                    { label: 'LA PARTICIPACIÓN COMUNITARIA EN CU AYUDA A DETERMINAR EL ACCESO', type: 'highlight' },
+                    { label: 'UNA PARTE PUEDE CONVERTIRSE EN RECURSOS DISPONIBLES', type: 'highlight' },
                   ]}
                 />
               ),
@@ -586,64 +665,75 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* ===== ¿DÓNDE ENTRAN LAS CU? ===== */}
+      {/* ===== ¿QUÉ SON LAS CU? (§9 + §3 + §11) ===== */}
       <Section background="white">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">
-            ¿Dónde entran las CU?
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
+            ¿Qué son las CU?
           </h2>
           <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-8">
-            Si un patrimonio común genera rendimientos y existen cientos o miles de participantes,
-            aparece una pregunta: <strong>¿cómo determinamos quién puede acceder a qué parte de esos
-            recursos?</strong>
+            Las CU son una unidad experimental de participación y señalización dentro de la comunidad. No
+            representan dinero, patrimonio ni una parte de los activos de la comunidad.
           </p>
 
-          <div className="space-y-4 mb-8">
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <p className="text-gray-700">Una solución sería repartir exactamente lo mismo a todo el mundo. Sería uniforme, pero ignoraría la participación.</p>
-            </div>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <p className="text-gray-700">Otra sería repartir según cuánto dinero aportó cada uno. Pero eso nos devolvería simplemente a un fondo de inversión tradicional.</p>
-            </div>
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-              <p className="text-gray-900 font-medium">
-                Nuestra hipótesis es introducir una tercera dimensión: <strong>la participación en la
-                comunidad.</strong>
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <p className="text-gray-800 text-lg">
-              Las <strong>CU</strong> serían una unidad interna para representar esa participación.
-              Se obtendrían mediante intercambios y contribuciones entre miembros, y podrían utilizarse
-              como uno de los mecanismos que determinan acceso a parte de los rendimientos disponibles.
+          <div className="rounded-2xl border border-sky-200 bg-sky-50 p-6 mb-6">
+            <p className="text-gray-800 leading-relaxed">
+              Actualmente se investigan como posible instrumento para registrar aspectos de{' '}
+              <strong>participación, demanda, prioridad, interacción, contribución y acceso</strong> dentro de
+              determinadas experiencias. Su significado definitivo todavía no está cerrado.
+            </p>
+            <p className="mt-3 text-gray-700 leading-relaxed">
+              La hipótesis actual es estudiar si ciertas señales de participación, demanda y prioridad pueden
+              ayudar a detectar qué capacidades humanas continúan siendo necesarias en un contexto de
+              automatización creciente. La CU no crea riqueza, no determina cuánto dinero existe, no determina
+              cuánto patrimonio tiene la comunidad y no convierte automáticamente una contribución humana en
+              dinero.
             </p>
           </div>
 
-          <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-900 text-sm">
-            <p>
-              <strong>Importante:</strong> las CU no otorgan ningún derecho automático ni contractual
-              sobre el patrimonio ni sobre recursos futuros. Son un mecanismo experimental de
-              participación interna (Capa 2), separado de toda distribución económica directa
-              (Capa 4), que en esta etapa solo se investiga y diseña.
-            </p>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+            <p className="text-sm font-semibold text-gray-900 mb-3">Por eso las CU no deben interpretarse como:</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+              {[
+                'pesos', 'dólares', 'acciones', 'participaciones patrimoniales', 'salario', 'deuda',
+                'crédito', 'depósito', 'inversión', 'dividendo', 'derecho sobre el patrimonio',
+                'promesa de pago',
+              ].map((item) => (
+                <div key={item} className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-center text-xs font-medium text-red-700">
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="mt-8 text-center">
-            <Diagram
-              steps={[
-                { label: 'COLABORACIÓN' },
-                { label: '↓', type: 'arrow' },
-                { label: 'CU' },
-                { label: '↓', type: 'arrow' },
-                { label: 'ACUMULACIÓN / PARTICIPACIÓN' },
-                { label: '↓', type: 'arrow' },
-                { label: 'UMBRAL DE ACCESO' },
-                { label: '↓', type: 'arrow' },
-                { label: 'RECURSOS DISPONIBLES DEL PATRIMONIO', type: 'highlight' },
-              ]}
-            />
+          <div className="bg-gray-900 rounded-xl p-6 text-center text-white mb-8">
+            <p className="text-lg font-bold">Tener más CU no significa ser más rico.</p>
+            <p className="mt-1 text-gray-300">Tener menos CU no significa tener menos valor como persona.</p>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Niveles de acceso: básico, medio y avanzado</h3>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Son niveles <strong>funcionales experimentales</strong>, no categorías de valor personal ni una
+              jerarquía económica basada en el saldo de CU.
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <p className="font-bold text-gray-900">Básico</p>
+                <p className="mt-1 text-sm text-gray-600">Participación inicial registrada en la comunidad.</p>
+              </div>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <p className="font-bold text-gray-900">Medio</p>
+                <p className="mt-1 text-sm text-gray-600">Mayor actividad de participación registrada.</p>
+              </div>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <p className="font-bold text-gray-900">Avanzado</p>
+                <p className="mt-1 text-sm text-gray-600">Contribución verificada, por ejemplo satisfaciendo demandas de otros miembros.</p>
+              </div>
+            </div>
+            <p className="mt-4 text-sm font-semibold text-gray-900">
+              El nivel de acceso no es una medida del valor de una persona.
+            </p>
           </div>
         </div>
       </Section>
@@ -673,7 +763,7 @@ export default function LandingPage() {
               <p className="text-red-800 font-bold text-lg">CU → dinero mágico</p>
             </div>
           </div>
-          <KeyPhrase text="Las CU no generan rendimientos. Los activos generan rendimientos. Las CU sirven para organizar participación y eventualmente determinar acceso a una parte de esos rendimientos." />
+          <KeyPhrase text="Las CU no generan rendimientos: los activos generan rendimientos. Las CU pertenecen al circuito de señales y no se conectan automáticamente con el patrimonio." />
         </div>
       </Section>
 
@@ -712,16 +802,16 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* ===== LOS DOS CIRCUITOS ===== */}
+      {/* ===== LOS DOS CIRCUITOS (§5) ===== */}
       <Section background="gray">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
-            El modelo comienza conectando dos circuitos
+            Los dos circuitos se estudian por separado
           </h2>
 
           <TwoColumnLayout
             left={{
-              title: 'CIRCUITO PRODUCTIVO',
+              title: 'CIRCUITO MATERIAL',
               icon: '🏭',
               color: 'blue',
               children: (
@@ -733,18 +823,16 @@ export default function LandingPage() {
                     { label: '↓', type: 'arrow' },
                     { label: 'CARTERA DE ACTIVOS EXISTENTES' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'ACCIONES + FONDOS + BONOS + OTROS ACTIVOS' },
-                    { label: '↓', type: 'arrow' },
                     { label: 'RENDIMIENTOS' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'REINVERSIÓN + RESERVAS + RECURSOS DISTRIBUIBLES', type: 'highlight' },
+                    { label: 'REINVERSIÓN + RESERVAS + RECURSOS DISPONIBLES', type: 'highlight' },
                   ]}
                 />
               ),
             }}
             right={{
-              title: 'CIRCUITO HUMANO',
-              icon: '👥',
+              title: 'CIRCUITO DE SEÑALES',
+              icon: '📡',
               color: 'green',
               children: (
                 <Diagram
@@ -753,11 +841,9 @@ export default function LandingPage() {
                     { label: '↓', type: 'arrow' },
                     { label: 'COMUNIDAD' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'COLABORACIÓN' },
+                    { label: 'DEMANDA + OFERTA HUMANA + AUTOMATIZACIÓN' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'CU' },
-                    { label: '↓', type: 'arrow' },
-                    { label: 'PARTICIPACIÓN', type: 'highlight' },
+                    { label: 'SEÑALES DE CAPACIDAD (CU)', type: 'highlight' },
                   ]}
                 />
               ),
@@ -765,19 +851,172 @@ export default function LandingPage() {
           />
 
           <div className="mt-10 bg-gray-900 rounded-2xl p-8 text-white">
-            <p className="text-center text-gray-400 mb-6">Y se encuentran aquí:</p>
-            <div className="text-center">
-              <Diagram
-                steps={[
-                  { label: 'RECURSOS DISTRIBUIBLES', type: 'highlight' },
-                  { label: '+' },
-                  { label: 'CU', type: 'highlight' },
-                  { label: '+' },
-                  { label: 'REGLAS DE ACCESO', type: 'highlight' },
-                  { label: '↓', type: 'arrow' },
-                  { label: 'DISTRIBUCIÓN', type: 'highlight' },
-                ]}
-              />
+            <p className="text-center text-gray-400 mb-4">
+              Por ahora, estos circuitos <span className="font-semibold text-white">no se tocan entre sí</span>:
+            </p>
+            <div className="text-center text-sm text-gray-300">
+              <p>
+                Las CU pertenecen al circuito de señales. El patrimonio pertenece al circuito material.
+              </p>
+              <p className="mt-2 font-semibold text-sky-300">
+                No aparecen conectando directamente ambos circuitos.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* ===== SEÑALES: PRESIÓN / CARGA / AUTOMATIZACIÓN (§6–§8) ===== */}
+      <Section background="white" id="señales">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-sm uppercase tracking-wider text-blue-600 font-semibold text-center mb-3">
+            Ronda C · conceptos
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
+            Señales de capacidad, explicadas en lenguaje humano
+          </h2>
+
+          <div className="grid gap-4 md:grid-cols-3 mb-8">
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
+              <h3 className="font-bold text-gray-900">Presión de demanda</h3>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                Indica cuánto de una determinada capacidad humana está siendo solicitado y no puede ser
+                satisfecho por la oferta disponible. Conceptualmente: demanda insatisfecha / oferta efectiva.
+              </p>
+              <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                Una presión alta indica un posible cuello de botella. Una presión baja no significa
+                necesariamente que una capacidad sea poco importante: puede existir suficiente oferta, la
+                demanda puede estar satisfecha, la capacidad puede estar automatizada, o simplemente puede
+                existir poca demanda. No debe interpretarse aisladamente.
+              </p>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
+              <h3 className="font-bold text-gray-900">Carga humana</h3>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                Indica cuánto de la capacidad humana disponible está siendo utilizada. Permite distinguir
+                situaciones que la presión sola no detecta.
+              </p>
+              <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                Demanda satisfecha con baja carga → capacidad abundante. Demanda satisfecha con alta carga →
+                muy utilizada. Demanda insatisfecha con alta carga → posible escasez. Demanda baja con baja
+                carga → poca actividad. No se convierte en una puntuación individual de personas.
+              </p>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
+              <h3 className="font-bold text-gray-900">Automatización</h3>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                Es una variable de observación, no un juicio de valor. El experimento busca observar qué
+                ocurre cuando una parte creciente de una capacidad puede ser provista tecnológicamente.
+              </p>
+              <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                No asumimos de antemano que toda automatización es buena, que toda es mala, que toda
+                capacidad humana desaparecerá o que toda será indispensable. Eso es precisamente lo que
+                queremos observar.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-sky-200 bg-sky-50 p-6">
+            <p className="text-lg font-semibold text-gray-900">El objetivo experimental es observar relaciones entre:</p>
+            <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {[
+                'demanda', 'oferta de capacidades', 'capacidad humana disponible',
+                'capacidad automatizada', 'utilización', 'demanda satisfecha',
+                'demanda insatisfecha', 'participación', 'acceso',
+              ].map((item) => (
+                <span key={item} className="rounded-md bg-white px-3 py-1.5 text-center text-sm font-medium text-sky-900 ring-1 ring-sky-200">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* ===== ¿QUÉ ESTAMOS INTENTANDO DESCUBRIR? (§12) ===== */}
+      <Section background="gray">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">
+            ¿Qué estamos intentando descubrir?
+          </h2>
+          <div className="space-y-4 text-gray-700 leading-relaxed">
+            <p>
+              La automatización puede reducir progresivamente la cantidad de trabajo humano necesario para
+              producir determinados bienes y servicios. Pero eso no significa que desaparezcan todas las
+              necesidades humanas ni todas las capacidades que las personas pueden aportar.
+            </p>
+            <p>
+              Queremos investigar si una comunidad puede detectar qué capacidades humanas siguen siendo
+              demandadas, cuáles están quedando cubiertas por tecnología y dónde aparecen verdaderos cuellos
+              de botella.
+            </p>
+            <p>
+              Las CU forman parte de ese experimento como señales internas de participación y demanda. El
+              patrimonio, en cambio, pertenece a otra capa: representa la capacidad económica material que una
+              comunidad podría llegar a construir y administrar.
+            </p>
+            <p>
+              Todavía no sabemos cuál será la mejor relación entre estas capas. Precisamente por eso las
+              estamos separando y estudiando.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      {/* ===== PREGUNTAS ABIERTAS (§13) ===== */}
+      <Section background="white">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-6">Preguntas abiertas</h2>
+          <p className="text-center text-gray-600 mb-8">
+            No respondemos estas preguntas artificialmente: son parte de la investigación.
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            {[
+              '¿Qué deben representar exactamente las CU?',
+              '¿Deben afectar prioridad, acceso, participación o solamente funcionar como señal?',
+              '¿Cómo evitar que una señal de participación termine convirtiéndose accidentalmente en dinero?',
+              '¿Cómo medir correctamente la escasez de capacidades humanas?',
+              '¿Cómo distinguir demanda real de demanda artificial?',
+              '¿Cómo cambia la señal cuando aumenta la automatización?',
+              '¿Qué relación debería existir entre patrimonio real y capacidad distribuible?',
+              '¿Qué parte del patrimonio debería reinvertirse?',
+              '¿Qué mecanismos jurídicos podrían soportar eventualmente una estructura patrimonial comunitaria?',
+              '¿Qué formas de gobierno deberían decidir sobre ese patrimonio?',
+              '¿Puede una estructura de este tipo funcionar sin imponer una forma determinada de vivir o pensar?',
+            ].map((q) => (
+              <div key={q} className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
+                • {q}
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* ===== RONDA A → RONDA C (§16) ===== */}
+      <Section background="gray">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
+            La historia experimental: el fracaso también es método
+          </h2>
+          <div className="space-y-4">
+            <div className="rounded-xl border border-gray-200 bg-white p-6">
+              <p className="text-xs font-bold tracking-wide text-gray-500 uppercase">Ronda A · Control mediante PID</p>
+              <h3 className="mt-1 text-lg font-bold text-gray-900">Sistema de control basado en una canasta de referencia</h3>
+              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                Se investigó un sistema de control con PID y una canasta de referencia para regular la oferta de
+                CU. Resultado: <span className="font-semibold text-red-700">descartado como mecanismo principal</span>.
+                El sensor tenía poca sensibilidad y el lazo de control no gobernaba efectivamente la oferta.
+              </p>
+            </div>
+            <div className="rounded-xl border border-sky-200 bg-sky-50 p-6">
+              <p className="text-xs font-bold tracking-wide text-sky-600 uppercase">Ronda C · Señalización de capacidades</p>
+              <h3 className="mt-1 text-lg font-bold text-gray-900">Modelo vigente</h3>
+              <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                Estudia demanda + oferta + automatización + carga humana + presión{' '}
+                <span className="font-semibold">sin utilizar el PID como controlador</span>. Los experimentos
+                anteriores con PID, canasta y SupplyPolicy se conservan como antecedentes y sirven para entender
+                por qué fueron descartados.
+              </p>
             </div>
           </div>
         </div>
@@ -809,7 +1048,7 @@ export default function LandingPage() {
               'Qué proporción se reserva',
               'Qué proporción se distribuye',
               'Reglas de acceso a los recursos distribuibles',
-              'Cómo se obtienen y circulan las CU',
+              'Cómo se registran las señales de participación (CU)',
               'Cómo funciona la gobernanza',
               'Qué proyectos se financian',
               'Cómo se resuelven disputas',
@@ -842,8 +1081,8 @@ export default function LandingPage() {
               { icon: '🧭', titulo: 'Gremio de Construcción Comunitaria', objetivo: 'Investigar y experimentar con la propia organización: gobernanza, resolución de conflictos y evolución del sistema.' },
               { icon: '⚖️', titulo: 'Gremio Jurídico', objetivo: 'Investigar la estructura legal viable; no se reciben fondos hasta definirla.' },
               { icon: '📈', titulo: 'Gremio Financiero', objetivo: 'Proponer criterios de inversión, riesgo y reinversión.' },
-              { icon: '📊', titulo: 'Gremio Económico', objetivo: 'Modelar CU y distribución.' },
-              { icon: '💻', titulo: 'Gremio Tecnológico', objetivo: 'Construir identidad, registro de CU y transparencia.' },
+              { icon: '📊', titulo: 'Gremio Económico', objetivo: 'Modelar señales de participación (CU).' },
+              { icon: '💻', titulo: 'Gremio Tecnológico', objetivo: 'Identidad, señales de participación y transparencia.' },
               { icon: '👥', titulo: 'Gremio Sociológico', objetivo: 'Analizar incentivos, poder y efectos sociales del sistema.' },
             ].map((g) => (
               <div key={g.titulo} className="bg-white border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-sm transition-all">
@@ -894,7 +1133,7 @@ export default function LandingPage() {
             <div className="rounded-xl border border-green-200 bg-green-50 p-5">
               <div className="text-3xl mb-2">🧢</div>
               <h3 className="font-bold text-gray-900">Capa 2 · Participación (CU)</h3>
-              <p className="text-sm text-gray-700 mt-1">Un mecanismo experimental de participación interna. No es dinero, cripto ni participación patrimonial.</p>
+              <p className="text-sm text-gray-700 mt-1">Un mecanismo experimental de participación interna. No es dinero, cripto ni participación patrimonial, y no se conecta automáticamente con la distribución (Capa 4).</p>
             </div>
             <div className="rounded-xl border border-gray-300 bg-gray-50 p-5">
               <div className="text-3xl mb-2">🏛️</div>
@@ -934,7 +1173,7 @@ export default function LandingPage() {
               {[
                 'Regulación: ¿cómo construir patrimonio colectivo sin violar regulaciones financieras?',
                 'Escala: ¿cómo acumular patrimonio suficiente para un impacto real?',
-                'Validación de participación: ¿cómo validar contribuciones sin fraude de CU?',
+                'Validación de participación: ¿cómo validar contribuciones sin distorsionar las señales?',
                 'Infraestructura: ¿cómo financiar la tecnología sin confundirlo con patrimonio colectivo?',
                 'Propósito: ¿cómo evitar gamificar trabajo precario?',
                 'Liquidez y salida: ¿cómo se gestionará la entrada y salida de participantes en el patrimonio?',
@@ -1068,8 +1307,8 @@ export default function LandingPage() {
               <ul className="space-y-2 text-sm text-gray-800">
                 <li>• El vehículo jurídico del patrimonio</li>
                 <li>• La primera cartera de activos</li>
-                <li>• El sistema de CU</li>
-                <li>• El primer experimento de distribución</li>
+                <li>• El sistema de señales de participación (CU) experimentales</li>
+                <li>• La separación experimental entre patrimonio y señales</li>
               </ul>
             </div>
           </div>
@@ -1207,10 +1446,11 @@ export default function LandingPage() {
       <footer className="bg-gray-900 text-gray-400 py-10 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <p className="font-medium text-gray-300">
-            Comunidad Post Singularidad - Patrimonio común de inversión
+            Comunidad Post Singularidad · Laboratorio experimental sobre participación, capacidades humanas,
+            automatización y propiedad colectiva del capital
           </p>
           <p className="text-sm mt-3">
-            «El ideal sin poder no sirve. El poder sin ideal tampoco.»
+            Hipótesis, no dogma. Experimento, no doctrina. Resultados, no consignas.
           </p>
           <div className="mt-4 flex justify-center gap-6 text-sm">
             <Link href="/login" className="hover:text-gray-200 transition-colors">Iniciar sesión</Link>

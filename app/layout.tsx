@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://comunidad-i86g.vercel.app'),
   title: 'Comunidad Post Singularidad | Propiedad Colectiva frente a la IA',
   description:
-    'Laboratorio de investigación para construir un patrimonio productivo colectivo. Una alternativa a la Renta Básica Universal frente al desplazamiento laboral por la Inteligencia Artificial.',
+    'Laboratorio experimental sobre participación, capacidades humanas, automatización y propiedad colectiva del capital. Una alternativa a la Renta Básica Universal frente al desplazamiento laboral por la Inteligencia Artificial.',
   keywords: [
     'Inteligencia artificial',
     'desempleo tecnológico',

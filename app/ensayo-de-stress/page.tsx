@@ -153,7 +153,7 @@ export default function EnsayoDeStress() {
     return (
       <main className="mx-auto max-w-6xl px-4 py-16">
         <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-          <h1 className="text-lg font-semibold text-red-800">Ensayo de Stress — Economía CU</h1>
+          <h1 className="text-lg font-semibold text-red-800">Ensayo de Stress — RONDA A (histórico)</h1>
           <p className="mt-2 text-sm text-red-700">
             No se pudieron cargar los datos del ensayo ({error}). Ejecutá el export: <code>pnpm dlx tsx scripts/stress/export-web.ts</code>
           </p>
@@ -181,10 +181,12 @@ export default function EnsayoDeStress() {
         <div className="mx-auto max-w-6xl px-4 py-14 text-white">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold tracking-[0.2em] text-sky-300 uppercase">Laboratorio de economía CU</p>
-              <h1 className="mt-2 max-w-2xl text-3xl font-bold sm:text-4xl">Ensayo de Stress · Economía de CU</h1>
+              <p className="text-xs font-semibold tracking-[0.2em] text-sky-300 uppercase">Laboratorio de participación</p>
+              <h1 className="mt-2 max-w-2xl text-3xl font-bold sm:text-4xl">Ensayo de Stress · RONDA A (histórico)</h1>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
-                Simulación sistemática del modelo experimental de CU tal como está configurado. Buscamos romperlo, no demostrar que funciona.
+                Simulación retrospectiva del antiguo controlador PID (legado RONDA A), conservada por reproducibilidad.
+                Buscábamos romperlo, no demostrar que funciona. Sus hallazgos motivaron el rediseño del modelo actual
+                (RONDA C: señales de demanda, oferta humana y automatización, sin PID).
               </p>
             </div>
             <div className="flex flex-wrap gap-2 text-xs">
@@ -199,7 +201,7 @@ export default function EnsayoDeStress() {
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-xl border border-slate-700 bg-slate-900/60 p-4">
-              <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">RONDA A · modelo actual</p>
+              <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">RONDA A · histórico</p>
               <p className="mt-1 text-3xl font-bold text-white">{data.rondaA}</p>
               <p className="mt-1 text-[11px] text-slate-400">corridas con política inerte (gains 0)</p>
             </div>
@@ -220,6 +222,30 @@ export default function EnsayoDeStress() {
               </p>
               <p className="mt-1 text-[11px] text-slate-400">el máximo de los 16 escenarios</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTEXTO: experimentos históricos vs modelo actual */}
+      <section className="mx-auto max-w-6xl px-4 pt-10">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-6">
+            <p className="text-xs font-semibold tracking-wide text-red-700 uppercase">Qué fue este experimento (RONDA A)</p>
+            <h2 className="mt-1 text-lg font-bold text-red-900">Controlador PID + canasta representativa + SupplyPolicy</h2>
+            <p className="mt-2 text-sm leading-relaxed text-red-800">
+              Un lazo de control intentaba ajustar la emisión de CU según el desvío del costo de una canasta frente
+              a un set point. El ensayo mostró que el sensor era casi ciego, la política estaba inerte y el acceso
+              era estructuralmente bajo. <span className="font-semibold">Ese camino se descartó.</span>
+            </p>
+          </div>
+          <div className="rounded-2xl border-2 border-teal-200 bg-teal-50 p-6">
+            <p className="text-xs font-semibold tracking-wide text-teal-700 uppercase">El modelo actual (RONDA C)</p>
+            <h2 className="mt-1 text-lg font-bold text-teal-900">Señales de demanda, oferta humana y automatización</h2>
+            <p className="mt-2 text-sm leading-relaxed text-teal-800">
+              No hay PID ni emisión por error de canasta. Las CU son una señal de participación y prioridad;
+              el patrimonio real es una capa separada y experimental. Este ensayo histórico explica por qué
+              el producto se diseñó así.
+            </p>
           </div>
         </div>
       </section>
@@ -286,7 +312,7 @@ export default function EnsayoDeStress() {
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="text-xl font-bold text-slate-900">Tabla comparativa · escenarios mínimos</h2>
           <p className="mt-1 text-sm text-slate-500">
-            RONDA A (política inerte). Setpoint 100 CU. Clic en cada fila para abrir su panel de gráficos.
+            RONDA A histórica (política inerte). Setpoint 100 CU. Clic en cada fila para abrir su panel de gráficos.
           </p>
           <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
             <table className="w-full min-w-[900px] text-left text-sm">
@@ -455,8 +481,12 @@ export default function EnsayoDeStress() {
             <h2 className="text-lg font-bold text-slate-900">Notas de interpretación</h2>
             <ul className="mt-3 space-y-2 text-sm text-slate-600">
               <li>• Las CU <span className="font-semibold">no son dinero</span>. La «velocidad» es actividad, no valor.</li>
-              <li>• Resultados separados en RONDA A (actual) y RONDA B (propuestas) para saber qué cambio produjo qué resultado.</li>
+              <li>• Resultados separados en RONDA A (histórico) y RONDA B (propuestas) para saber qué cambio produjo qué resultado.</li>
               <li>• El objetivo era romper el modelo: que esté «estable» en el costo de canasta sin acceso es un fallo, no un éxito.</li>
+              <li>
+                • Estos hallazgos motivaron el <span className="font-semibold">descarte del PID</span> y el rediseño del
+                modelo: señales de demanda / oferta humana / automatización, con patrimonio separado (RONDA C).
+              </li>
             </ul>
           </div>
         </div>

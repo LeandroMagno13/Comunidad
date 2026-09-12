@@ -1041,7 +1041,7 @@ export default function AdminPanel() {
               href="/ensayo-de-stress"
               className="ml-2 mt-3 inline-block rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
             >
-              Ver informe completo: Ensayo de Stress →
+              Ver informe completo: Ensayo de Stress (legado RONDA A) →
             </a>
             <a
               href="/capacidad/REPORTE-CU-CAPACIDAD.md"
@@ -1055,29 +1055,6 @@ export default function AdminPanel() {
             <p className="mt-6 text-sm text-gray-500">Medí el estado de la economía de CU para ver las métricas.</p>
           ) : (
             <>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Stat label="Oferta total (CU emitidas netas)" value={`${eco.supply} CU`} />
-                <Stat label="Set point (canasta)" value={`${eco.setPoint} CU`} tip="CU objetivo para adquirir / reproducir la canasta representativa en equilibrio." />
-                <Stat label="Canasta observada" value={`${eco.observed} CU`} tip="Valor del 'sensor' v2: costo observado de la canasta. Integra flujo neto y brecha de acceso cuando la metodología es 'auto'." />
-                <Stat label="Sensor v2 (integrado)" value={`${eco.observedSensed} CU`} tip="Lectura con sensibilidad a flujo neto + acceso (puede diferir del observado persistido manual)." />
-                <Stat label="Acceso real (saldo ≥ canasta)" value={eco.accessRatio != null ? `${Math.round(eco.accessRatio * 100)}%` : '—'} tip="Fracción de cuentas que pueden comprar la canasta. Objetivo configurado: accessTarget." />
-                <Stat label="Error de control (compuesto)" value={`${eco.error} · SP ef. ${eco.effectiveSetPoint}`} accent={eco.error > 0 ? 'text-amber-700' : 'text-green-700'} tip="Error = desvío de canasta + brecha de acceso (CU). Set point efectivo alcanzable según distribución." />
-                <Stat label="Señal de corrección (PID)" value={eco.pidOutput} accent={eco.pidOutput >= 0 ? 'text-amber-700' : 'text-green-700'} tip="Salida del controlador. NO es una emisión: indica la dirección y magnitud de la corrección sugerida de oferta." />
-                <Stat label="Política de oferta (fase)" value={phaseLabel(eco.policy?.phase)} accent={phaseColor(eco.policy?.phase)} tip="Decisión de la capa SupplyPolicy según la señal del PID: expansión / neutralidad / contracción." />
-                <Stat label="Señal → Emisión / Quema" value={`${eco.policy?.emission ?? '—'} / ${eco.policy?.burn ?? 0} CU`} tip="Decisión de la política según la señal: emisión en expansión, quema en contracción. La política actúa por señal, no por inercia." />
-                <Stat label="Velocidad (periodo)" value={eco.velocity} tip="Actividad = (transferidas + consumidas) / oferta. Es una métrica de actividad, NO un precio del CU." />
-                <Stat label="Transferidas (periodo)" value={`${eco.transferredPeriod} CU`} />
-                <Stat label="Consumidas (periodo)" value={`${eco.consumedPeriod} CU`} />
-                <Stat label="Cuentas" value={eco.accounts} />
-                <Stat label="Usuarios activos" value={eco.activeUsers} />
-                <Stat label="Saldo promedio" value={Math.round(eco.avgBalance)} />
-                <Stat label="Saldo mediano" value={eco.medianBalance} />
-                <Stat label="Concentración (10% mayor)" value={eco.topDecileShare != null ? `${Math.round(eco.topDecileShare * 100)}%` : '—'} />
-                <Stat label="Emisión acumulada" value={`${eco.issuedTotal} CU`} />
-                <Stat label="Consumo acumulado" value={`${eco.consumedTotal} CU`} />
-                <Stat label="PID (experimento histórico)" value={eco.controllerEnabled ? 'activo (no gobierna)' : 'inactivo'} tip="El PID legado (RONDA A) NO gobierna la oferta del nuevo modelo: emisión = política de grants. Ver señalizacion.patrimonio.pidGoverning." />
-              </div>
-
               <div className="mt-4 rounded-lg border border-teal-200 bg-white p-4">
                 <h3 className="text-sm font-semibold text-teal-900">Señalización y asignación de capacidad (RONDA C)</h3>
                 <p className="mt-1 text-xs text-gray-500">
@@ -1134,8 +1111,42 @@ export default function AdminPanel() {
                 </p>
               </div>
 
-              <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4">
-                <h3 className="text-sm font-semibold text-gray-900">Estimación de 'liberación' (percepción colectiva, NO monetaria)</h3>
+              <details className="mt-6 overflow-hidden rounded-lg border-2 border-red-200 bg-red-50/40">
+                <summary className="cursor-pointer bg-red-50 px-4 py-3 text-sm font-semibold text-red-900">
+                  HISTÓRICO / LEGACY — RONDA A: PID, canasta, SupplyPolicy y emisión. NO forma parte del modelo actual (Ronda C).
+                </summary>
+                <div className="space-y-6 bg-white p-4">
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800">
+                    Estos elementos pertenecen al experimento histórico RONDA A y se conservan únicamente por
+                    reproducibilidad. El modelo vigente (RONDA C) usa señales de demanda, oferta humana y
+                    automatización: no utiliza el PID, el error de canasta ni la emisión por error.
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <Stat label="Oferta total (CU emitidas netas)" value={`${eco.supply} CU`} />
+                    <Stat label="Set point (canasta)" value={`${eco.setPoint} CU`} tip="CU objetivo para adquirir / reproducir la canasta representativa en equilibrio (histórico)." />
+                    <Stat label="Canasta observada" value={`${eco.observed} CU`} tip="Valor del 'sensor' v2: costo observado de la canasta (histórico)." />
+                    <Stat label="Sensor v2 (integrado)" value={`${eco.observedSensed} CU`} tip="Lectura con sensibilidad a flujo neto + acceso (histórico)." />
+                    <Stat label="Acceso real (saldo ≥ canasta)" value={eco.accessRatio != null ? `${Math.round(eco.accessRatio * 100)}%` : '—'} tip="Fracción de cuentas que podían comprar la canasta (histórico)." />
+                    <Stat label="Error de control (compuesto)" value={`${eco.error} · SP ef. ${eco.effectiveSetPoint}`} accent={eco.error > 0 ? 'text-amber-700' : 'text-green-700'} tip="Error = desvío de canasta + brecha de acceso (CU). Concepto histórico (RONDA A)." />
+                    <Stat label="Señal de corrección (PID)" value={eco.pidOutput} accent={eco.pidOutput >= 0 ? 'text-amber-700' : 'text-green-700'} tip="Salida del controlador histórico. NO es una emisión." />
+                    <Stat label="Política de oferta (fase)" value={phaseLabel(eco.policy?.phase)} accent={phaseColor(eco.policy?.phase)} tip="Decisión de la capa SupplyPolicy según la señal del PID (histórico)." />
+                    <Stat label="Señal → Emisión / Quema" value={`${eco.policy?.emission ?? '—'} / ${eco.policy?.burn ?? 0} CU`} tip="Emisión/quema decididas por la política según la señal (histórico)." />
+                    <Stat label="Velocidad (periodo)" value={eco.velocity} tip="Actividad = (transferidas + consumidas) / oferta. Es una métrica de actividad, NO un precio del CU." />
+                    <Stat label="Transferidas (periodo)" value={`${eco.transferredPeriod} CU`} />
+                    <Stat label="Consumidas (periodo)" value={`${eco.consumedPeriod} CU`} />
+                    <Stat label="Cuentas" value={eco.accounts} />
+                    <Stat label="Usuarios activos" value={eco.activeUsers} />
+                    <Stat label="Saldo promedio" value={Math.round(eco.avgBalance)} />
+                    <Stat label="Saldo mediano" value={eco.medianBalance} />
+                    <Stat label="Concentración (10% mayor)" value={eco.topDecileShare != null ? `${Math.round(eco.topDecileShare * 100)}%` : '—'} />
+                    <Stat label="Emisión acumulada" value={`${eco.issuedTotal} CU`} />
+                    <Stat label="Consumo acumulado" value={`${eco.consumedTotal} CU`} />
+                    <Stat label="PID (experimento histórico)" value={eco.controllerEnabled ? 'activo (no gobierna)' : 'inactivo'} tip="El PID legado (RONDA A) NO gobierna la oferta del nuevo modelo." />
+                  </div>
+
+              <div className="rounded-lg border border-gray-200 bg-white p-4">
+                <h3 className="text-sm font-semibold text-gray-900">Estimación de 'liberación' (percepción colectiva, NO monetaria — LEGACY / RONDA A)</h3>
                 <p className="mt-1 text-xs text-gray-500">
                   {LIBERATION_DISCLAIMER} Esta estimación es un dato experimental de percepción y{' '}
                   <span className="font-semibold">no alimenta al PID</span>: no modifica emisiones ni saldos.
@@ -1511,7 +1522,9 @@ export default function AdminPanel() {
                     </div>
                   </div>
                 )}
+                </div>
               </div>
+              </details>
             </>
           )}
         </div>
