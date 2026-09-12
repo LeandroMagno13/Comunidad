@@ -1,7 +1,18 @@
+// ============================================================================
+// LEGACY / NO USAR COMO DINERO — Solicitudes de la Comunidad (posts/[id]/offer.ts)
+//
+// Este flujo conserva el marketplace de solicitudes comunitarias ("Solicitud
+// con CU") SOLO como registro de PARTICIPACIÓN. Por Lee.txt (limpieza RONDA C):
+// la CU NO paga, cobra, vende ni transfiere como precio de servicio; tampoco
+// usa cuOffer como monto monetario. El campo cuOffer del post se ignora.
+// Si en el futuro se quiere registrar contribuciones: ParticipationEvent.
+//
+// Acciones disponibles: accept (asumir tarea) / complete (confirmar participación)
+// / cancel (liberar o cancelar). NINGUNA transfiere CU.
+// ============================================================================
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest } from '@/src/lib/auth';
-import { ensureCuAccount, transferCu } from '@/src/lib/cu';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -24,17 +35,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(404).json({ error: 'Solicitud no encontrada' });
   }
   if (post.type !== 'request') {
-    return res.status(400).json({ error: 'Esta publicación no es una solicitud con CU' });
+    return res.status(400).json({ error: 'Esta publicación no es una solicitud comunitaria' });
   }
 
   const { action } = req.body;
-  const account = await ensureCuAccount(user.id);
 
   switch (action) {
     case 'accept':
       return accept(res, user, post);
     case 'complete':
-      return complete(res, user, post, account);
+      return complete(res, user, post);
     case 'cancel':
       return cancel(res, user, post);
     default:
@@ -65,7 +75,7 @@ async function accept(res: NextApiResponse, user: any, post: any) {
       userId: post.authorId,
       type: 'request',
       title: 'Alguien aceptó tu solicitud',
-      content: `${user.name} se ofreció a realizar tu solicitud de ${post.cuOffer} CU. Completá la actividad y confirmá la tarea para transferir las CU.`,
+      content: `${user.name} se ofreció a realizar tu solicitud comunitaria. Completá la actividad y confirmá la tarea para registrar su participación.`,
       link: `/community/${post.id}`,
     },
   });
@@ -73,22 +83,21 @@ async function accept(res: NextApiResponse, user: any, post: any) {
   return res.status(200).json({ success: true, requestStatus: 'on_going' });
 }
 
-async function complete(res: NextApiResponse, user: any, post: any, account: any) {
+async function complete(res: NextApiResponse, user: any, post: any) {
   if (post.authorId !== user.id) {
     return res.status(403).json({ error: 'Solo el autor de la solicitud puede confirmar la tarea' });
   }
   if (post.requestStatus !== 'on_going' || !post.fulfillUserId) {
     return res.status(400).json({ error: 'La solicitud no tiene una tarea en curso' });
   }
-  if (account.balance < post.cuOffer) {
-    return res.status(400).json({
-      error: `No tenés suficientes CU para transferir (necesitás ${post.cuOffer} y tenés ${account.balance}).`,
-    });
-  }
 
-  await transferCu(post.authorId, post.fulfillUserId, post.cuOffer, `Pago por solicitud "${post.title || post.content.slice(0, 60)}"`, {
-    refType: 'request',
-    refId: post.id,
+  await db.participationEvent.create({
+    data: {
+      postId: post.id,
+      participantId: post.fulfillUserId,
+      kind: 'fulfillment',
+      detail: `Solicitud comunitaria "${post.title || post.content.slice(0, 60)}"`,
+    },
   });
 
   await db.post.update({
@@ -100,8 +109,8 @@ async function complete(res: NextApiResponse, user: any, post: any, account: any
     data: {
       userId: post.fulfillUserId,
       type: 'request',
-      title: `¡Recibiste ${post.cuOffer} CU!`,
-      content: 'El autor confirmó tu tarea y se transfirieron las CU. Gracias por participar.',
+      title: 'Participación confirmada',
+      content: 'El autor confirmó tu participación en su solicitud comunitaria. Gracias por contribuir.',
       link: `/community/${post.id}`,
     },
   });

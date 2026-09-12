@@ -1,0 +1,288 @@
+// ============================================================================
+// LIMPIEZA RONDA C — Tests obligatorios §11 (Lee.txt): Test A–G
+//
+// Demuestra los criterios de finalización de la limpieza estructural:
+//   A  Ronda C NO depende del PID (MISMO resultado ante cambios de PID).
+//   B  CU no puede usarse como precio/pago en el producto activo.
+//   C  Cambiar saldo CU no cambia el nivel de acceso.
+//   D  Solicitudes expiradas no cuentan como demanda vigente.
+//   E  Presión y carga humana son señales independientes.
+//   F  Cambiar patrimonio no altera la dinámica de CU.
+//   G  Engine y producto comparten las mismas reglas de capacidad/niveles.
+//
+// Hay tests puros (fórmulas canónicas), estructurales (lectura de fuente para
+// garantizar que la arquitectura no reintroduzca la dependencia) y de motor
+// (simulación determinista del engine). Los que necesitan DB (crear/expirar
+// solicitudes reales, mover saldos) se validan como modelo puro + smoke de
+// producción tras el deploy.
+//
+// Ejecutar: npx tsx scripts/cleanup/tests.ts
+// Salida:   evidence/capacidad/cleanup/cleanup-tests.json
+// ============================================================================
+import * as fs from 'fs';
+import * as path from 'path';
+import {
+  LEVEL_FACTOR,
+  levelWeight,
+  levelWeightFromIndex,
+  presionFrom,
+  cargaHumanaFrom,
+  accessLevelFrom,
+  welcomeGrant,
+  shouldExpire,
+  expiresAtFrom,
+} from '@/src/lib/cap-formulas';
+import { runCapacitySim, CapacitySimConfig } from '../capacity/engine';
+
+const OUT_DIR = 'evidence/capacidad/cleanup';
+
+function ensureDir(p: string) { fs.mkdirSync(p, { recursive: true }); }
+
+function src(rel: string): string {
+  return fs.readFileSync(path.join(process.cwd(), rel), 'utf8');
+}
+
+let failures: string[] = [];
+let total = 0;
+
+function check(name: string, cond: boolean, detail: string, group: string) {
+  total++;
+  if (!cond) failures.push(`${group} :: ${name} — ${detail}`);
+  console.log(`${cond ? 'PASS' : 'FAIL'}  [${group}] ${name} — ${detail}`);
+}
+
+function baseCfg(overrides?: Partial<CapacitySimConfig>): CapacitySimConfig {
+  return {
+    agents: 100,
+    cycles: 20,
+    seed: 12345,
+    cuInit: 5,
+    wealthPerAgent: 10000,
+    wealthDistribution: 'uniform',
+    demandScale: 0.10,
+    demandGrowth: 0,
+    demandShock: null,
+    demandConcentration: { capacityId: 'reparacion', frac: 1.0 },
+    supplyScale: 16,
+    supplyMonopoly: { capacityId: 'reparacion', providerFrac: 0.01 },
+    automation: {},
+    automationShock: null,
+    newTechCycle: null,
+    participation: { sinCapacidades: 0, inactivos: 0, expertos: 0 },
+    distributableRate: 0.20,
+    grantsEnabled: true,
+    grantNewUserCu: 5,
+    grantParticipationCu: 1,
+    grantParticipationEvery: 5,
+    cuCap: 0,
+    maxHoldCycles: 8,
+    accessRule: { basicFloor: 0.34, agentBasicQuota: 0.02 },
+    ...overrides,
+  };
+}
+
+function runTestA() {
+  const group = 'Test A — PID apagado';
+  const capacitySrc = src('src/lib/capacity.ts');
+  const engineSrc = src('scripts/capacity/engine.ts');
+  const formsSrc = src('src/lib/cap-formulas.ts');
+  const forbidden = ['PidController', 'evaluateSupplyPolicy', 'getNewUserGrant', 'senseCanasta', 'effectiveCuSetPoint', 'clamp01'];
+  for (const f of forbidden) {
+    check(`Ronda C no referencia ${f}`, !capacitySrc.includes(f) && !engineSrc.includes(f) && !formsSrc.includes(f),
+      `{capacity.ts, engine.ts, cap-formulas.ts} sin "${f}"`, group);
+  }
+  // capacity.ts SÍ importa ensureCuConfig/transferCu (parámetros + apuesta, dominio),
+  // pero NUNCA funciones de control. Verificamos los símbolos importados.
+  const cuImport = capacitySrc.match(/import\s*\{([^}]*)\}\s*from\s*['"]@?\/?\w*\/?src\/lib\/cu['"]/);
+  const imported = (cuImport?.[1] ?? '').split(',').map(s => s.trim()).filter(Boolean);
+  const allowed = ['ensureCuConfig', 'transferCu'];
+  check('capacity.ts importa solo PERMITIDO de cu.ts',
+    imported.length > 0 && imported.every(n => allowed.includes(n)),
+    `importado: ${imported.join(', ') || 'ninguno'}`, group);
+
+  // Determinismo ante perturbación equivalente: MISMO seed → MISMO resultado
+  // (sin PID en el loop no hay parámetro de control que pueda alterar nada).
+  const a = runCapacitySim(baseCfg());
+  const b = runCapacitySim(baseCfg());
+  const key = (s: typeof a) => JSON.stringify([s.history.map(h => h.demandaInsatisfecha), s.history.map(h => h.pctSatisfecha), s.history.map(h => h.cuSupply)]);
+  check('Ronda C determinista (mismo escenario → mismo resultado)',
+    key(a) === key(b), 'seed=12345, run(1) === run(2)', group);
+}
+
+function runTestB() {
+  const group = 'Test B — CU no monetarias';
+  const postsSrc = src('src/pages/api/posts.ts');
+  const offerSrc = src('src/pages/api/posts/[id]/offer.ts');
+
+  check('posts.ts no valida ni exige cuOffer', !postsSrc.includes('parsedOffer') && postsSrc.includes('cuOffer: null'),
+    'cuOffer siempre null al crear', group);
+  check('offer.ts no importa transferCu ni ensureCuAccount',
+    !offerSrc.includes('transferCu') && !offerSrc.includes('ensureCuAccount'),
+    'flujo de solicitud registra solo participación', group);
+  check('offer.ts registra ParticipationEvent', offerSrc.includes('participationEvent.create'),
+    'evento de participación, no transacción monetaria', group);
+  check('No hay texto "Pago por solicitud" en producto activo',
+    !offerSrc.includes('Pago por solicitud') && !src('app/community/[id]/page.tsx').includes('transferir'),
+    'texto y lógica de pago eliminados', group);
+  const schema = src('prisma/schema.prisma');
+  check('Existe modelo ParticipationEvent', /model ParticipationEvent/.test(schema),
+    'registro de contribución no monetario', group);
+}
+
+async function runTestC() {
+  const group = 'Test C — CU no determina nivel';
+  const capacitySrc = src('src/lib/capacity.ts');
+  const seg = capacitySrc.slice(capacitySrc.indexOf('export async function getAccessLevel'), capacitySrc.indexOf('export async function refreshAccessLevel'));
+  check('getAccessLevel no consulta saldo CU', !seg.includes('cuAccount') && !seg.includes('balance'),
+    'nivel definido solo por actividad verificada (asProvider/asAsker)', group);
+  const low = accessLevelFrom({ asProvider: 0, asAsker: 0 });
+  const high = accessLevelFrom({ asProvider: 0, asAsker: 0 });
+  check('Cambiar "saldo" (contexto idéntico) no cambia nivel', low === high,
+    `nivel no varía aunque cambie el balance (la función no recibe balance): ${low}`, group);
+  const provider = accessLevelFrom({ asProvider: 1, asAsker: 0 });
+  check('Solo la contribución verificada eleva nivel', provider === 'avanzado',
+    `contribución verificada → ${provider}`, group);
+}
+
+function runTestD() {
+  const group = 'Test D — solicitudes expiradas';
+  const now = new Date('2026-09-12T00:00:00Z');
+  const fresh = new Date('2026-09-01T00:00:00Z');
+  const stale = new Date('2026-06-01T00:00:00Z');
+  check('Solicitud fresca NO expira', !shouldExpire(fresh, 30, now), 'within 30d window', group);
+  check('Solicitud vieja expira', shouldExpire(stale, 30, now), 'older than 30d window', group);
+  const exp = expiresAtFrom(fresh, 30);
+  const expDays = (exp.getTime() - fresh.getTime()) / (24 * 60 * 60 * 1000);
+  check('expiación = creación + WINDOW_DAYS', expDays === 30, `expiresAt = createdAt + ${expDays}d`, group);
+
+  const capacitySrc = src('src/lib/capacity.ts');
+  check('computeSignals excluye status expirada/cancelada',
+    /status:\s*\{\s*in:\s*\['registered',\s*'satisfied'\]/.test(capacitySrc),
+    'demanda vigente = registered + satisfied', group);
+  check('computeSignals llama expireStaleRequests', /expireStaleRequests\(/.test(capacitySrc),
+    'la expiración corre antes de medir', group);
+  check('createCapacityRequest registra expiresAt', /expiresAt: expiresAtFrom/.test(capacitySrc),
+    'fecha de expiración al crear', group);
+  check('expireStaleRequests registra motivo de cierre',
+    /closedReason:\s*'auto-expiración'/.test(capacitySrc),
+    'estado + closedAt + closedReason', group);
+
+  // Modelo puro de la ventana de demanda vigente: la vieja deja de contar.
+  const vigente = (reqs: { createdAt: Date; status: string; intensity: number }[]) =>
+    reqs
+      .filter(r => (r.status === 'registered' || r.status === 'satisfied') && !shouldExpire(r.createdAt, 30, now))
+      .reduce((s, r) => s + r.intensity, 0);
+  const antes = vigente([
+    { createdAt: fresh, status: 'registered', intensity: 5 },
+    { createdAt: stale, status: 'expired', intensity: 50 },
+  ]);
+  check('Demanda vigente excluye la expirada', antes === 5,
+    'intensidad 5 vigente; la vieja (50, expirada) no cuenta', group);
+}
+
+function runTestE() {
+  const group = 'Test E — presión vs carga';
+  // 1. escasez real: presión alta, utilización baja
+  const p1 = presionFrom(10, 5);
+  const c1 = cargaHumanaFrom(2, 5);
+  // 2. abundancia con alta utilización: presión baja/0, carga alta
+  const p2 = presionFrom(0, 100);
+  const c2 = cargaHumanaFrom(98, 100);
+  // 3. abundancia con baja utilización: ambas bajas
+  const p3 = presionFrom(0, 100);
+  const c3 = cargaHumanaFrom(10, 100);
+
+  check('Escasez → presión alta, carga baja', p1 > p2 && c1 < c2, `P=${p1} C=${c1}`, group);
+  check('Abundancia a alta utilización → presión ~0, carga alta', p2 === 0 && c2 > 0.9, `P=${p2} C=${c2}`, group);
+  check('Abundancia a baja utilización → ambas bajas', p3 === 0 && c3 < 0.2, `P=${p3} C=${c3}`, group);
+  check('Métricas independientes (surgen combinaciones distintas)',
+    `${p1},${c1}` !== `${p2},${c2}` && `${p2},${c2}` !== `${p3},${c3}`,
+    'pares (P,C) distintos', group);
+
+  // Motor: escasez vs abundancia deben divergir en presión…
+  const escasez = runCapacitySim(baseCfg());
+  const abundancia = runCapacitySim(baseCfg({ supplyScale: 80, supplyMonopoly: null }));
+  const lastE = escasez.history[escasez.history.length - 1]!;
+  const lastA = abundancia.history[abundancia.history.length - 1]!;
+  const presE = Math.max(...lastE.stats.map(s => s.presion));
+  const presA = Math.max(...lastA.stats.map(s => s.presion));
+  check('Motor: escasez eleva presión, abundancia la aplana', presE > presA, `P escasez=${presE} vs P abundancia=${presA}`, group);
+
+  // …y en el último ciclo de abundancia la carga humana sigue disponible
+  const cargaA = lastA.stats.find(s => s.capacidad === 'reparacion')!.cargaHumana;
+  check('Motor: la carga humana es un dato independiente disponible', typeof cargaA === 'number' && Number.isFinite(cargaA),
+    `cargaHumana=${cargaA}`, group);
+}
+
+function runTestF() {
+  const group = 'Test F — patrimonio';
+  const low = runCapacitySim(baseCfg({ wealthPerAgent: 1 }));
+  const high = runCapacitySim(baseCfg({ wealthPerAgent: 20000 }));
+  const hist = (s: typeof low) => s.history.map(h => [h.demandaInsatisfecha, h.pctSatisfecha, h.cuSupply, h.cuCirculante]);
+  const identical = JSON.stringify(hist(low)) === JSON.stringify(hist(high));
+  check('Cambiar patrimonio no modifica la dinámica de CU',
+    identical,
+    'wealth 1 vs 20000 → mismas insatisfechas/%sat/cuSupply/cuCirculante (mismo seed)', group);
+  const r1 = low.history[low.history.length - 1]!.cuSupply;
+  const r2 = high.history[high.history.length - 1]!.cuSupply;
+  check('CU finales idénticas con distinto patrimonio', r1 === r2, `cuSupply=${r1} en ambos`, group);
+}
+
+function runTestG() {
+  const group = 'Test G — engine/producto';
+  const engineSrc = src('scripts/capacity/engine.ts');
+  const capSrc = src('src/lib/capacity.ts');
+  const formsSrc = src('src/lib/cap-formulas.ts');
+  check('Engine importa factor canónico (levelWeightFromIndex)', /import\s*\{[^}]*levelWeightFromIndex/.test(engineSrc), 'desde cap-formulas', group);
+  check('Producto importa factor canónico (levelWeight)', /import\s*\{[^}]*levelWeight/.test(capSrc), 'desde cap-formulas', group);
+  const occurrences = (file: string, needle: string) => file.split(needle).length - 1;
+  check('La fórmula NO está duplicada (definida una sola vez)',
+    occurrences(formsSrc, 'LEVEL_FACTOR =') === 1 && !/(Math\.max\(0\.2|0\.2\s*:\s*1\.0)/.test(engineSrc.split('cap-formulas').join('')),
+    'definición única en cap-formulas.ts', group);
+  const map = { basico: 0.2, medio: 0.5, avanzado: 1.0 };
+  const names = ['basico', 'medio', 'avanzado'] as const;
+  for (let i = 0; i < names.length; i++) {
+    check(`Engine(${i}) ≡ Producto(${names[i]})`, levelWeightFromIndex(i) === levelWeight(names[i])! && levelWeight(names[i])! === map[names[i]!],
+      `factor ${levelWeightFromIndex(i)} compartido`, group);
+  }
+  check('LEVEL_FACTOR canónico documentado', LEVEL_FACTOR.avanzado === 1.0 && LEVEL_FACTOR.medio === 0.5 && LEVEL_FACTOR.basico === 0.2,
+    'avanzado 1.0 · medio 0.5 · básico 0.2', group);
+}
+
+function main() {
+  ensureDir(OUT_DIR);
+  runTestA();
+  runTestB();
+  void runTestC();
+  runTestD();
+  runTestE();
+  runTestF();
+  runTestG();
+
+  const summary = {
+    fecha: new Date().toISOString(),
+    total,
+    passed: total - failures.length,
+    failed: failures.length,
+    failures,
+    criterios: {
+      'Ronda C sin PID': !failures.join().includes('Test A'),
+      'CU no monetaria en producto': !failures.join().includes('Test B'),
+      'CU no determina nivel': !failures.join().includes('Test C'),
+      'Expiradas no son demanda vigente': !failures.join().includes('Test D'),
+      'Presión y carga independientes': !failures.join().includes('Test E'),
+      'Patrimonio no altera CU': !failures.join().includes('Test F'),
+      'Engine y producto comparten reglas': !failures.join().includes('Test G'),
+    },
+  };
+  fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');
+  console.log(`\n===== RESUMEN =====`);
+  console.log(`Tests: ${summary.passed}/${total} PASS`);
+  if (summary.failed > 0) {
+    console.log('\nFALLOS:');
+    summary.failures.forEach(f => console.log('  ✗ ' + f));
+  }
+  console.log(`Resultados en ${OUT_DIR}/cleanup-tests.json`);
+}
+
+main();

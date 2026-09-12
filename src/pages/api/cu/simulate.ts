@@ -39,6 +39,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     newUserShare: num(b.newUserShare, 0, 1, config.newUserShare),
     historicalShare: num(b.historicalShare, 0, 1, config.historicalShare),
     maxEmissionPerCycle: num(b.maxEmissionPerCycle, 0, 1000000000, config.maxEmissionPerCycle),
+    maxBurnPerCycle: num(b.maxBurnPerCycle, 0, 1000000000, config.maxBurnPerCycle),
+    accessTarget: num(b.accessTarget, 0, 1, config.accessTarget),
+    reachableSetPoint: b.reachableSetPoint === undefined ? config.reachableSetPoint : Boolean(b.reachableSetPoint),
+    sensorFlowGain: num(b.sensorFlowGain, 0, 5, config.sensorFlowGain),
+    sensorAccessGain: num(b.sensorAccessGain, 0, 5, config.sensorAccessGain),
     cycles: Math.round(num(b.cycles, 1, 60, 20)),
   };
 

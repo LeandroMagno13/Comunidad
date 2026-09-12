@@ -72,11 +72,12 @@ export function lineChart(opts: {
 }
 
 const METRICS: Array<{ key: keyof TraceRow; label: string; reference?: (s: SimResult) => number }> = [
-  { key: 'observed', label: 'Canasta observada', reference: (s) => s.scenario.setPoint },
-  { key: 'error', label: 'Error del sistema (obs − set point)' },
+  { key: 'observed', label: 'Canasta observada', reference: (s) => s.rows[s.rows.length - 1]?.setPointEffective ?? s.scenario.setPoint },
+  { key: 'error', label: 'Error de control (compuesto)' },
   { key: 'supply', label: 'Oferta total CU' },
   { key: 'pidOutput', label: 'Señal PID' },
-  { key: 'issued', label: 'Emisión vs destrucción' },
+  { key: 'issued', label: 'Emisión vs consumo' },
+  { key: 'burn', label: 'Quema (contracción)' },
   { key: 'accessPct', label: 'Acceso a la canasta (%)' },
   { key: 'avg', label: 'Saldo medio' },
   { key: 'median', label: 'Saldo mediano' },

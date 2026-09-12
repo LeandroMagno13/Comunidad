@@ -1,0 +1,9 @@
+test;escenario;pasa;observado;indicador
+¿Puede alguien con pocas CU seguir teniendo acceso básico?;K-pocas-cu-acceso-basico;true;"con cuInit=1 y 40% sin capacidades: básico=40%, excluidos de los que pidieron=11.5%.";"básico>0 y excluidos< b."
+¿Puede alguien tener muchas CU pero no existir capacidad real suficiente?;K-muchas-cu-sin-capacidad;true;"cuInit=20, oferta ×0.15: presión máx=120.41, excluidos=78%. CU no crean capacidad real.";"presión alta y exclusión pese a CU."
+¿Puede existir mucho patrimonio pero poca capacidad distribuible?;K-mucho-patrimonio-poca-distribubil;true;"wealth=20000 pero distributableRate=0.02 → %sat=67.05%, presión media=4.4.";"el patrimonio no garantiza saturación."
+¿Demanda alta + oferta humana baja genera señal fuerte?;D-dem-sin-proveedor;true;"presión máx=302.59 vs abundancia 5.78 (oferta ×2).";"47,7-107 vs 3,4."
+¿La automatización elimina demanda de una capacidad?;E-auto-shock;true;"shock de automatización en traducción: %sat=57.6% (baja aut: 42.86%).";"mayor %sat con más automatización."
+¿Las CU terminan comportándose como dinero/reserva de valor? (intento de demostración);K-cu-como-dinero;true;"acumulación sin gasto (demanda baja): CU top-10=38.87%, Gini CU=62. La acumulación no tradujo en más acceso.";"acumulación posible en top-10%."
+¿Las CU generan concentración de poder?;K-cu-como-dinero;true;"concentración de CU 38.87% top-10 mientras %sat=80.42% (alta). Sin vínculo CU→poder observado.";"concentración sin dominio del acceso."
+¿El sistema puede ser manipulado mediante farming de grants?;K-farming;true;"90% sin capacidades ni actividad con grants activos: CU top-10=13.03%, básico=90%.";"tope de balance (cuCap=30) limita el acopio."

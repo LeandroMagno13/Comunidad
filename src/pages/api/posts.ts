@@ -54,7 +54,7 @@ async function listPosts(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) {
-  const { title, content, guildId, type, cuOffer } = req.body;
+  const { title, content, guildId, type } = req.body;
   const postType = type === 'request' ? 'request' : 'update';
 
   if (!content || !String(content).trim()) {
@@ -65,14 +65,9 @@ async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) 
     return res.status(400).json({ error: 'La publicación es demasiado larga' });
   }
 
-  let parsedOffer: number | null = null;
-  if (postType === 'request') {
-    parsedOffer = Number(cuOffer);
-    if (!Number.isInteger(parsedOffer) || parsedOffer <= 0) {
-      return res.status(400).json({ error: 'Una solicitud requiere ofrecer una cantidad de CU (entero positivo)' });
-    }
-  }
-
+  // LEGACY: cuOffer se ignora. La CU NO es medio de pago (§Lee.txt). Las
+  // solicitudes comunitarias registran participación (ParticipationEvent),
+  // no transacciones monetarias. El campo cuOffer se setea null siempre.
   if (guildId) {
     const membership = await db.guildMembership.findUnique({
       where: { userId_guildId: { userId: user.id, guildId } },
@@ -89,7 +84,7 @@ async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) 
       content: String(content).trim(),
       guildId: guildId || null,
       type: postType,
-      cuOffer: postType === 'request' ? parsedOffer : null,
+      cuOffer: null,
       requestStatus: postType === 'request' ? 'open' : null,
     },
     include: {

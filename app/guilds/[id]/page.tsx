@@ -16,7 +16,6 @@ type PostItem = {
   title?: string | null;
   content: string;
   type: string;
-  cuOffer?: number | null;
   requestStatus?: string | null;
   author: { name: string };
   createdAt: string;
@@ -41,7 +40,6 @@ export default function GuildDetailPage() {
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [postContent, setPostContent] = useState('');
   const [postType, setPostType] = useState('update');
-  const [cuOffer, setCuOffer] = useState('');
   const [error, setError] = useState('');
 
   async function loadMembers() {
@@ -92,7 +90,7 @@ export default function GuildDetailPage() {
     const res = await fetch('/api/posts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: postContent, guildId, type: postType, cuOffer: postType === 'request' ? cuOffer : null }),
+      body: JSON.stringify({ content: postContent, guildId, type: postType }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -100,7 +98,6 @@ export default function GuildDetailPage() {
       return;
     }
     setPostContent('');
-    setCuOffer('');
     setPostType('update');
     await loadPosts();
   }
@@ -157,19 +154,9 @@ export default function GuildDetailPage() {
                     postType === 'request' ? 'bg-amber-500 text-white' : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  Solicitud con CU
+                  Solicitud comunitaria
                 </button>
               </div>
-              {postType === 'request' && (
-                <input
-                  type="number"
-                  min={1}
-                  className="w-28 rounded-md border border-gray-200 px-3 py-1.5 text-sm"
-                  placeholder="CU a ofrecer"
-                  value={cuOffer}
-                  onChange={(e) => setCuOffer(e.target.value)}
-                />
-              )}
             </div>
             <textarea
               className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
@@ -217,9 +204,9 @@ export default function GuildDetailPage() {
                           Informativa
                         </span>
                       )}
-                      {p.type === 'request' && p.cuOffer != null && p.requestStatus !== 'completed' && (
+                      {p.type === 'request' && (
                         <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
-                          {p.cuOffer} CU
+                          Solicitud comunitaria
                         </span>
                       )}
                     </div>

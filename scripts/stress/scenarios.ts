@@ -224,49 +224,50 @@ export function barridoDemanda(): Scenario[] {
 }
 
 export function barridoOferta(roundB: boolean): Scenario[] {
-  // RONDA B: política activa (gain>0) y emisión por ciclo distribuida por cuotas
-  const rb = roundB ? { expansionGain: 1, contractionGain: 1, maxEmissionPerCycle: 50 } : {};
+  // RONDA A (roundB=false): configuración v1 legada (sensor ciego + política inerte).
+  // RONDA B (roundB=true): v2 control real (sensor consciente + válvula activa + quema).
+  const rb = roundB ? {} : { legacySensor: true, expansionGain: 0, contractionGain: 0, maxBurnPerCycle: 0 };
   return [
     {
-      id: 'D5-em-normal', label: 'Emisión normal', users0: 100, perUser0: 20,
+      id: roundB ? 'D5-em-normal' : 'A-D5-em-normal', label: 'Emisión normal', users0: 100, perUser0: 20,
       setPoint: 100, startObserved: 100, cycles: 60, growth: linear(2), demandRate: 0.2,
       transferRate: 0.05, emissionBase: 10, emitMode: roundB ? 'shares' : 'none',
       config: rb, seed: FIRST,
     },
     {
-      id: 'D5-em-excesiva', label: 'Emisión excesiva', users0: 100, perUser0: 20,
+      id: roundB ? 'D5-em-excesiva' : 'A-D5-em-excesiva', label: 'Emisión excesiva', users0: 100, perUser0: 20,
       setPoint: 100, startObserved: 100, cycles: 60, growth: linear(2), demandRate: 0.2,
       transferRate: 0.05, emissionBase: 50, emitMode: roundB ? 'shares' : 'none',
       config: rb, seed: FIRST,
     },
     {
-      id: 'D5-em-insuficiente', label: 'Emisión insuficiente', users0: 100, perUser0: 20,
+      id: roundB ? 'D5-em-insuficiente' : 'A-D5-em-insuficiente', label: 'Emisión insuficiente', users0: 100, perUser0: 20,
       setPoint: 100, startObserved: 100, cycles: 60, growth: linear(2), demandRate: 0.2,
       transferRate: 0.05, emissionBase: 1, emitMode: roundB ? 'shares' : 'none',
       config: rb, seed: FIRST,
     },
     {
-      id: 'D5-em-interrumpida', label: 'Interrupción de emisión', users0: 100, perUser0: 20,
+      id: roundB ? 'D5-em-interrumpida' : 'A-D5-em-interrumpida', label: 'Interrupción de emisión', users0: 100, perUser0: 20,
       setPoint: 100, startObserved: 100, cycles: 60, growth: linear(2), demandRate: 0.2,
       transferRate: 0.05, emissionBase: 10, emitMode: roundB ? 'shares' : 'none',
       supplyShocks: [{ cycle: 30, pct: 0 }], config: rb, seed: FIRST,
     },
     {
-      id: 'D5-shock-emision', label: 'Shock de emisión', users0: 100, perUser0: 20,
+      id: roundB ? 'D5-shock-emision' : 'A-D5-shock-emision', label: 'Shock de emisión', users0: 100, perUser0: 20,
       setPoint: 100, startObserved: 100, cycles: 60, growth: linear(2), demandRate: 0.2,
       transferRate: 0.05, emissionBase: 10, emitMode: roundB ? 'shares' : 'none',
       supplyShocks: [{ cycle: 30, pct: 50 }], config: rb, seed: FIRST,
     },
     {
-      id: 'D5-exceso-inicial', label: 'Exceso inicial de CU', users0: 100, perUser0: 500,
+      id: roundB ? 'D5-exceso-inicial' : 'A-D5-exceso-inicial', label: 'Exceso inicial de CU', users0: 100, perUser0: 500,
       setPoint: 100, startObserved: 100, cycles: 60, growth: none, demandRate: 0.2,
       transferRate: 0.05, emissionBase: 0, emitMode: 'none', config: rb, seed: FIRST,
     },
     {
-      id: 'D5-reduccion-abrupta', label: 'Reducción abrupta de oferta', users0: 100, perUser0: 20,
+      id: roundB ? 'D5-reduccion-abrupta' : 'A-D5-reduccion-abrupta', label: 'Reducción abrupta de oferta', users0: 100, perUser0: 20,
       setPoint: 100, startObserved: 100, cycles: 60, growth: none, demandRate: 0.2,
       transferRate: 0.05, emissionBase: 0, emitMode: 'none',
-      supplyShocks: [{ cycle: 30, pct: -70 }], seed: FIRST,
+      supplyShocks: [{ cycle: 30, pct: -70 }], config: rb, seed: FIRST,
     },
   ];
 }

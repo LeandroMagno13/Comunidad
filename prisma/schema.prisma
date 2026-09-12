@@ -39,6 +39,11 @@ model User {
   cuTransactionsSent         CuTransaction[] @relation("CuFromUser")
   cuTransactionsReceived     CuTransaction[] @relation("CuToUser")
   postsModerated             Post[]          @relation("PostFulfiller")
+  cuAccessLevel              String          @default("basic") // básico | medio | avanzado (asignación, no jerarquía)
+  userCapacities             UserCapacity[]
+  capacityRequestsAsker      CapacityRequest[] @relation("CapacityRequestAsker")
+  capacityRequestsProvider   CapacityRequest[] @relation("CapacityRequestProvider")
+  participationEvents        ParticipationEvent[]
 }
 
 model Profile {
@@ -241,6 +246,7 @@ model Post {
   fulfilledBy    User?    @relation("PostFulfiller", fields: [fulfillUserId], references: [id])
   comments       Comment[]
   reports        Report[]
+  participationEvents ParticipationEvent[]
 }
 
 model Comment {
@@ -352,17 +358,103 @@ model CuConfig {
   newUserGrantCu     Int     @default(20) // cantidad base en equilibrio (0 = sin base)
   newUserSensitivity Float   @default(1) // qué tan fuerte baja/sube la asignación según escasez/abundancia
   // Capa SupplyPolicy: la señal PID NO es emisión. La política decide.
-  expansionGain      Float   @default(0) // cuánto escala la emisión ante señal positiva (0 = la política no emite automáticamente)
-  contractionGain    Float   @default(0) // cuánto reduce la emisión ante señal negativa
+  expansionGain      Float   @default(1) // apertura de la válvula de expansión (0 = la política no emite automáticamente)
+  contractionGain    Float   @default(1) // apertura de la válvula de contracción (quema proporcional ante abundancia)
   reserveShare       Float   @default(0.3) // proporción de emisión destinada a reserva
   newUserShare       Float   @default(0.5) // proporción destinada a nuevos usuarios
   historicalShare    Float   @default(0.2) // proporción destinada a usuarios históricos (sujeta a ajuste auditable)
-  maxEmissionPerCycle Int   @default(1000) // límite anti-shock
+  maxEmissionPerCycle Int   @default(1000) // límite anti-shock de emisión absoluto por ciclo
+  maxBurnPerCycle    Int     @default(200) // límite anti-shock de contracción (quema) por ciclo
+  // Sensor y variable de control (v2): control REAL por acceso a la canasta.
+  accessTarget       Float   @default(0.5) // fracción objetivo de cuentas que acceden a la canasta
+  reachableSetPoint  Boolean @default(true) // set point efectivo anclado a la distribución (alcanzable)
+  sensorFlowGain     Float   @default(0.5) // sensibilidad del sensor al flujo neto (consumo − emisión)/oferta
+  sensorAccessGain   Float   @default(0.6) // sensibilidad del sensor a la brecha acceso-objetivo
   // Ajustes históricos: SIEMPRE gratuitas, registradas y auditablemente separadas del PID.
   adjustmentEnabled  Boolean @default(false) // deshabilitado por defecto: no hay reglas de confiscación automática
   adjustmentMode     String  @default("none") // none | flat | proportional | manual
   adjustmentCap      Int     @default(0) // si > 0, límite de |CU| por ajuste por usuario y por evento
   enabled            Boolean @default(true) // si el control de lazo cerrado está activo
+  // Capa señalización y capacidad (RONDA C, §Lee.txt). El PID NO gobierna la oferta (pidGoverning=false).
+  pidGoverning       Boolean @default(false) // si true, la señal del PID alimenta la política de emisión (solo experimental)
+  patrimonyUsd       Float   @default(1000) // patrimonio real simulado (usd), separado de CU
+  distributableRate  Float   @default(0.2) // fracción del patrimonio real que las reglas permiten distribuir efectivamente
+  grantCap           Int     @default(30) // tope de balance de CU por cuenta (anti-farming)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+}
+
+// ============ CAPACIDADES HUMANAS (RONDA C, §Lee.txt) ============
+// Señalización y asignación de capacidad humana. Las CU expresan participación
+// y prioridad; nunca convierten a dinero ni a patrimonio.
+
+model Capacity {
+  id            String         @id @default(cuid())
+  slug          String         @unique // identificador estable (ej: salud-y-cuidado)
+  name          String
+  description   String?
+  category      String?
+  automatizacion Float         @default(0) // cobertura tecnológica estimada (0-1)
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  users         UserCapacity[]
+  requests      CapacityRequest[]
+}
+
+model UserCapacity {
+  id            String   @id @default(cuid())
+  userId        String
+  capacityId    String
+  disponibilidad Float   @default(0.5) // declarada 0-1
+  calidad       Float    @default(0.5) // declarada 0-1
+  verified      Boolean  @default(false) // oferta efectiva ≠ declarada: requiere verificación
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id])
+  capacity      Capacity @relation(fields: [capacityId], references: [id])
+
+  @@unique([userId, capacityId])
+  @@index([capacityId])
+}
+
+model CapacityRequest {
+  id            String    @id @default(cuid())
+  askerId       String
+  capacityId    String
+  providerId    String?
+  intensity     Int       @default(1)
+  cuCommitted   Int       @default(0) // prioridad apostada (se transfiere al proveedor SIEMPRE que se satisfaga). No es precio (§Lee.txt)
+  status        String    @default("registered") // registered | satisfied | expired | cancelled
+  holdCycles    Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  satisfiedAt   DateTime?
+  expiresAt     DateTime? // fin de la ventana de demanda vigente (§6 Lee.txt, Test D)
+  closedAt      DateTime? // momento de expirar/cancelar (auditoría)
+  closedReason  String?   // motivo de cierre: auto-expiración, cancelación, etc.
+  asker         User      @relation("CapacityRequestAsker", fields: [askerId], references: [id])
+  provider      User?     @relation("CapacityRequestProvider", fields: [providerId], references: [id])
+  capacity      Capacity  @relation(fields: [capacityId], references: [id])
+
+  @@index([capacityId, status])
+  @@index([askerId])
+  @@index([providerId])
+}
+
+// Eventos de participación (no monetarios): registro de contribución REAL
+// cuando alguien satisface una solicitud comunitaria (p. ej. el flujo legacy
+// de posts/[id]/offer.ts). NO reemplaza a la CU como unidad de cuenta.
+model ParticipationEvent {
+  id        String   @id @default(cuid())
+  postId    String
+  participantId String
+  kind      String   @default("fulfillment") // fulfillment | contribution | ...
+  detail    String?
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id])
+  participant User   @relation(fields: [participantId], references: [id])
+
+  @@index([participantId])
+  @@index([postId])
 }

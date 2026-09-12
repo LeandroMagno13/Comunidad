@@ -9,7 +9,6 @@ type PostItem = {
   title?: string | null;
   content: string;
   type: string;
-  cuOffer?: number | null;
   requestStatus?: string | null;
   createdAt: string;
   author: { id: string; name: string; profile?: { profession?: string | null } | null; cuAccount?: { balance: number } | null };
@@ -31,7 +30,6 @@ export default function CommunityPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [postType, setPostType] = useState('update');
-  const [cuOffer, setCuOffer] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -53,6 +51,7 @@ export default function CommunityPage() {
     if (!content.trim()) return;
     setError('');
     setLoading(true);
+    // LEGACY: cuOffer eliminado. La CU NO es medio de pago (§Lee.txt).
     const res = await fetch('/api/posts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -61,7 +60,6 @@ export default function CommunityPage() {
         content,
         guildId: null,
         type: postType,
-        cuOffer: postType === 'request' ? cuOffer : null,
       }),
     });
     const data = await res.json();
@@ -72,7 +70,6 @@ export default function CommunityPage() {
     }
     setTitle('');
     setContent('');
-    setCuOffer('');
     setPostType('update');
     setLoading(false);
     await load();
@@ -87,7 +84,7 @@ export default function CommunityPage() {
       <h1 className="text-2xl font-bold text-gray-900">Comunidad</h1>
       <p className="mt-1 text-sm text-gray-600">
         Muro de la comunidad. Publicá tu participación: información para compartir o solicitudes
-        concretas con CU de por medio. Cuida el contenido: está sujeto a moderación.
+        comunitarias para contribuir. Cuida el contenido: está sujeto a moderación.
       </p>
 
       <form onSubmit={createPost} className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
@@ -109,19 +106,9 @@ export default function CommunityPage() {
                 postType === 'request' ? 'bg-amber-500 text-white' : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
-              Solicitud con CU
+              Solicitud comunitaria
             </button>
           </div>
-          {postType === 'request' && (
-            <input
-              type="number"
-              min={1}
-              className="w-28 rounded-md border border-gray-200 px-3 py-1.5 text-sm"
-              placeholder="CU a ofrecer"
-              value={cuOffer}
-              onChange={(e) => setCuOffer(e.target.value)}
-            />
-          )}
         </div>
         <input
           className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm font-medium"
@@ -134,7 +121,7 @@ export default function CommunityPage() {
           className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
           placeholder={
             postType === 'request'
-              ? '¿Qué necesitás? Describí brevemente la tarea y las CU que ofrecerás por completarla.'
+              ? '¿Qué necesitás? Describí brevemente la tarea.'
               : '¿Qué quieres compartir con la comunidad?'
           }
           rows={4}
@@ -185,11 +172,6 @@ export default function CommunityPage() {
                         {REQUEST_LABEL[post.requestStatus || 'open'] || post.requestStatus}
                       </span>
                     )}
-                    {isRequest && post.cuOffer != null && post.requestStatus !== 'completed' && (
-                      <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
-                        {post.cuOffer} CU
-                      </span>
-                    )}
                     {!isRequest && (
                       <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-medium text-teal-700">
                         Informativa
@@ -215,9 +197,6 @@ export default function CommunityPage() {
                   <span className="text-blue-600 hover:underline">
                     {post._count?.comments || 0} comentarios · ver publicación completa →
                   </span>
-                  {post.author.cuAccount && (
-                    <span className="text-gray-400">{post.author.cuAccount.balance} CU</span>
-                  )}
                 </div>
               </Link>
             );

@@ -208,6 +208,11 @@ export default function AdminPanel() {
     expansionGain: '1',
     contractionGain: '1',
     maxEmissionPerCycle: '1000',
+    maxBurnPerCycle: '200',
+    accessTarget: '0.5',
+    reachableSetPoint: 'true',
+    sensorFlowGain: '0.5',
+    sensorAccessGain: '0.6',
     cycles: '20',
   });
 
@@ -297,6 +302,11 @@ export default function AdminPanel() {
       newUserShare: data.config?.newUserShare,
       historicalShare: data.config?.historicalShare,
       maxEmissionPerCycle: data.config?.maxEmissionPerCycle,
+      maxBurnPerCycle: data.config?.maxBurnPerCycle,
+      accessTarget: data.config?.accessTarget,
+      reachableSetPoint: data.config?.reachableSetPoint,
+      sensorFlowGain: data.config?.sensorFlowGain,
+      sensorAccessGain: data.config?.sensorAccessGain,
       adjustmentEnabled: data.config?.adjustmentEnabled,
       adjustmentMode: data.config?.adjustmentMode,
       adjustmentCap: data.config?.adjustmentCap,
@@ -335,6 +345,11 @@ export default function AdminPanel() {
         newUserShare: Number(ecoConfig.newUserShare),
         historicalShare: Number(ecoConfig.historicalShare),
         maxEmissionPerCycle: Number(ecoConfig.maxEmissionPerCycle),
+        maxBurnPerCycle: Number(ecoConfig.maxBurnPerCycle),
+        accessTarget: Number(ecoConfig.accessTarget),
+        reachableSetPoint: Boolean(ecoConfig.reachableSetPoint),
+        sensorFlowGain: Number(ecoConfig.sensorFlowGain),
+        sensorAccessGain: Number(ecoConfig.sensorAccessGain),
         adjustmentEnabled: Boolean(ecoConfig.adjustmentEnabled),
         adjustmentMode: ecoConfig.adjustmentMode,
         adjustmentCap: Number(ecoConfig.adjustmentCap),
@@ -401,6 +416,11 @@ export default function AdminPanel() {
         expansionGain: Number(simForm.expansionGain),
         contractionGain: Number(simForm.contractionGain),
         maxEmissionPerCycle: Number(simForm.maxEmissionPerCycle),
+        maxBurnPerCycle: Number(simForm.maxBurnPerCycle),
+        accessTarget: Number(simForm.accessTarget),
+        reachableSetPoint: simForm.reachableSetPoint === 'true',
+        sensorFlowGain: Number(simForm.sensorFlowGain),
+        sensorAccessGain: Number(simForm.sensorAccessGain),
         cycles: Number(simForm.cycles),
       }),
     });
@@ -978,39 +998,43 @@ export default function AdminPanel() {
 
       {tab === 'economy' && canManageUsers && (
         <div className="mt-6">
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-5">
-            <p className="text-sm font-semibold text-amber-900">
-              ¿Qué estamos experimentando? — Economía de CU (modelo de control)
+          <div className="rounded-lg border border-teal-200 bg-teal-50 p-5">
+            <p className="text-sm font-semibold text-teal-900">
+              Economía de CU — Sistema experimental de señalización y asignación de capacidad
             </p>
-            <div className="mt-2 grid gap-4 text-xs text-amber-800 lg:grid-cols-2">
+            <div className="mt-2 grid gap-4 text-xs text-teal-800 lg:grid-cols-2">
               <div>
                 <p className="font-semibold">Idea</p>
                 <p className="mt-1">
-                  Las CU son una unidad interna de participación / "stamina" de la comunidad. NO son
-                  dinero, no tienen conversión monetaria y no representan patrimonio. Son una capa
-                  separada del patrimonio real.
+                  Las CU no representan dinero ni patrimonio. Son una unidad experimental para
+                  registrar participación, demanda y acceso dentro de la comunidad. El patrimonio
+                  real es la fuente material de los recursos que eventualmente pueden distribuirse;
+                  la existencia de muchas CU no implica riqueza real, y mucho patrimonio no implica
+                  que todo sea distribuible.
                 </p>
-                <p className="mt-2 font-semibold">Ritmo</p>
-                <p className="mt-1">
-                  MEDICIÓN → COMPARAR → CORREGIR → VOLVER A MEDIR. La canasta representativa actúa
-                  como 'sensor': comparamos su costo observado contra un set point y corregimos la
-                  OFERTA relativa, no el valor de las personas ni de las CU.
+                <p className="mt-2 font-semibold">Cadena</p>
+                <p className="mt-1 font-mono text-[11px] leading-relaxed">
+                  PATRIMONIO REAL → CAPACIDAD DISTRIBUIBLE → RECURSOS DISPONIBLES
+                  <br />
+                  DEMANDA + OFERTA HUMANA → SEÑAL → ACCESO / INFORMACIÓN → OBSERVACIÓN
                 </p>
               </div>
               <div>
-                <p className="font-semibold">Tubería de decisión</p>
-                <p className="mt-1 font-mono text-[11px] leading-relaxed">
-                  MEDICIÓN → PID → SEÑAL DE CORRECCIÓN → POLÍTICA DE OFERTA → EMISIÓN / NO EMISIÓN /
-                  AJUSTE → NUEVA MEDICIÓN
+                <p className="font-semibold">Señal de escasez (¿qué necesitan las personas de las personas?)</p>
+                <p className="mt-1">
+                  Registramos solicitudes (demanda total / satisfecha / insatisfecha) por capacidad.
+                  La presión <span className="font-mono">= demanda insatisfecha / oferta efectiva</span>{' '}
+                  detecta cuellos de botella de capacidad humana frente a la automatización. No es un
+                  precio: es información.
                 </p>
                 <p className="mt-2">
-                  Ojo: la señal del PID <span className="font-semibold">no es una emisión</span>.
-                  La política de oferta decide si emite, no emite o ajusta; y con qué tasa. Los
-                  ajustes sobre saldos históricos son auditables y están separados del PID.
+                  El PID legado se conserva únicamente como experimento histórico (RONDA A).{' '}
+                  <span className="font-semibold">No gobierna</span> la oferta del nuevo modelo
+                  (emisión = política de grants, no reacción al error de canasta).
                 </p>
               </div>
             </div>
-            <button onClick={loadEconomy} className="mt-3 rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700">
+            <button onClick={loadEconomy} className="mt-3 rounded-md bg-teal-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-teal-800">
               Medir ahora
             </button>
             <a
@@ -1018,6 +1042,12 @@ export default function AdminPanel() {
               className="ml-2 mt-3 inline-block rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
             >
               Ver informe completo: Ensayo de Stress →
+            </a>
+            <a
+              href="/capacidad/REPORTE-CU-CAPACIDAD.md"
+              className="ml-2 mt-3 inline-block rounded-md bg-white px-3 py-1.5 text-xs font-medium text-teal-900 ring-1 ring-teal-300 hover:bg-teal-100"
+            >
+              REPORTE-CU-CAPACIDAD →
             </a>
           </div>
 
@@ -1028,11 +1058,13 @@ export default function AdminPanel() {
               <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <Stat label="Oferta total (CU emitidas netas)" value={`${eco.supply} CU`} />
                 <Stat label="Set point (canasta)" value={`${eco.setPoint} CU`} tip="CU objetivo para adquirir / reproducir la canasta representativa en equilibrio." />
-                <Stat label="Canasta observada" value={`${eco.observed} CU`} tip="Valor del 'sensor': costo observado de la canasta según su metodología (manual | auto)." />
-                <Stat label="Error (obs − set point)" value={eco.error} accent={eco.error > 0 ? 'text-amber-700' : 'text-green-700'} tip="Cuánto se aleja el sensor del set point. Error positivo = la canasta está 'cara' (escasez relativa de CU); negativo = 'barata' (abundancia relativa)." />
+                <Stat label="Canasta observada" value={`${eco.observed} CU`} tip="Valor del 'sensor' v2: costo observado de la canasta. Integra flujo neto y brecha de acceso cuando la metodología es 'auto'." />
+                <Stat label="Sensor v2 (integrado)" value={`${eco.observedSensed} CU`} tip="Lectura con sensibilidad a flujo neto + acceso (puede diferir del observado persistido manual)." />
+                <Stat label="Acceso real (saldo ≥ canasta)" value={eco.accessRatio != null ? `${Math.round(eco.accessRatio * 100)}%` : '—'} tip="Fracción de cuentas que pueden comprar la canasta. Objetivo configurado: accessTarget." />
+                <Stat label="Error de control (compuesto)" value={`${eco.error} · SP ef. ${eco.effectiveSetPoint}`} accent={eco.error > 0 ? 'text-amber-700' : 'text-green-700'} tip="Error = desvío de canasta + brecha de acceso (CU). Set point efectivo alcanzable según distribución." />
                 <Stat label="Señal de corrección (PID)" value={eco.pidOutput} accent={eco.pidOutput >= 0 ? 'text-amber-700' : 'text-green-700'} tip="Salida del controlador. NO es una emisión: indica la dirección y magnitud de la corrección sugerida de oferta." />
                 <Stat label="Política de oferta (fase)" value={phaseLabel(eco.policy?.phase)} accent={phaseColor(eco.policy?.phase)} tip="Decisión de la capa SupplyPolicy según la señal del PID: expansión / neutralidad / contracción." />
-                <Stat label="Señal → Emisión sugerida" value={`${eco.policy?.emission ?? '—'} CU/ciclo`} tip="Emisión que resultaría de aplicar la política (expansión/contracción) sobre la emisión base." />
+                <Stat label="Señal → Emisión / Quema" value={`${eco.policy?.emission ?? '—'} / ${eco.policy?.burn ?? 0} CU`} tip="Decisión de la política según la señal: emisión en expansión, quema en contracción. La política actúa por señal, no por inercia." />
                 <Stat label="Velocidad (periodo)" value={eco.velocity} tip="Actividad = (transferidas + consumidas) / oferta. Es una métrica de actividad, NO un precio del CU." />
                 <Stat label="Transferidas (periodo)" value={`${eco.transferredPeriod} CU`} />
                 <Stat label="Consumidas (periodo)" value={`${eco.consumedPeriod} CU`} />
@@ -1043,7 +1075,54 @@ export default function AdminPanel() {
                 <Stat label="Concentración (10% mayor)" value={eco.topDecileShare != null ? `${Math.round(eco.topDecileShare * 100)}%` : '—'} />
                 <Stat label="Emisión acumulada" value={`${eco.issuedTotal} CU`} />
                 <Stat label="Consumo acumulado" value={`${eco.consumedTotal} CU`} />
-                <Stat label="Control PID" value={eco.controllerEnabled ? 'activo' : 'inactivo'} />
+                <Stat label="PID (experimento histórico)" value={eco.controllerEnabled ? 'activo (no gobierna)' : 'inactivo'} tip="El PID legado (RONDA A) NO gobierna la oferta del nuevo modelo: emisión = política de grants. Ver señalizacion.patrimonio.pidGoverning." />
+              </div>
+
+              <div className="mt-4 rounded-lg border border-teal-200 bg-white p-4">
+                <h3 className="text-sm font-semibold text-teal-900">Señalización y asignación de capacidad (RONDA C)</h3>
+                <p className="mt-1 text-xs text-gray-500">
+                  Demandas y señales por capacidad humana. Las CU expresan participación y prioridad;
+                  no convierten a dinero ni a patrimonio. Ranking por presión de demanda — nunca ranking de personas.
+                </p>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <Stat label="Patrimonio real (simulado)" value={eco.señalizacion?.patrimonio?.patrimonioUsd != null ? `USD ${eco.señalizacion.patrimonio.patrimonioUsd}` : '—'} tip="Activos reales simulados. No todo es distribuible. Separado por completo de las CU." />
+                  <Stat label="Capacidad distribuible (tasa)" value={eco.señalizacion?.patrimonio?.distributableRate != null ? `${Math.round(eco.señalizacion.patrimonio.distributableRate * 100)}%` : '—'} tip="Fracción del patrimonio que las reglas permiten distribuir efectivamente por periodo." />
+                  <Stat label="Demanda insatisfecha (30d)" value={eco.señalizacion?.demanda ? `${eco.señalizacion.demanda.insatisfecha} solicitudes` : '—'} tip="Total de solicitudes registradas − satisfechas. La señal central del nuevo modelo." />
+                  <Stat label="Demanda satisfecha" value={eco.señalizacion?.demanda ? `${eco.señalizacion.demanda.satisfecha} (${eco.señalizacion.pctSatisfecha}%)` : '—'} />
+                </div>
+                {eco.señalizacion?.niveles && (
+                  <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                    <Stat label="Usuarios acceso básico" value={eco.señalizacion.niveles.basico} accent="text-teal-700" tip="Piso protegido: nadie queda fuera por no tener nada para ofrecer." />
+                    <Stat label="Usuarios acceso medio" value={eco.señalizacion.niveles.medio} />
+                    <Stat label="Usuarios acceso avanzado" value={eco.señalizacion.niveles.avanzado} accent="text-teal-700" tip="Contribución verificada (satisfacer solicitudes de otros). No es 'más CU = mejor persona'." />
+                  </div>
+                )}
+                {Array.isArray(eco.señalizacion?.capacidades) && eco.señalizacion.capacidades.length > 0 && (
+                  <div className="mt-3 overflow-hidden rounded-lg border border-gray-200">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-gray-100 text-gray-700">
+                        <tr>
+                          <th className="px-3 py-2">Capacidad</th>
+                          <th className="px-3 py-2">Demanda T / S / I</th>
+                          <th className="px-3 py-2">Presión</th>
+                          <th className="px-3 py-2">Oferta decl. / efec.</th>
+                          <th className="px-3 py-2">Auto.</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {eco.señalizacion.capacidades.map((c: any) => (
+                          <tr key={c.slug}>
+                            <td className="px-3 py-2 font-medium text-gray-900">{c.name}</td>
+                            <td className="px-3 py-2 text-gray-600">{c.demandaTotal} / {c.demandaSatisfecha} / {c.demandaInsatisfecha}</td>
+                            <td className="px-3 py-2 font-semibold text-teal-900">{c.presion}</td>
+                            <td className="px-3 py-2 text-gray-600">{c.ofertaDeclarada} / {c.ofertaEfectiva}</td>
+                            <td className="px-3 py-2 text-gray-600">{Math.round(c.automatizacion * 100)}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
 
               <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4">
@@ -1119,6 +1198,7 @@ export default function AdminPanel() {
                       <Field label="Gan. expansión" value={ecoConfig.expansionGain} onChange={(v) => setEcoConfig({ ...ecoConfig, expansionGain: v })} step="0.05" tip="0 = la política no emite automáticamente ante señal positiva." />
                       <Field label="Gan. contracción" value={ecoConfig.contractionGain} onChange={(v) => setEcoConfig({ ...ecoConfig, contractionGain: v })} step="0.05" tip="0 = la política no reduce automáticamente la emisión ante señal negativa." />
                       <Field label="Máx emisión/ciclo" value={ecoConfig.maxEmissionPerCycle} onChange={(v) => setEcoConfig({ ...ecoConfig, maxEmissionPerCycle: v })} tip="Tope anti-shock de emisión por ciclo para evitar sobre-corrección." />
+                      <Field label="Máx quema/ciclo" value={ecoConfig.maxBurnPerCycle} onChange={(v) => setEcoConfig({ ...ecoConfig, maxBurnPerCycle: v })} tip="Tope anti-shock de contracción (quema) por ciclo en fase de abundancia." />
                       <Field label="Reserva" value={ecoConfig.reserveShare} onChange={(v) => setEcoConfig({ ...ecoConfig, reserveShare: v })} step="0.05" tip="Proporción de la emisión destinada a reserva." />
                       <Field label="Nuevos usuarios" value={ecoConfig.newUserShare} onChange={(v) => setEcoConfig({ ...ecoConfig, newUserShare: v })} step="0.05" tip="Proporción de la emisión destinada a nuevos usuarios." />
                       <Field label="Históricos" value={ecoConfig.historicalShare} onChange={(v) => setEcoConfig({ ...ecoConfig, historicalShare: v })} step="0.05" tip="Proporción destinada a usuarios históricos (sujeta a ajuste auditable)." />
@@ -1127,6 +1207,28 @@ export default function AdminPanel() {
                       Las proporciones deberían sumar 1 (o menos). Son hipótesis experimentales:
                       parametrizables, nunca reglas definitivas.
                     </p>
+                  </div>
+                  <div className="mt-3 rounded-lg border border-teal-100 bg-teal-50 p-3">
+                    <p className="text-xs font-semibold text-teal-900">Sensor v2 y control por ACCESO</p>
+                    <p className="mt-1 text-[11px] text-teal-700">
+                      La canasta "sentida" integra flujo neto + brecha de acceso. El error de control
+                      combina el desvío de precio con cuántas cuentas pueden comprar la canasta
+                      (objetivo: <b>acceso</b>). El set point efectivo se ancla a la distribución para
+                      que la meta sea alcanzable, no un ideal imposible.
+                    </p>
+                    <div className="mt-2 grid grid-cols-3 gap-3">
+                      <Field label="Acceso objetivo (0–1)" value={ecoConfig.accessTarget} onChange={(v) => setEcoConfig({ ...ecoConfig, accessTarget: v })} step="0.05" tip="Fracción de cuentas que el sistema persigue que accedan a la canasta." />
+                      <Field label="Sens. flujo" value={ecoConfig.sensorFlowGain} onChange={(v) => setEcoConfig({ ...ecoConfig, sensorFlowGain: v })} step="0.1" tip="Sensibilidad del sensor al flujo neto (consumo − emisión)/oferta." />
+                      <Field label="Sens. acceso" value={ecoConfig.sensorAccessGain} onChange={(v) => setEcoConfig({ ...ecoConfig, sensorAccessGain: v })} step="0.1" tip="Sensibilidad del sensor y del error a la brecha de acceso." />
+                    </div>
+                    <label className="mt-2 flex items-center gap-1.5 text-xs text-teal-800">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(ecoConfig.reachableSetPoint)}
+                        onChange={(e) => setEcoConfig({ ...ecoConfig, reachableSetPoint: e.target.checked })}
+                      />
+                      Set point efectivo alcanzable (ancla a la distribución)
+                    </label>
                   </div>
                   <div className="mt-3 rounded-lg border border-purple-100 bg-purple-50 p-3">
                     <p className="text-xs font-semibold text-purple-900">Ajustes históricos (separados del PID, auditablemente)</p>
@@ -1208,7 +1310,7 @@ export default function AdminPanel() {
                           onChange={(e) => setBasketForm({ ...basketForm, observedMethod: e.target.value })}
                         >
                           <option value="manual">manual</option>
-                          <option value="auto">auto (TODO)</option>
+                          <option value="auto">auto (sensor v2: flujo + acceso)</option>
                         </select>
                       </label>
                     </div>
@@ -1336,6 +1438,18 @@ export default function AdminPanel() {
                   <Field label="Gan. expansión" value={simForm.expansionGain} onChange={(v) => setSimForm({ ...simForm, expansionGain: v })} step="0.05" />
                   <Field label="Gan. contracción" value={simForm.contractionGain} onChange={(v) => setSimForm({ ...simForm, contractionGain: v })} step="0.05" />
                   <Field label="Máx emisión/ciclo" value={simForm.maxEmissionPerCycle} onChange={(v) => setSimForm({ ...simForm, maxEmissionPerCycle: v })} />
+                  <Field label="Máx quema/ciclo" value={simForm.maxBurnPerCycle} onChange={(v) => setSimForm({ ...simForm, maxBurnPerCycle: v })} tip="Tope de contracción (quema) por ciclo en fase de abundancia." />
+                  <Field label="Acceso objetivo (0–1)" value={simForm.accessTarget} onChange={(v) => setSimForm({ ...simForm, accessTarget: v })} tip="Fracción objetivo de cuentas que pueden comprar la canasta." />
+                  <label className="flex items-center gap-1.5 pt-2 text-xs font-medium text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={simForm.reachableSetPoint === 'true'}
+                      onChange={(e) => setSimForm({ ...simForm, reachableSetPoint: String(e.target.checked) })}
+                    />
+                    Set point alcanzable (automático)
+                  </label>
+                  <Field label="Sens. flujo" value={simForm.sensorFlowGain} onChange={(v) => setSimForm({ ...simForm, sensorFlowGain: v })} step="0.1" tip="Sensibilidad del sensor al flujo neto." />
+                  <Field label="Sens. acceso" value={simForm.sensorAccessGain} onChange={(v) => setSimForm({ ...simForm, sensorAccessGain: v })} step="0.1" tip="Sensibilidad del sensor y del error a la brecha de acceso." />
                   <Field label="Ciclos" value={simForm.cycles} onChange={(v) => setSimForm({ ...simForm, cycles: v })} />
                 </form>
                 <button className="mt-4 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
@@ -1370,6 +1484,8 @@ export default function AdminPanel() {
                             <th className="px-3 py-2 text-left text-[10px] font-medium uppercase text-gray-500">Señal PID</th>
                             <th className="px-3 py-2 text-left text-[10px] font-medium uppercase text-gray-500">Fase</th>
                             <th className="px-3 py-2 text-left text-[10px] font-medium uppercase text-gray-500">Emisión</th>
+                            <th className="px-3 py-2 text-left text-[10px] font-medium uppercase text-gray-500">Quema</th>
+                            <th className="px-3 py-2 text-left text-[10px] font-medium uppercase text-gray-500">Acceso %</th>
                             <th className="px-3 py-2 text-left text-[10px] font-medium uppercase text-gray-500">Consumo</th>
                             <th className="px-3 py-2 text-left text-[10px] font-medium uppercase text-gray-500">Usuarios</th>
                           </tr>
@@ -1384,6 +1500,8 @@ export default function AdminPanel() {
                               <td className={`px-3 py-1.5 ${c.pidOutput >= 0 ? 'text-amber-700' : 'text-green-700'}`}>{c.pidOutput}</td>
                               <td className="px-3 py-1.5">{c.phase}</td>
                               <td className="px-3 py-1.5">{c.emission}</td>
+                              <td className={`px-3 py-1.5 ${c.burn ? 'text-rose-600' : ''}`}>{c.burn || 0}</td>
+                              <td className="px-3 py-1.5">{c.accessPct}</td>
                               <td className="px-3 py-1.5">{c.consumption}</td>
                               <td className="px-3 py-1.5">{c.users}</td>
                             </tr>

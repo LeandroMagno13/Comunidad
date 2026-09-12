@@ -1,0 +1,16 @@
+{
+  "fecha": "2026-09-12T16:29:51.784Z",
+  "total": 39,
+  "passed": 39,
+  "failed": 0,
+  "failures": [],
+  "criterios": {
+    "Ronda C sin PID": true,
+    "CU no monetaria en producto": true,
+    "CU no determina nivel": true,
+    "Expiradas no son demanda vigente": true,
+    "Presión y carga independientes": true,
+    "Patrimonio no altera CU": true,
+    "Engine y producto comparten reglas": true
+  }
+}

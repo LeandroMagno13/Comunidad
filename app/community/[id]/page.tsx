@@ -17,7 +17,6 @@ type PostDetail = {
   title?: string | null;
   content: string;
   type: string;
-  cuOffer?: number | null;
   requestStatus?: string | null;
   author: { id: string; name: string; cuAccount?: { balance: number } | null };
   fulfilledBy?: { id: string; name: string } | null;
@@ -122,7 +121,7 @@ export default function PostDetailPage() {
       return;
     }
     setActionMsgOk(true);
-    setActionMsg(action === 'accept' ? 'Te anotaste para realizar la tarea.' : action === 'complete' ? '¡Tarea confirmada! Las CU se transfirieron.' : 'Solicitud actualizada.');
+    setActionMsg(action === 'accept' ? 'Te anotaste para realizar la tarea.' : action === 'complete' ? '¡Participación confirmada! Gracias por contribuir.' : 'Solicitud actualizada.');
     await load();
   }
 
@@ -186,11 +185,6 @@ export default function PostDetailPage() {
               {REQUEST_LABEL[post.requestStatus || 'open'] || post.requestStatus}
             </span>
           )}
-          {post.type === 'request' && post.cuOffer != null && (
-            <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
-              {post.cuOffer} CU
-            </span>
-          )}
           {post.type !== 'request' && (
             <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-medium text-teal-700">
               Informativa
@@ -216,13 +210,11 @@ export default function PostDetailPage() {
 
         {post.type === 'request' && (
           <div className="mt-4 rounded-md bg-indigo-50 p-4">
-            <p className="text-sm font-semibold text-indigo-900">
-              {post.cuOffer != null ? `${post.cuOffer} CU` : ''} · Intercambio entre usuarios
-            </p>
+            <p className="text-sm font-semibold text-indigo-900">Solicitud comunitaria · participación</p>
             <p className="mt-1 text-xs text-indigo-700">
-              {post.author.name} ofrece {post.cuOffer ?? 0} CU a quien realice la tarea. Cuando
-              ambos confirmen el trabajo, las CU se transfieren automáticamente. Las CU no son
-              dinero: representan participación en la comunidad.
+              Pedido de ayuda entre usuarios de la comunidad. Cuando el autor confirme el trabajo,
+              la contribución queda registrada como participación. La CU no se transfiere: no es un
+              medio de pago.
             </p>
 
             {(post.requestStatus === 'open' || post.requestStatus === 'on_going') && (
@@ -238,7 +230,7 @@ export default function PostDetailPage() {
                           onClick={() => requestAction('complete')}
                           className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                         >
-                          Confirmar tarea y transferir {post.cuOffer} CU
+                          Confirmar tarea y registrar participación
                         </button>
                       </>
                     )}
@@ -275,7 +267,7 @@ export default function PostDetailPage() {
 
             {post.requestStatus === 'completed' && post.fulfilledBy && (
               <p className="mt-2 text-sm text-green-700">
-                Tarea completada y {post.cuOffer} CU transferidas a {post.fulfilledBy.name}.
+                Tarea completada. Participación de {post.fulfilledBy.name} registrada.
               </p>
             )}
           </div>

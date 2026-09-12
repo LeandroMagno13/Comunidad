@@ -2,7 +2,8 @@ import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { signToken, TOKEN_COOKIE } from '@/src/lib/auth';
-import { getNewUserGrant, issueCu } from '@/src/lib/cu';
+import { issueCu, ensureCuConfig } from '@/src/lib/cu';
+import { welcomeGrant } from '@/src/lib/cap-formulas';
 
 export default async function handler(
   req: NextApiRequest,
@@ -77,10 +78,14 @@ async function register(req: NextApiRequest, res: NextApiResponse) {
 
     const token = await signToken({ userId: user.id, email: user.email, role: user.role });
 
-    // CU de bienvenida (política experimental parametrizada, no fija)
-    const grant = await getNewUserGrant();
-    if (grant.enabled && grant.amount > 0) {
-      await issueCu(user.id, grant.amount, `CU de bienvenida (política experimental: ${grant.amount} CU)`, {
+    // CU de bienvenida — política propia y EXPLÍCITA, NO derivada del PID.
+    // RONDA C está desacoplada de controller/CU (Lee.txt §2): el grant es el
+    // parámetro config.newUserGrantCu acotado por grantCap (anti-farming).
+    // No se reemplaza por otro controlador automático.
+    const config = await ensureCuConfig();
+    const capped = welcomeGrant({ newUserGrantCu: config.newUserGrantCu, grantCap: config.grantCap });
+    if (capped > 0 && config.newUserGrantEnabled) {
+      await issueCu(user.id, capped, `CU de bienvenida (política explícita: ${capped} CU, tope ${config.grantCap}, PID no interviene)`, {
         refType: 'system',
       });
     }

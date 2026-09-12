@@ -51,6 +51,14 @@ async function main() {
   }
 
   runAll(escenariosMinimos as any);
+  // RONDA A (v1 legada: sensor ciego + política inerte) como espejo de comparación
+  runAll(
+    (escenariosMinimos as any[]).map((s) => ({
+      ...s,
+      id: 'L-' + s.id,
+      config: { ...(s.config || {}), legacySensor: true, expansionGain: 0, contractionGain: 0, maxBurnPerCycle: 0 },
+    }))
+  );
   runAll(barridoPoblaciones());
   runAll(barridoOfertaInicial());
   runAll(barridoCrecimiento());
@@ -117,6 +125,7 @@ async function main() {
       meanTransferredPerCycle: round2(m.meanTransferredPerCycle),
       emittedTotal: m.emittedTotal,
       destroyedTotal: m.destroyedTotal,
+      burnedTotal: m.burnedTotal,
       netSupply: round2(m.netSupply),
       finalSupply: round2(m.finalSupply),
       finalUsers: m.finalUsers,

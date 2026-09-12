@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest, isAdmin, isModerator } from '@/src/lib/auth';
-import { CU_CONFIG_ID, ensureCuConfig } from '@/src/lib/cu';
+import { CU_CONFIG_ID, ensureCuConfig, refreshCuSensor } from '@/src/lib/cu';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
@@ -47,6 +47,8 @@ async function updateConfig(req: NextApiRequest, res: NextApiResponse) {
     ['newUserShare', 0],
     ['historicalShare', 0],
     ['newUserSensitivity', 0],
+    ['sensorFlowGain', 0],
+    ['sensorAccessGain', 0],
   ];
   for (const [key, min] of floats) {
     if (body[key] !== undefined) {
@@ -61,6 +63,13 @@ async function updateConfig(req: NextApiRequest, res: NextApiResponse) {
         }
       }
     }
+  }
+  if (body.accessTarget !== undefined) {
+    const v = Number(body.accessTarget);
+    if (!Number.isFinite(v) || v < 0 || v > 1) {
+      return res.status(400).json({ error: 'accessTarget debe estar entre 0 y 1' });
+    }
+    patch.accessTarget = v;
   }
   const floatsBounded: Array<[string, number, number]> = [
     ['outputMin', -1000000, 1000000],
@@ -80,6 +89,7 @@ async function updateConfig(req: NextApiRequest, res: NextApiResponse) {
     ['milestoneCu', 1, 1000000000],
     ['newUserGrantCu', 0, 1000000000],
     ['maxEmissionPerCycle', 0, 1000000000],
+    ['maxBurnPerCycle', 0, 1000000000],
     ['adjustmentCap', 0, 1000000000],
   ];
   for (const [key, min, max] of ints) {
@@ -94,6 +104,7 @@ async function updateConfig(req: NextApiRequest, res: NextApiResponse) {
   if (body.enabled !== undefined) patch.enabled = Boolean(body.enabled);
   if (body.newUserGrantEnabled !== undefined) patch.newUserGrantEnabled = Boolean(body.newUserGrantEnabled);
   if (body.adjustmentEnabled !== undefined) patch.adjustmentEnabled = Boolean(body.adjustmentEnabled);
+  if (body.reachableSetPoint !== undefined) patch.reachableSetPoint = Boolean(body.reachableSetPoint);
   if (body.adjustmentMode !== undefined) {
     const m = String(body.adjustmentMode);
     if (!['none', 'flat', 'proportional', 'manual'].includes(m)) {
@@ -116,5 +127,6 @@ async function updateConfig(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const config = await db.cuConfig.update({ where: { id: CU_CONFIG_ID }, data: patch });
-  return res.status(200).json(config);
+  const sensed = await refreshCuSensor();
+  return res.status(200).json({ config, sensorRefresh: sensed });
 }

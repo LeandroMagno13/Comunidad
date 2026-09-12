@@ -1,6 +1,13 @@
 // ============================================================================
 // HARNESS DE STRESS TEST — economía experimental de CU
 //
+// ⚠️ LEGACY / NO USAR PARA REGULACIÓN (Lee.txt, limpieza RONDA C):
+//   Este harness conserva el ensayo experimental del modelo de control
+//   (PID + canasta + política + grant). Es SOLO investigación/disgnóstico y
+//   corre en memoria (ensayo-de-stress); NO escribe saldos NI gobierna la
+//   oferta en producción. La oferta real es la seÑal RONDA C (cap-formulas,
+//   capacity.ts) sin PID.
+//
 // Reproduce la ARQUITECTURA ACTUAL (src/lib/cu.ts) pero a nivel de AGENTES
 // (saldos individuales) para poder medir distribución, acceso a la canasta,
 // concentración, velocidad y comportamiento del PID sobre una población.
@@ -24,7 +31,35 @@
 //     (destruye/inyecta % del saldo de forma proporcional).
 // ============================================================================
 
-import { PidController, evaluateSupplyPolicy, SupplyPolicyDecision, computeNewUserGrant } from '@/src/lib/cu';
+import { PidController, evaluateSupplyPolicy, SupplyPolicyDecision, computeNewUserGrant, senseCanasta, effectiveCuSetPoint, clamp01 } from '@/src/lib/cu';
+
+// RONDA A → v1 (legacy): sensor ciego anclado + política inerte.
+function legacyMode(cfg: EngineConfig): boolean {
+  return Boolean(cfg.legacySensor);
+}
+
+// Reproducción del v1 (p001): emisión = baseEmission * (1 + señal*gain/100), gains 0 → inerte.
+function evaluateSupplyPolicyP001(inputs: EngineConfig & { supply: number }, signal: number, baseEmission: number): SupplyPolicyDecision {
+  const phase = signal > 0.0001 ? 'expansion' : signal < -0.0001 ? 'contraction' : 'neutral';
+  let emission = baseEmission;
+  if (phase === 'expansion') emission = baseEmission * Math.max(0, 1 + (signal * inputs.expansionGain) / 100);
+  else if (phase === 'contraction') emission = baseEmission * Math.max(0, 1 + (signal * inputs.contractionGain) / 100);
+  if (inputs.maxEmissionPerCycle > 0) emission = Math.min(emission, inputs.maxEmissionPerCycle);
+  emission = Math.max(0, emission);
+  const allocation = { reserve: emission * inputs.reserveShare, newUsers: emission * inputs.newUserShare, historical: emission * inputs.historicalShare };
+  return {
+    phase,
+    signal: Math.round(signal * 100) / 100,
+    emission: Math.round(emission * 100) / 100,
+    burn: 0,
+    newUserAllocation: Math.round(allocation.newUsers * 100) / 100,
+    allocation: {
+      reserve: Math.round(allocation.reserve * 100) / 100,
+      newUsers: Math.round(allocation.newUsers * 100) / 100,
+      historical: Math.round(allocation.historical * 100) / 100,
+    },
+  };
+}
 
 export function mulberry32(seed: number) {
   let a = seed >>> 0;
@@ -53,7 +88,15 @@ export interface EngineConfig {
   newUserShare: number;
   historicalShare: number;
   maxEmissionPerCycle: number;
+  maxBurnPerCycle: number;
   grantEnabled: boolean;
+  // Sensor y control por acceso (v2):
+  accessTarget: number;
+  reachableSetPoint: boolean;
+  sensorFlowGain: number;
+  sensorAccessGain: number;
+  // Modo legado (RONDA A): reproduce el v1 roto (sensor anclado y la política inerte).
+  legacySensor?: boolean;
 }
 
 export interface DemandShock {
@@ -95,13 +138,19 @@ export const DEFAULT_CONFIG: EngineConfig = {
   outputMax: 100,
   newUserGrantCu: 20,
   newUserSensitivity: 1,
-  expansionGain: 0,
-  contractionGain: 0,
+  expansionGain: 1,
+  contractionGain: 1,
   reserveShare: 0.3,
   newUserShare: 0.5,
   historicalShare: 0.2,
   maxEmissionPerCycle: 1000,
+  maxBurnPerCycle: 200,
   grantEnabled: true,
+  accessTarget: 0.5,
+  reachableSetPoint: true,
+  sensorFlowGain: 0.5,
+  sensorAccessGain: 0.6,
+  legacySensor: false,
 };
 
 export interface TraceRow {
@@ -115,11 +164,13 @@ export interface TraceRow {
   injected: number;
   observed: number;
   setPoint: number;
+  setPointEffective: number;
   error: number;
   pidOutput: number;
   phase: string;
   emissionDecision: number;
   emissionsApplied: number;
+  burn: number;
   accessCount: number;
   accessPct: number;
   avg: number;
@@ -243,7 +294,11 @@ export function runScenario(s: Scenario): SimResult {
   let balances = initialBalances(s, rng);
   let usersCount = balances.length;
   const setPoint = s.setPoint;
-  let observed = s.startObserved;
+  const legacy = legacyMode(cfg);
+  // v2: la canasta ARRANCA en el precio alcanzable (mediana), no en el nominal imposible;
+  // el sensor descubrirá luego sobre flujos reales. v1 conserva el arranque nominal.
+  const startMedian = balanceStats(balances).median;
+  let observed = legacy || !cfg.reachableSetPoint ? s.startObserved : effectiveCuSetPoint(setPoint, startMedian, true);
   const cycles = Math.max(1, Math.min(s.cycles, 200));
 
   const pid = new PidController({
@@ -254,28 +309,16 @@ export function runScenario(s: Scenario): SimResult {
     outputMax: cfg.outputMax,
   });
 
-  const grantAt = (error: number) => (cfg.grantEnabled ? computeNewUserGrant(cfg, error, setPoint) : 0);
-
   const rows: TraceRow[] = [];
   const errs = new Array<number>();
   const velos = new Array<number>();
 
   for (let c = 1; c <= cycles; c++) {
-    const signal = pid.update(observed, setPoint);
-    const error = observed - setPoint;
-    const policyInputs = {
-      expansionGain: cfg.expansionGain,
-      contractionGain: cfg.contractionGain,
-      reserveShare: cfg.reserveShare,
-      newUserShare: cfg.newUserShare,
-      historicalShare: cfg.historicalShare,
-      maxEmissionPerCycle: cfg.maxEmissionPerCycle,
-    };
-    const decision: SupplyPolicyDecision = evaluateSupplyPolicy(policyInputs, signal, s.emissionBase);
-
     // ---- 1) crecimiento e incorporación (grant) ----
     const growthN = typeof s.growth === 'function' ? Math.max(0, Math.round(s.growth(c))) : Math.max(0, Math.round(s.growth));
-    const grant = grantAt(error);
+    const avgBefore = balances.length ? totalOf(balances) / balances.length : 0;
+    const effBefore = effectiveCuSetPoint(setPoint, avgBefore, cfg.reachableSetPoint);
+    const grant = cfg.grantEnabled ? computeNewUserGrant(cfg, observed - effBefore, effBefore) : 0;
     let issuedGrowth = 0;
     for (let g = 0; g < growthN; g++) {
       balances.push(grant);
@@ -283,34 +326,67 @@ export function runScenario(s: Scenario): SimResult {
     }
     usersCount = balances.length;
 
-    // ---- 2) emisión (política) ----
+    const st0 = balanceStats(balances);
+    const supplyBefore = totalOf(balances);
+    const setPointEffective = effectiveCuSetPoint(setPoint, st0.median, cfg.reachableSetPoint);
+    const accessRatio = usersCount ? balances.filter((b) => b >= observed).length / usersCount : 0;
+    // Error de control: desvío de precio (set point alcanzable) + brecha de acceso (acotada).
+    const error = legacy
+      ? observed - setPoint
+      : observed - setPointEffective + (clamp01(cfg.accessTarget) - accessRatio) * setPointEffective * cfg.sensorAccessGain;
+
+    const signal = pid.update(error, 0); // PID → SEÑAL
+    const policyInputs = {
+      expansionGain: cfg.expansionGain,
+      contractionGain: cfg.contractionGain,
+      reserveShare: cfg.reserveShare,
+      newUserShare: cfg.newUserShare,
+      historicalShare: cfg.historicalShare,
+      maxEmissionPerCycle: cfg.maxEmissionPerCycle,
+      maxBurnPerCycle: cfg.maxBurnPerCycle,
+      supply: supplyBefore,
+    };
+    const decision: SupplyPolicyDecision = legacy
+      ? evaluateSupplyPolicyP001(policyInputs, signal, s.emissionBase)
+      : evaluateSupplyPolicy(policyInputs, signal, 0); // v2: base 0, la política actúa por señal
+
+    // ---- 3) emisión (política) y quema/contracción ----
     let emissionsApplied = 0;
-    if (decision.emission > 0 && s.emitMode !== 'none') {
-      if (s.emitMode === 'shares') {
-        const historical = decision.emission * cfg.historicalShare;
-        const reserve = decision.emission * cfg.reserveShare;
-        const newPool = decision.emission * cfg.newUserShare;
-        // históricos (proporcional al saldo de los existentes)
-        const existingBal = balances.slice(0, usersCount - growthN);
-        if (existingBal.length && historical > 0) {
-          const total = existingBal.reduce((a, b) => a + b, 0);
-          for (let i = 0; i < existingBal.length; i++) {
-            const w = total > 0 ? existingBal[i]! / total : 1 / existingBal.length;
-            existingBal[i]! += Math.floor(historical * w);
-          }
+    let burned = 0;
+    if (decision.emission > 0 && !legacy) {
+      const historical = decision.emission * cfg.historicalShare;
+      const reserve = decision.emission * cfg.reserveShare;
+      const newPool = decision.emission * cfg.newUserShare;
+      const existingBal = balances.slice(0, usersCount - growthN);
+      if (existingBal.length && historical > 0) {
+        // v2: lo asignado a "históricos" va a las cuentas con MENOS saldo (acceso + anti-concentración)
+        const poorN = Math.max(1, Math.ceil(existingBal.length * 0.5));
+        const poorSet = new Set(existingBal.map((_, i) => i).sort((a, b) => existingBal[a]! - existingBal[b]!).slice(0, poorN));
+        const per = Math.floor(historical / poorN);
+        for (let i = 0; i < existingBal.length; i++) {
+          if (poorSet.has(i) && per > 0) existingBal[i]! += per;
         }
-        // nuevos usuarios (solo los que entraron este ciclo)
-        if (newPool > 0 && growthN > 0) {
-          for (let i = usersCount - growthN; i < usersCount; i++) {
-            balances[i]! += Math.floor(newPool / growthN);
-          }
+      }
+      if (newPool > 0 && growthN > 0) {
+        for (let i = usersCount - growthN; i < usersCount; i++) {
+          balances[i]! += Math.floor(newPool / growthN);
         }
-        // reserva: CU 'retenidos' (no se asignan a nadie) — solo suma a la oferta contable
-        emissionsApplied = historical + newPool;
+      }
+      void reserve;
+      emissionsApplied = historical + newPool;
+    }
+    // contracción real (v2): quema proporcional al saldo (los que más tienen, más aportan)
+    if (decision.burn > 0 && !legacy) {
+      const total = totalOf(balances);
+      const frac = Math.min(1, decision.burn / Math.max(1, total));
+      for (let i = 0; i < balances.length; i++) {
+        const d = Math.round(balances[i]! * frac);
+        balances[i]! -= d;
+        burned += d;
       }
     }
 
-    // ---- 3) shocks de oferta (intervención artificial de testeo) ----
+    // ---- 4) shocks de oferta (intervención artificial de testeo) ----
     let destroyed = 0;
     let injected = 0;
     for (const sh of s.supplyShocks || []) {
@@ -333,10 +409,9 @@ export function runScenario(s: Scenario): SimResult {
       }
     }
 
-    // ---- 4) demanda (consumo por parte de quienes acceden) ----
+    // ---- 5) demanda (consumo por parte de quienes acceden) ----
     const accessCost = observed;
-    const earners = balances.filter((b) => b >= accessCost);
-    const accessCount = earners.length;
+    const accessCount = balances.filter((b) => b >= accessCost).length;
     let rate = s.demandRate;
     if (s.demandGrowthPct) rate *= Math.pow(1 + s.demandGrowthPct / 100, c - 1);
     if (s.demandVolatility) rate *= 1 + (rng() * 2 - 1) * s.demandVolatility;
@@ -348,29 +423,21 @@ export function runScenario(s: Scenario): SimResult {
     let consumed = 0;
     if (accessCount > 0) {
       const perUserBudget = Math.max(0, accessCost * rate);
-      const indices = balances.map((_, i) => i);
-      const picked = new Set<number>();
-      // elegir consumidores con más saldo primero (los "demandantes")
-      let guard = 0;
-      while (guard < balances.length * 2) {
-        guard++;
-        let idx: number;
-        if (picked.size < accessCount) {
-          // muestreo preferente por saldo (media de los que acceden)
-          idx = pickWeighted(rng, earners, balances);
-        } else {
-          break;
-        }
-        if (idx < 0 || picked.has(idx)) continue;
-        picked.add(idx);
-        const spend = Math.min(balances[idx]!, perUserBudget);
-        balances[idx]! -= spend;
+      const capacity = accessCount * perUserBudget;
+      // demandantes con más saldo primero (O(n log n))
+      const earnerIdx = balances
+        .map((b, i) => ({ i, b }))
+        .filter((x) => x.b >= accessCost)
+        .sort((a, b) => b.b - a.b);
+      for (const { i, b } of earnerIdx) {
+        const spend = Math.min(b, perUserBudget);
+        balances[i]! -= spend;
         consumed += spend;
-        if (consumed >= accessCount * perUserBudget * 0.999) break;
+        if (consumed >= capacity * 0.999) break;
       }
     }
 
-    // ---- 5) transferencias ----
+    // ---- 6) transferencias ----
     const transferTarget = (s.transferRate || 0) * totalOf(balances);
     let transferred = 0;
     let tguard = 0;
@@ -386,10 +453,24 @@ export function runScenario(s: Scenario): SimResult {
       transferred += amt;
     }
 
-    // ---- 6) recalcular y actualizar sensor ----
+    // ---- 7) recalcular y actualizar sensor ----
     const supply = totalOf(balances);
     const supplyIn = issuedGrowth + emissionsApplied + injected;
-    observed = Math.max(1, s.startObserved * (1 + ((consumed - supplyIn) / Math.max(1, supply)) * 0.1));
+    if (legacy) {
+      // v1 (ciego): anclado al valor inicial, ganancia 0,1
+      observed = Math.max(1, s.startObserved * (1 + ((consumed - supplyIn) / Math.max(1, supply)) * 0.1));
+    } else {
+      // v2: sensor integra flujo neto + descubrimiento de precio hacia el set point efectivo
+      observed = senseCanasta({
+        observed,
+        supply,
+        consumed,
+        suppliedIn: supplyIn,
+        effectiveSetPoint: setPointEffective,
+        sensorFlowGain: cfg.sensorFlowGain,
+        sensorAccessGain: cfg.sensorAccessGain,
+      });
+    }
 
     const st = balanceStats(balances);
     const velocity = supply > 0 ? (transferred + consumed) / supply : 0;
@@ -408,11 +489,13 @@ export function runScenario(s: Scenario): SimResult {
       injected,
       observed: Math.round(observed * 100) / 100,
       setPoint,
+      setPointEffective,
       error: Math.round(error * 100) / 100,
       pidOutput: Math.round(signal * 100) / 100,
       phase: decision.phase,
       emissionDecision: decision.emission,
       emissionsApplied,
+      burn: Math.round(burned * 100) / 100,
       accessCount,
       accessPct: usersCount ? Math.round((accessCount / usersCount) * 1000) / 10 : 0,
       avg: Math.round(st.avg * 100) / 100,
@@ -437,20 +520,6 @@ export function runScenario(s: Scenario): SimResult {
 
 function totalOf(balances: number[]): number {
   return balances.reduce((s, b) => s + b, 0);
-}
-
-function pickWeighted(rng: () => number, candidates: number[], balances: number[]): number {
-  // elige un índice con probabilidad ~ proporcional al saldo entre quienes acceden
-  const total = candidates.reduce((s, b) => s + b, 0);
-  if (total <= 0) return -1;
-  let r = rng() * total;
-  for (let i = 0; i < balances.length; i++) {
-    const b = balances[i]!;
-    if (b <= 0) continue;
-    r -= b;
-    if (r <= 0) return i;
-  }
-  return -1;
 }
 
 // ============================================================================
@@ -478,6 +547,7 @@ export interface StabilityMetrics {
   meanTransferredPerCycle: number;
   emittedTotal: number;
   destroyedTotal: number;
+  burnedTotal: number;
   netSupply: number;
   finalSupply: number;
   finalUsers: number;
@@ -492,7 +562,7 @@ export function stability(s: SimResult): StabilityMetrics {
       finalAccessPct: 0, meanAccessPct: 0, minAccessPct: 0,
       finalGini: 0, finalTop10: 0, finalZerosPct: 0, meanVelocity: 0,
       meanConsumedPerCycle: 0, meanTransferredPerCycle: 0,
-      emittedTotal: 0, destroyedTotal: 0, netSupply: 0, finalSupply: 0, finalUsers: s.finalBalances.length,
+      emittedTotal: 0, destroyedTotal: 0, burnedTotal: 0, netSupply: 0, finalSupply: 0, finalUsers: s.finalBalances.length,
     };
   }
   const errs = rows.map((r) => r.error);
@@ -503,7 +573,8 @@ export function stability(s: SimResult): StabilityMetrics {
   const peakUnder = Math.max(0, ...errs.map((e) => -e));
   const mean = mae; // (referencia)
   const stdError = Math.sqrt(errs.reduce((a, b) => a + (b - mean) * (b - mean), 0) / rows.length) || 0;
-  const band = (pct: number) => (s.scenario.setPoint * pct) / 100;
+  const effTarget = rows[rows.length - 1]!.setPointEffective || s.scenario.setPoint || 1;
+  const band = (pct: number) => (effTarget * pct) / 100;
 
   function recovery(pct: number): number {
     const b = band(pct);
@@ -554,6 +625,7 @@ export function stability(s: SimResult): StabilityMetrics {
     meanTransferredPerCycle: meanTransferred,
     emittedTotal: rows.reduce((a, r) => a + r.issued, 0),
     destroyedTotal: rows.reduce((a, r) => a + r.destroyed, 0),
+    burnedTotal: rows.reduce((a, r) => a + r.burn, 0),
     netSupply: r1.supply - (rows[0]?.supply ?? 0),
     finalSupply: r1.supply,
     finalUsers: r1.users,

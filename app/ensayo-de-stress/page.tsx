@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 type Escenario = {
   id: string;
@@ -120,10 +121,23 @@ const JERINGA: Record<string, string> = {
 };
 
 export default function EnsayoDeStress() {
+  const router = useRouter();
   const [data, setData] = useState<Presentacion | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sel, setSel] = useState(0);
   const [selOverlay, setSelOverlay] = useState(0);
+
+  useEffect(() => {
+    // LEGACY / NO USAR: ensayo histórico del antiguo control PID. Solo
+    // accesible desde el panel de administración (Lee.txt §9: el legacy no
+    // debe estar accesible desde el producto normal).
+    fetch('/api/auth/me')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d?.user || d.user.role !== 'SUPER_ADMIN') router.replace('/admin');
+      })
+      .catch(() => router.replace('/admin'));
+  }, [router]);
 
   useEffect(() => {
     fetch('/stress-test/data/presentation.json')

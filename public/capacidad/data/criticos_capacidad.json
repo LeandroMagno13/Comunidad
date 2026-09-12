@@ -1,0 +1,58 @@
+[
+  {
+    "test": "¿Puede alguien con pocas CU seguir teniendo acceso básico?",
+    "escenario": "K-pocas-cu-acceso-basico",
+    "observadoCualitativo": "con cuInit=1 y 40% sin capacidades: básico=40%, excluidos de los que pidieron=11.5%.",
+    "pasa": true,
+    "indicador": "básico>0 y excluidos< b."
+  },
+  {
+    "test": "¿Puede alguien tener muchas CU pero no existir capacidad real suficiente?",
+    "escenario": "K-muchas-cu-sin-capacidad",
+    "observadoCualitativo": "cuInit=20, oferta ×0.15: presión máx=120.41, excluidos=78%. CU no crean capacidad real.",
+    "pasa": true,
+    "indicador": "presión alta y exclusión pese a CU."
+  },
+  {
+    "test": "¿Puede existir mucho patrimonio pero poca capacidad distribuible?",
+    "escenario": "K-mucho-patrimonio-poca-distribubil",
+    "observadoCualitativo": "wealth=20000 pero distributableRate=0.02 → %sat=67.05%, presión media=4.4.",
+    "pasa": true,
+    "indicador": "el patrimonio no garantiza saturación."
+  },
+  {
+    "test": "¿Demanda alta + oferta humana baja genera señal fuerte?",
+    "escenario": "D-dem-sin-proveedor",
+    "observadoCualitativo": "presión máx=302.59 vs abundancia 5.78 (oferta ×2).",
+    "pasa": true,
+    "indicador": "47,7-107 vs 3,4."
+  },
+  {
+    "test": "¿La automatización elimina demanda de una capacidad?",
+    "escenario": "E-auto-shock",
+    "observadoCualitativo": "shock de automatización en traducción: %sat=57.6% (baja aut: 42.86%).",
+    "pasa": true,
+    "indicador": "mayor %sat con más automatización."
+  },
+  {
+    "test": "¿Las CU terminan comportándose como dinero/reserva de valor? (intento de demostración)",
+    "escenario": "K-cu-como-dinero",
+    "observadoCualitativo": "acumulación sin gasto (demanda baja): CU top-10=38.87%, Gini CU=62. La acumulación no tradujo en más acceso.",
+    "pasa": true,
+    "indicador": "acumulación posible en top-10%."
+  },
+  {
+    "test": "¿Las CU generan concentración de poder?",
+    "escenario": "K-cu-como-dinero",
+    "observadoCualitativo": "concentración de CU 38.87% top-10 mientras %sat=80.42% (alta). Sin vínculo CU→poder observado.",
+    "pasa": true,
+    "indicador": "concentración sin dominio del acceso."
+  },
+  {
+    "test": "¿El sistema puede ser manipulado mediante farming de grants?",
+    "escenario": "K-farming",
+    "observadoCualitativo": "90% sin capacidades ni actividad con grants activos: CU top-10=13.03%, básico=90%.",
+    "pasa": true,
+    "indicador": "tope de balance (cuCap=30) limita el acopio."
+  }
+]
