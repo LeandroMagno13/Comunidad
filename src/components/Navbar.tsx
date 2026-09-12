@@ -71,6 +71,7 @@ export default function Navbar() {
         { href: '/community', label: 'Comunidad' },
         { href: '/guilds', label: 'Gremios' },
         { href: '/principios', label: 'Principios' },
+        { href: '/manual', label: 'Manual' },
         { href: '/messages', label: 'Mensajes' },
         { href: '/profile', label: 'Perfil' },
       ]

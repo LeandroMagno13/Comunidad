@@ -532,87 +532,153 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* ===== MODELO: DOS CIRCUITOS SEPARADOS ===== */}
+      {/* ===== MODELO: CÓMO FUNCIONA (SISTEMA ACTUAL, RONDA C) ===== */}
       <Section background="white" id="modelo">
         <div className="max-w-4xl mx-auto">
+          <p className="text-sm uppercase tracking-wider text-blue-600 font-semibold text-center mb-3">
+            Ronda C · esta versión
+          </p>
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-3">
-            El modelo experimental tiene dos circuitos separados
+            Cómo funciona el modelo
           </h2>
           <p className="text-center text-xs font-semibold uppercase tracking-wide text-red-600 mb-8">
-            Concepto en estudio. No representa cifras reales, proyecciones ni una promesa de rentabilidad.
+            Experimento en curso. Todo lo que leés acá puede variar según cómo participe la comunidad.
           </p>
 
-          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-8">
-            Investigamos dos capas por separado, sin darlas por conectadas: la capacidad material
-            (patrimonio) y las señales de capacidad humana (CU). Cada una tiene su propia cadena.
+          <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-10">
+            Este es un laboratorio. Lo implementado hoy sigue pasos simples: te sumás, recibís un punto de
+            partida, participás con tus capacidades y el sistema registra señales (demanda, oferta y
+            utilización) que todavía estamos aprendiendo a leer. Nada de esto es definitivo.
           </p>
+
+          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 mb-8">
+            <Diagram
+              steps={[
+                { label: 'TE SUMÁS A LA COMUNIDAD' },
+                { label: '↓', type: 'arrow' },
+                { label: 'RECIBÍS UNA CU DE BIENVENIDA' },
+                { label: '↓', type: 'arrow' },
+                { label: 'PARTICIPÁS: SOLICITUDES, OFERTA DE CAPACIDADES Y GREMIOS' },
+                { label: '↓', type: 'arrow' },
+                { label: 'SE GENERAN SEÑALES DE DEMANDA, PRESIÓN Y CARGA' },
+                { label: '↓', type: 'arrow' },
+                { label: 'LA COMUNIDAD OBSERVA, APRENDE Y AJUSTA', type: 'highlight' },
+              ]}
+            />
+          </div>
 
           <div className="grid gap-6 md:grid-cols-2 mb-8">
-            <div className="rounded-2xl border border-gray-300 bg-gray-50 p-6">
-              <p className="text-xs font-bold tracking-wide text-gray-500 uppercase mb-2">Circuito material</p>
-              <Diagram
-                steps={[
-                  { label: 'PATRIMONIO REAL' },
-                  { label: '↓', type: 'arrow' },
-                  { label: 'CAPACIDAD DISTRIBUIBLE' },
-                  { label: '↓', type: 'arrow' },
-                  { label: 'RECURSOS DISPONIBLES', type: 'highlight' },
-                ]}
-              />
-              <p className="mt-3 text-xs leading-relaxed text-gray-600">
-                No todo el patrimonio puede distribuirse: una parte puede reinvertirse, mantenerse como
-                reserva, usarse para funcionamiento, quedar comprometida o no estar disponible. Por eso{' '}
-                <span className="font-semibold text-gray-800">PATRIMONIO ≠ RECURSOS DISPONIBLES</span>. Esta
-                parte es experimental y no representa una promesa de distribución real.
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <h3 className="font-bold text-gray-900 mb-2">Qué pasa cuando ingresa una persona nueva</h3>
+              <p className="text-sm leading-relaxed text-gray-700">
+                Al registrarte creás tu perfil (qué sabés hacer, qué buscás) y, si la política de bienvenida
+                está activa, recibís una CU de bienvenida: un punto de partida interno, explícito y acotado
+                (con tope anti-abuso). No es dinero. Empezás en nivel de acceso{' '}
+                <span className="font-semibold text-gray-900">básico</span>: un piso protegido para que nadie
+                quede afuera por no tener nada que ofrecer todavía.
               </p>
             </div>
-            <div className="rounded-2xl border border-sky-200 bg-sky-50 p-6">
-              <p className="text-xs font-bold tracking-wide text-sky-600 uppercase mb-2">Circuito de señales</p>
-              <Diagram
-                steps={[
-                  { label: 'DEMANDA + OFERTA HUMANA + AUTOMATIZACIÓN' },
-                  { label: '↓', type: 'arrow' },
-                  { label: 'SEÑALES DE CAPACIDAD' },
-                  { label: '↓', type: 'arrow' },
-                  { label: 'INFORMACIÓN PARA LA COMUNIDAD', type: 'highlight' },
-                ]}
-              />
-              <p className="mt-3 text-xs leading-relaxed text-sky-900">
-                Las CU pertenecen a este segundo circuito, no al primero. Son señales internas de
-                participación y demanda, no una porción de los activos ni un medio de pago.
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <h3 className="font-bold text-gray-900 mb-2">Cómo se participa</h3>
+              <p className="text-sm leading-relaxed text-gray-700">
+                Publicás solicitudes comunitarias o te ofrecés a resolver las de otros; al completar, el autor
+                confirma tu participación y queda registrada. Declarás tus capacidades (qué ofrecés y a qué
+                disponibilidad y calidad) y te sumás a los gremios donde se organiza el trabajo por
+                especialidad. Cada acción alimenta tu nivel de acceso, nunca tu «riqueza».
+              </p>
+            </div>
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <h3 className="font-bold text-gray-900 mb-2">Qué son los gremios</h3>
+              <p className="text-sm leading-relaxed text-gray-700">
+                Son los círculos de organización por especialidad (economía, derecho, tecnología, cultura…).
+                Ahí la comunidad discute cómo avanzar, propone reglas experimentales y decide el rumbo. No son
+                clubes sociales: son la capa donde el experimento se ejecuta. La estructura definitiva del
+                patrimonio, por ejemplo, la definiría un gremio.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+              <h3 className="font-bold text-gray-900 mb-2">De dónde salen las CU y cómo circulan</h3>
+              <p className="text-sm leading-relaxed text-gray-700">
+                No hay una moneda que compre nada ni una emisión mágica. Las CU salen de dos lugares: la{' '}
+                <span className="font-semibold text-gray-900">política de bienvenida explícita</span> (al
+                registrarte) y las <span className="font-semibold text-gray-900">apuestas de prioridad</span>{' '}
+                que un solicitante compromete: se le transfieren a quien satisface su solicitud solo al
+                completarla; si expira sin resolverse, nadie cobra. En las solicitudes comunitarias no se
+                mueven CU: solo se registra la participación.
               </p>
             </div>
           </div>
 
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
-            <p className="text-gray-700 text-center mb-4">
-              En el circuito material, si algún día existieran rendimientos reales, la comunidad tendría que
-              decidir qué hacer con ellos. En abstracto, esa decisión tiene tres destinos posibles:
+          <div className="rounded-2xl border border-sky-200 bg-sky-50 p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Oferta y demanda de participación</h3>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+              <div className="rounded-lg border border-sky-200 bg-white p-4">
+                <p className="text-xs font-bold text-sky-700 uppercase">Oferta declarada</p>
+                <p className="mt-1 text-sm text-gray-700">Cantidad de personas que declaran una capacidad.</p>
+              </div>
+              <div className="rounded-lg border border-sky-200 bg-white p-4">
+                <p className="text-xs font-bold text-sky-700 uppercase">Oferta efectiva</p>
+                <p className="mt-1 text-sm text-gray-700">Disponibilidad × calidad, ponderadas por nivel de acceso.</p>
+              </div>
+              <div className="rounded-lg border border-sky-200 bg-white p-4">
+                <p className="text-xs font-bold text-sky-700 uppercase">Demanda vigente</p>
+                <p className="mt-1 text-sm text-gray-700">Solicitudes activas o satisfechas en los últimos 30 días. Las viejas expiran y no acumulan.</p>
+              </div>
+              <div className="rounded-lg border border-sky-200 bg-white p-4">
+                <p className="text-xs font-bold text-sky-700 uppercase">Presión y carga</p>
+                <p className="mt-1 text-sm text-gray-700">Presión = demanda insatisfecha / oferta efectiva (detecta cuellos). Carga = capacidad utilizada / disponible.</p>
+              </div>
+            </div>
+            <p className="text-xs leading-relaxed text-sky-900">
+              Estas señales son <span className="font-semibold">información, no precios</span>. Nunca se
+              convierten en un ranking de personas: se usan para observar dónde la capacidad humana sigue
+              siendo necesaria frente a la automatización.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="bg-white border border-green-200 rounded-lg p-4 text-center">
-                <p className="text-xl font-bold text-green-700 mb-1">Reinvertir</p>
-                <p className="text-sm text-gray-600">Una porción vuelve al patrimonio para que siga creciendo.</p>
-              </div>
-              <div className="bg-white border border-amber-200 rounded-lg p-4 text-center">
-                <p className="text-xl font-bold text-amber-700 mb-1">Reservar</p>
-                <p className="text-sm text-gray-600">Otra se conserva ante imprevistos o futuras decisiones.</p>
-              </div>
-              <div className="bg-white border border-blue-200 rounded-lg p-4 text-center">
-                <p className="text-xl font-bold text-blue-700 mb-1">Distribuir</p>
-                <p className="text-sm text-gray-600">Otra podría destinarse a recursos disponibles según las reglas que la comunidad defina.</p>
-              </div>
-            </div>
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-amber-900 text-sm">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Cómo afecta lo que hacés</h3>
+            <ul className="space-y-2 text-sm text-gray-700 leading-relaxed">
+              <li>
+                <span className="font-semibold text-gray-900">Tu nivel de acceso</span> (básico → medio →
+                avanzado) sube por participación y por contribución verificada —por ejemplo, satisfaciendo
+                solicitudes de otras personas—, jamás por tu saldo de CU. Tener más CU no te convierte en
+                mejor persona.
+              </li>
+              <li>
+                <span className="font-semibold text-gray-900">Tus solicitudes y ofertas</span> alimentan las
+                señales que el experimento estudia: cada capacidad medida muestra su demanda y su presión en
+                el panel de administración.
+              </li>
+              <li>
+                <span className="font-semibold text-gray-900">El piso se protege</span>: en nivel básico las
+                apuestas tienen un tope (5 CU), de modo que quien no tenga nada todavía pueda participar sin
+                quedar afuera.
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-amber-900 text-sm mb-6">
             <p>
-              <strong>Advertencia:</strong> esta aplicación no está implementando actualmente una moneda
-              comunitaria ni un sistema financiero. Los dos circuitos se estudian por separado y todavía no
-              se define precio de una CU, tipo de cambio, equivalencia con dinero, rentabilidad, dividendos,
-              retiros ni distribución monetaria. Esas cuestiones pertenecen a etapas posteriores y dependerían
-              además de una estructura jurídica y económica real que todavía no está definida.
+              <strong>Esto es un laboratorio.</strong> Llegamos hasta acá: registro, participación, gremios,
+              señales y niveles de acceso. Toda regla es experimental, parametrizada y reversible, y el
+              sistema no se detiene en lo que está escrito hoy:{' '}
+              <span className="font-semibold">
+                todo varía según la interacción real de los usuarios
+              </span>
+              . La estructura monetaria, la relación de las CU con el patrimonio y cualquier distribución de
+              rendimientos quedan para etapas posteriores, sujetas a una estructura jurídica y económica real
+              que todavía no está definida.
             </p>
+          </div>
+
+          <div className="text-center mb-6">
+            <a
+              href="/manual"
+              className="inline-block rounded-lg bg-sky-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-sky-700"
+            >
+              Manual de uso de esta versión →
+            </a>
           </div>
 
           <KeyPhrase text="La pregunta de esta fase no es cuánto se reparte ni cuánto valen las CU, sino qué señales son útiles y cómo se decide el resto. Eso todavía se está investigando, no prometiendo." />

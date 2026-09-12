@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { MANUAL_VERSION } from '@/src/lib/manual';
 
 type Tab = 'dashboard' | 'users' | 'guilds' | 'reports' | 'content' | 'economy';
 
@@ -189,6 +190,7 @@ export default function AdminPanel() {
   const [eco, setEco] = useState<any>(null);
   const [ecoConfig, setEcoConfig] = useState<any>({});
   const [basketForm, setBasketForm] = useState<any>({});
+  const [manualNotify, setManualNotify] = useState<{ state: 'idle' | 'busy' | 'done'; msg?: string }>({ state: 'idle' });
   const [simForm, setSimForm] = useState({
     users: '100',
     initialCu: '20',
@@ -363,6 +365,24 @@ export default function AdminPanel() {
     }
     notify('Configuración del controlador guardada', true);
     loadEconomy();
+  }
+
+  async function notifyManualVersion() {
+    setManualNotify({ state: 'busy' });
+    const res = await fetch('/api/admin/manual-notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setManualNotify({ state: 'done', msg: `Error: ${data.error || 'no se pudo notificar'}` });
+      return;
+    }
+    setManualNotify({
+      state: 'done',
+      msg: `Aviso enviado a ${data.notified} usuario(s). Manual de uso vigente: v${data.manualVersion || MANUAL_VERSION}.`,
+    });
   }
 
   async function saveBasket(e: React.FormEvent) {
@@ -1049,6 +1069,31 @@ export default function AdminPanel() {
             >
               REPORTE-CU-CAPACIDAD →
             </a>
+            <div className="mt-3 rounded-lg border border-teal-200 bg-white/70 p-3">
+              <p className="text-xs font-semibold text-teal-900">
+                ¿No sabés qué hace cada control y qué NO hace? →
+                <a href="/manual#panel-admin" className="ml-1 font-medium underline underline-offset-2 hover:text-teal-950">
+                  Manual de uso · Panel de administración
+                </a>
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="text-xs text-teal-800">
+                  Manual de uso vigente: <span className="font-semibold">v{MANUAL_VERSION}</span>
+                </span>
+                <button
+                  onClick={notifyManualVersion}
+                  disabled={manualNotify.state === 'busy'}
+                  className="rounded-md bg-slate-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-900 disabled:opacity-50"
+                >
+                  {manualNotify.state === 'busy' ? 'Enviando…' : 'Avisar nueva versión del manual a los usuarios'}
+                </button>
+              </div>
+              {manualNotify.state === 'done' && (
+                <p className={`mt-1.5 text-xs ${manualNotify.msg?.startsWith('Error') ? 'text-red-700' : 'text-teal-900'}`}>
+                  {manualNotify.msg}
+                </p>
+              )}
+            </div>
           </div>
 
           {!eco ? (

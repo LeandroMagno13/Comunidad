@@ -1,0 +1,257 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { MANUAL_CHANGELOG, MANUAL_UPDATED_AT, MANUAL_VERSION } from '../../src/lib/manual';
+
+export const metadata: Metadata = {
+  title: 'Manual de uso | Comunidad Post Singularidad',
+  description:
+    'Manual de uso de esta versión de Comunidad Post Singularidad: cómo participar, de dónde salen las CU, qué se puede y qué no se puede hacer, y cómo funciona el laboratorio.',
+  alternates: {
+    canonical: '/manual',
+  },
+  openGraph: {
+    title: 'Manual de uso | Comunidad Post Singularidad',
+    description:
+      'Guía de esta versión del laboratorio: participación, CU de bienvenida, niveles de acceso, gremios, señales y controles de administración.',
+    url: 'https://comunidad-i86g.vercel.app/manual',
+    siteName: 'Comunidad Post Singularidad',
+    locale: 'es_AR',
+    type: 'website',
+  },
+};
+
+function Block({
+  id,
+  title,
+  eyebrow,
+  children,
+}: {
+  id?: string;
+  title: string;
+  eyebrow?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div id={id} className="scroll-mt-24 rounded-xl border border-gray-200 bg-white p-6 sm:p-8">
+      {eyebrow && (
+        <p className="text-xs font-bold uppercase tracking-wide text-sky-600 mb-1">{eyebrow}</p>
+      )}
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">{title}</h2>
+      <div className="space-y-4 text-gray-700 leading-relaxed text-sm sm:text-base">{children}</div>
+    </div>
+  );
+}
+
+function L({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link href={href} className="font-medium text-sky-700 underline underline-offset-2 hover:text-sky-900">
+      {children}
+    </Link>
+  );
+}
+
+export default function ManualPage() {
+  return (
+    <main className="bg-slate-50 py-12">
+      <div className="mx-auto max-w-3xl space-y-6 px-4">
+        <div className="rounded-xl bg-slate-900 p-8 text-white">
+          <p className="text-xs font-bold uppercase tracking-widest text-sky-300">Manual de uso</p>
+          <h1 className="mt-2 text-3xl font-bold">Cómo funciona esta versión del sistema</h1>
+          <p className="mt-4 text-sm text-slate-300">
+            Este manual cambia con cada versión del sistema. Cuando se actualiza, lo avisamos a los usuarios
+            mediante notificaciones. Versión{' '}
+            <span className="font-semibold text-sky-300">v{MANUAL_VERSION}</span> · {MANUAL_UPDATED_AT}.
+          </p>
+          <p className="mt-3 text-sm text-slate-400">
+            Esto es un laboratorio. Todo lo que leés aquí puede variar según cómo participe la comunidad.
+          </p>
+        </div>
+
+        <Block id="version" eyebrow="Versión vigente" title="Qué es esta versión (RONDA C)">
+          <p>
+            El sistema actual estudia dos capas <strong>por separado</strong>: la capacidad material
+            (patrimonio común de inversión, todavía en estudio) y las señales de capacidad humana (las{' '}
+            <strong>CU</strong>). Las CU son una unidad experimental de participación y señal: no son dinero,
+            no representan patrimonio, no tienen precio ni se conectan automáticamente con la distribución de
+            rendimientos.
+          </p>
+          <p>
+            Lo que está implementado hoy se concentra en registrar participación, demanda, oferta y acceso, y
+            en mostrar las señales que eso produce. La construcción efectiva del patrimonio y cualquier
+            distribución quedan para etapas posteriores, sujetas a una estructura jurídica y económica real
+            que todavía no está definida. Ver <L href="/principios">los principios</L> y la{' '}
+            <L href="/">landing</L> para el contexto conceptual.
+          </p>
+        </Block>
+
+        <Block id="cuenta" eyebrow="Tu cuenta" title="Tu cuenta y tu perfil">
+          <p>
+            Con tu cuenta podés:
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>Editar tu perfil: nombre, bio, qué sabés hacer (profesión, habilidades e intereses) y tu disponibilidad.</li>
+            <li>Ver tu nivel de acceso y tu registro de CU en <L href="/profile">Perfil</L>.</li>
+            <li>Participar en <L href="/community">Comunidad</L> y en los <L href="/guilds">Gremios</L>.</li>
+          </ul>
+          <p>
+            El perfil sirve para que otras personas sepan qué podés aportar. No se usa para calcular cuánto
+            valés ni para asignar cuotas de reparto.
+          </p>
+        </Block>
+
+        <Block id="bienvenida" eyebrow="De dónde salen las CU" title="La CU de bienvenida">
+          <p>
+            Al registrarte, si la política de bienvenida está activa, recibís una{' '}
+            <strong>CU de bienvenida</strong>: un punto de partida interno, explícito y acotado (con tope
+            anti-abuso). No es dinero, no se puede convertir y no representa riqueza.
+          </p>
+          <p>
+            Las CU también circulan como <strong>apuesta de prioridad</strong>: cuando alguien satisface una
+            solicitud de capacidad, la CU que el solicitante comprometió se le transfiere al proveedor solo
+            al completarse la solicitud. Si la solicitud expira sin resolverse (30 días), no se cobra nada.
+          </p>
+          <p>
+            En las solicitudes comunitarias (<L href="/community">Comunidad</L>) no se mueven CU: solo se
+            registra la participación. No existe emisión automática por controlador, ni minado, ni compra de
+            CU.
+          </p>
+        </Block>
+
+        <Block id="niveles" eyebrow="Acceso" title="Niveles de acceso: básico, medio y avanzado">
+          <p>
+            El nivel de acceso es una categoría <strong>funcional experimental</strong>, no una jerarquía de
+            valor personal.
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li><strong>Básico</strong>: piso protegido. Se entra al registrarse; nadie queda afuera por no tener nada que ofrecer.</li>
+            <li><strong>Medio</strong>: sube al participar (por ejemplo, teniendo solicitudes satisfechas).</li>
+            <li><strong>Avanzado</strong>: sube con contribución verificada, por ejemplo satisfaciendo solicitudes de otras personas.</li>
+          </ul>
+          <p>
+            El nivel <strong>nunca</strong> depende del saldo de CU. Tener más CU no te convierte en mejor
+            persona, y tener menos no te hace valer menos.
+          </p>
+        </Block>
+
+        <Block id="participar" eyebrow="Participación" title="Cómo participar">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong>Solicitudes comunitarias</strong> (<L href="/community">Comunidad</L>): publicá una
+              necesidad u ofrecerte a resolver la de otra persona. Al completar, el autor confirma tu
+              participación y queda registrada. No hay pago de por medio.
+            </li>
+            <li>
+              <strong>Oferta de capacidades</strong>: declarás qué capacidades ofrecés y a qué
+              disponibilidad y calidad. Esa declaración alimenta la «oferta» de las señales.
+            </li>
+            <li>
+              <strong>Gremios</strong> (<L href="/guilds">Gremios</L>): agrupate por especialidad (economía,
+              derecho, tecnología, cultura…). Ahí se discute cómo avanzar el experimento y se proponen reglas.
+            </li>
+            <li>
+              <strong>Mensajes</strong> (<L href="/messages">Mensajes</L>): conversaciones directas entre
+              miembros.
+            </li>
+          </ul>
+        </Block>
+
+        <Block id="senales" eyebrow="Señales" title="Demanda, oferta, presión y carga">
+          <p>
+            El sistema mide, por capacidad, la <strong>demanda vigente</strong> (solicitudes activas o
+            satisfechas en los últimos 30 días; las viejas expiran y no acumulan), la{' '}
+            <strong>oferta declarada</strong> (cuánta gente declara ofrecer esa capacidad) y la{' '}
+            <strong>oferta efectiva</strong> (disponibilidad × calidad, ponderadas por nivel de acceso).
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li><strong>Presión</strong> = demanda insatisfecha / oferta efectiva. Alta presión sugiere un posible cuello de botella.</li>
+            <li><strong>Carga humana</strong> = capacidad utilizada / disponible. Permite distinguir «abundante» de «saturada» cuando la presión sola no alcanza.</li>
+          </ul>
+          <p>
+            Son señales de <strong>información</strong>, no precios. No se convierten en un ranking de
+            personas y no se usan para juzgar a nadie.
+          </p>
+        </Block>
+
+        <Block id="cuestas-cu" eyebrow="Tu registro de CU" title="Ver tus CU en Perfil">
+          <p>
+            En tu perfil, la sección «Mis CU · registro experimental» muestra tu saldo y el historial de
+            transacciones (emisiones de bienvenida, transferencias por solicitudes satisfechas, consumos).
+            Es un registro interno del experimento, no un monedero.
+          </p>
+        </Block>
+
+        <Block id="no-se-puede" eyebrow="Límites" title="Qué no se puede hacer todavía">
+          <ul className="list-disc space-y-1 pl-5">
+            <li>No hay transferencias directas entre usuarios en la interfaz.</li>
+            <li>No se puede comprar, vender, convertir ni retirar CU.</li>
+            <li>Las CU no tienen precio, tipo de cambio ni equivalencia con dinero.</li>
+            <li>No hay aportes de capital, promesas de rentabilidad ni distribución de rendimientos.</li>
+            <li>Nadie es calificado ni rankeado por su saldo de CU.</li>
+          </ul>
+        </Block>
+
+        <Block id="panel-admin" eyebrow="Solo personal del sistema" title="Panel de administración («Economía CU»)">
+          <p>
+            El panel <L href="/admin">Admin</L>, pestaña «Economía CU», tiene varios controles. Acá está qué
+            hace cada uno:
+          </p>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>
+              <strong>«Medir ahora»</strong>: recalcula las métricas y señales. Es de solo lectura; no cambia
+              nada del sistema.
+            </li>
+            <li>
+              <strong>«Señalización y asignación de capacidad (RONDA C)»</strong>: lectura de la demanda,
+              presión, carga y niveles de acceso por capacidad. No es configurable desde acá.
+            </li>
+            <li>
+              <strong>«Patrimonio real + economías personales»</strong>: información, no controles. Las CU no
+              representan activos reales.
+            </li>
+            <li>
+              <strong>«HISTÓRICO / LEGACY — RONDA A»</strong> (plegado): PID, canasta, SupplyPolicy, ajustes y
+              simulador. Son del experimento histórico y se conservan solo por reproducibilidad. Cambiar esos
+              parámetros <strong>no</strong> gobierna el modelo actual: se usan únicamente como diagnóstico.
+              La excepción son los campos «CU de bienvenida» y «Dar CU de bienvenida», que sí controlan cuánto
+              recibe una persona nueva al registrarse.
+            </li>
+            <li>
+              <strong>«Avisar sobre nueva versión del manual»</strong>: envía una notificación a todos los
+              usuarios avisando de la versión actual del manual. Se usa cuando cambia el manual.
+            </li>
+          </ul>
+          <p>
+            Regla general para el personal: si no sabés qué hace un control, no lo toques. La configuración
+            económica es experimental: primero se observa, se mide y se discute en los gremios.
+          </p>
+        </Block>
+
+        <Block id="actualizaciones" eyebrow="Actualizaciones" title="Cómo te enterás de los cambios">
+          <p>
+            Cada vez que el manual cambia, se sube la versión y se avisa a los usuarios con una notificación.
+            El historial de versiones del manual:
+          </p>
+          <ul className="space-y-4 pl-1">
+            {MANUAL_CHANGELOG.map((c) => (
+              <li key={c.version} className="rounded-lg border border-gray-200 bg-slate-50 p-4">
+                <p className="text-xs font-bold uppercase tracking-wide text-sky-700">
+                  v{c.version} · {c.date}
+                </p>
+                <p className="mt-1 font-semibold text-gray-900">{c.title}</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-700">
+                  {c.notes.map((n) => (
+                    <li key={n}>{n}</li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </Block>
+
+        <p className="pb-8 text-center text-xs text-slate-400">
+          Comunidad Post Singularidad · Manual de uso v{MANUAL_VERSION} · {MANUAL_UPDATED_AT}
+        </p>
+      </div>
+    </main>
+  );
+}
