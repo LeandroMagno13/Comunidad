@@ -14,13 +14,38 @@ type Me = {
   } | null;
 };
 
-type Notif = {
-  notifications: { id: string }[];
+type NotifItem = {
+  id: string;
+  type: string;
+  title: string;
+  content: string;
+  link?: string | null;
+  readAt?: string | null;
+  createdAt: string;
+};
+
+type NotifData = {
+  notifications: NotifItem[];
   unread: number;
 };
 
+function fmtFecha(iso: string) {
+  const d = new Date(iso);
+  const diff = Date.now() - d.getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return 'ahora';
+  if (min < 60) return `hace ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `hace ${h} h`;
+  const days = Math.floor(h / 24);
+  if (days === 1) return 'ayer';
+  if (days < 7) return `hace ${days} días`;
+  return d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
+}
+
 export default function Navbar() {
   const [user, setUser] = useState<Me['user'] | null | undefined>(undefined);
+  const [notifs, setNotifs] = useState<NotifItem[]>([]);
   const [unread, setUnread] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -46,7 +71,10 @@ export default function Navbar() {
     if (!user) return;
     fetch('/api/notifications')
       .then((r) => (r.ok ? r.json() : null))
-      .then((data: Notif) => setUnread(data?.unread ?? 0))
+      .then((data: NotifData | null) => {
+        setNotifs(data?.notifications ?? []);
+        setUnread(data?.unread ?? 0);
+      })
       .catch(() => {});
   }, [user, pathname]);
 
@@ -62,7 +90,23 @@ export default function Navbar() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ all: true }),
     });
+    const now = new Date().toISOString();
+    setNotifs((list) => list.map((n) => (n.readAt ? n : { ...n, readAt: now })));
     setUnread(0);
+  }
+
+  async function openNotif(n: NotifItem) {
+    if (!n.readAt) {
+      await fetch('/api/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: n.id }),
+      });
+      setUnread((u) => Math.max(0, u - 1));
+      setNotifs((list) => list.map((x) => (x.id === n.id ? { ...x, readAt: new Date().toISOString() } : x)));
+    }
+    setNotifOpen(false);
+    router.push(n.link ?? '/notifications');
   }
 
   const navItems = user
@@ -135,14 +179,44 @@ export default function Navbar() {
               </button>
 
               {notifOpen && (
-                <div className="absolute right-0 mt-2 w-72 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
+                <div className="absolute right-0 mt-2 w-96 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
                   <div className="mb-2 flex items-center justify-between">
                     <p className="text-sm font-semibold text-slate-900">Notificaciones</p>
                     <button onClick={markAllRead} className="text-xs text-sky-600 hover:underline">
                       Marcar todas leídas
                     </button>
                   </div>
-                  <p className="text-sm text-slate-500">Últimas novedades en tu correo y enlaces.</p>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifs.length === 0 ? (
+                      <p className="py-6 text-center text-sm text-slate-400">No tenés notificaciones.</p>
+                    ) : (
+                      <ul className="space-y-1">
+                        {notifs.map((n) => (
+                          <li key={n.id}>
+                            <button
+                              onClick={() => openNotif(n)}
+                              className="flex w-full flex-col gap-0.5 rounded-lg px-2 py-2 text-left hover:bg-slate-50"
+                            >
+                              <span className="flex items-center justify-between gap-2">
+                                <span className={`text-sm ${n.readAt ? 'text-slate-600' : 'font-semibold text-slate-900'}`}>
+                                  {!n.readAt && <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-sky-500 align-middle" />}
+                                  {n.title}
+                                </span>
+                                <span className="shrink-0 text-[11px] text-slate-400">{fmtFecha(n.createdAt)}</span>
+                              </span>
+                              <span className="break-words text-xs text-slate-500">{n.content}</span>
+                              {n.link && <span className="text-[11px] font-medium text-sky-600">Abrir enlace →</span>}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                  <div className="mt-2 border-t border-slate-100 pt-2">
+                    <button onClick={() => { setNotifOpen(false); router.push('/notifications'); }} className="text-xs font-medium text-sky-600 hover:underline">
+                      Ver todas las notificaciones →
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Rutas que requieren sesión
-  const protectedPaths = ['/messages', '/profile', '/community'];
+  const protectedPaths = ['/messages', '/profile', '/community', '/notifications'];
   const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
 
   // /admin solo para SUPER_ADMIN (el siguiente check también protege por ruta)
