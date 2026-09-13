@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.3.0';
+export const MANUAL_VERSION = '1.4.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-13';
 
@@ -19,6 +19,17 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.4.0',
+    date: '2026-09-13',
+    title: 'Framing: propiedad productiva participativa',
+    notes: [
+      'El sistema se presenta como una investigación sobre quién será propietario de la productividad que producen las máquinas y cómo una comunidad puede participar de ella siendo propietaria de una parte del capital productivo.',
+      'La pregunta de partida deja de ser cómo redistribuir la riqueza: pasa a ser quién será propietario de la productividad. PostSingular estudia propiedad del capital productivo, no una alternativa de renta básica ni un mecanismo de reparto.',
+      'Se aclara que la propiedad compartida investigada no reemplaza la propiedad individual y que participar no significa pertenecer exclusivamente.',
+      'Las CU siguen siendo señales de participación (no dinero, no patrimonio), y la participación en rendimientos (distribución) queda explícitamente como una cuestión posterior. No hubo cambios funcionales: solo comunicación y terminología.',
+    ],
+  },
   {
     version: '1.3.0',
     date: '2026-09-13',

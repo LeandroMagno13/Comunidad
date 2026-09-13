@@ -1,7 +1,7 @@
 {
-  "fecha": "2026-09-13T03:51:42.876Z",
-  "total": 83,
-  "passed": 83,
+  "fecha": "2026-09-13T14:54:23.335Z",
+  "total": 93,
+  "passed": 93,
   "failed": 0,
   "failures": [],
   "criterios": {
@@ -14,6 +14,7 @@
     "Engine y producto comparten reglas": true,
     "Ronda D: urgencia presupuestada y piso de dignidad": true,
     "Gremios: representantes y encuestas con trazabilidad": true,
-    "Publicaciones con formato enriquecido (sanitizado)": true
+    "Publicaciones con formato enriquecido (sanitizado)": true,
+    "Framing: propiedad productiva participativa (no redistribución, no RBU)": true
   }
 }

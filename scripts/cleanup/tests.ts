@@ -17,6 +17,8 @@
 //   J  Publicaciones con formato enriquecido: editor con controles (sin
 //      escribir código), whitelist aplicada al guardar y al mostrar, y
 //      aspecto de foro en detalle y listados.
+//   K  Framing conceptual (comunicación): la propiedad productiva
+//      participativa es el eje, no la redistribución; no hay framing RBU.
 //
 // Hay tests puros (fórmulas canónicas), estructurales (lectura de fuente para
 // garantizar que la arquitectura no reintroduzca la dependencia) y de motor
@@ -462,6 +464,63 @@ function runTestJ() {
     'transparencia: el formato es seguro, no magia', group);
 }
 
+function runTestK() {
+  const group = 'Test K — framing: propiedad productiva participativa (no redistribución, no RBU)';
+
+  const landing = src('app/page.tsx');
+  const layout = src('app/layout.tsx');
+  const princi = src('app/principios/page.tsx');
+  const manualPage = src('app/manual/page.tsx');
+  const profile = src('app/profile/page.tsx');
+  const og = src('app/opengraph-image.tsx');
+
+  check('Hero: la pregunta es quién será propietario de la productividad',
+    landing.includes('será propietario de esa productividad'),
+    'pantalla inicial responde la pregunta de propiedad, no de redistribución', group);
+  check('Hero: participar siendo propietarios del capital productivo que la genera',
+    landing.includes('capital productivo que') &&
+      landing.includes('la genera') &&
+      landing.includes('Participar no significa pertenecer exclusivamente'),
+    'primera pantalla responde: qué se propone y qué no hay que abandonar', group);
+  check('Diagrama de transición: PROPIEDAD → CAPITAL PRODUCTIVO → PRODUCCIÓN → RENDIMIENTOS → PARTICIPACIÓN',
+    landing.includes("'PROPIEDAD'") &&
+      landing.includes("'CAPITAL PRODUCTIVO'") &&
+      landing.includes("'PRODUCCIÓN'") &&
+      landing.includes("'RENDIMIENTOS'") &&
+      landing.includes("'PARTICIPACIÓN'"),
+    'cadena de valor por propiedad, no por distribución', group);
+  check('La propiedad compartida no reemplaza la individual (página y principios)',
+    landing.includes('no reemplaza la propiedad individual') &&
+      princi.includes('no reemplaza la propiedad individual'),
+    'coexistencia con el mercado y la propiedad privada explícita', group);
+  check('No hay rastro del framing viejo de "distribuir riqueza" como partida',
+    !landing.includes('discutir cómo distribuir riqueza sería') &&
+      !landing.includes('Una segunda fuente de acceso a recursos'),
+    'el eje de partida ya no es la redistribución de ingresos', group);
+  check('Capa 4 renombrada a "Participación en rendimientos"',
+    landing.includes('Capa 4 · Participación en rendimientos') &&
+      !landing.includes('Capa 4 · Distribución'),
+    'la distribución es cuestión posterior, no el punto de partida', group);
+  check('SEO sin framing RBU/preset (metadata)',
+    !layout.includes('renta básica') &&
+      !layout.includes('Universal Basic') &&
+      !layout.includes('post-escas') &&
+      layout.includes('propiedad productiva participativa'),
+    'metadatos y JSON-LD orientados a propiedad productiva, no a RBU', group);
+  check('Manual: explica la propiedad productiva y no habla de cuotas de reparto',
+    manualPage.includes('propietaria de una parte del capital productivo') &&
+      !manualPage.includes('cuotas de reparto'),
+    'documentación del sistema enmarcada en participación en rendimientos', group);
+  check('Perfil: las CU no se conectan con los rendimientos del patrimonio',
+    profile.includes('no se conectan') &&
+      profile.includes('rendimientos del patrimonio'),
+    'CU como señal, no como derecho sobre rendimientos', group);
+  check('Imagen OG/llamada sin "Universal Basic Assets" e investiga propiedad',
+    !og.includes('Universal Basic Assets') &&
+      og.replace(/\s+/g, ' ').includes('propietaria de una parte del capital productivo'),
+    'tarjeta de compatir usa la pregunta de propiedad', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -474,6 +533,7 @@ function main() {
   runTestH();
   runTestI();
   runTestJ();
+  runTestK();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -492,6 +552,7 @@ function main() {
       'Ronda D: urgencia presupuestada y piso de dignidad': !failures.join().includes('Test H'),
       'Gremios: representantes y encuestas con trazabilidad': !failures.join().includes('Test I'),
       'Publicaciones con formato enriquecido (sanitizado)': !failures.join().includes('Test J'),
+      'Framing: propiedad productiva participativa (no redistribución, no RBU)': !failures.join().includes('Test K'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

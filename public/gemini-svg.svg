@@ -22,16 +22,16 @@
   <text x="80" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="60" font-weight="800" fill="#FFFFFF" letter-spacing="-1">Comunidad Post Singularidad</text>
   
   <!-- Subtítulo -->
-  <text x="80" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="30" font-weight="600" fill="#60A5FA">Propiedad Colectiva frente a la Inteligencia Artificial</text>
+  <text x="80" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="30" font-weight="600" fill="#60A5FA">¿Quién será propietario de la productividad que producen las máquinas?</text>
   
   <!-- Bajada Conceptual -->
-  <text x="80" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="400" fill="#94A3B8">Investigación y diseño de un patrimonio productivo colectivo como alternativa</text>
-  <text x="80" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="400" fill="#94A3B8">estructural frente al desplazamiento laboral tecnológico.</text>
+  <text x="80" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="400" fill="#94A3B8">Investigamos si una comunidad puede participar de esa productividad siendo propietaria</text>
+  <text x="80" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="400" fill="#94A3B8">de una parte del capital productivo que la genera.</text>
   
   <!-- Divisor -->
   <line x1="80" y1="490" x2="1120" y2="490" stroke="#1E293B" stroke-width="2"/>
   
   <!-- Footer -->
-  <text x="80" y="535" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="500" fill="#CBD5E1">Universal Basic Assets (UBA)</text>
+  <text x="80" y="535" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="500" fill="#CBD5E1">Propiedad productiva participativa</text>
   <text x="1120" y="535" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="400" fill="#64748B" text-anchor="end">comunidadpostsingularidad.org</text>
 </svg>

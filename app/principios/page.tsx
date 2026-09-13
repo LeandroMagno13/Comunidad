@@ -50,9 +50,8 @@ export default function PrincipiosPage() {
           <h1 className="text-4xl sm:text-5xl font-bold mb-8">Principios</h1>
           <p className="text-lg sm:text-xl text-gray-300 leading-relaxed mb-10">
             Comunidad Post Singularidad no parte de una ideología económica determinada. Parte de
-            una pregunta: ¿cómo podemos ampliar la autonomía de las personas frente a una economía
-            en la que el trabajo humano podría dejar de ser el principal mecanismo de acceso a los
-            recursos?
+            una pregunta: ¿quién será propietario de la productividad que producen las máquinas y
+            cómo puede una comunidad participar de ella?
           </p>
           <KeyPhrase
             text="No partimos de una ideología. Partimos de una pregunta."
@@ -162,7 +161,8 @@ export default function PrincipiosPage() {
             <P>
               La existencia de un patrimonio común dentro del proyecto no implica que todo
               patrimonio de los miembros deba convertirse en patrimonio común. La propiedad personal
-              y el patrimonio comunitario deben mantenerse conceptualmente separados.
+              y el patrimonio comunitario deben mantenerse conceptualmente separados. La propiedad
+              compartida que investigamos no reemplaza la propiedad individual: puede coexistir con ella.
             </P>
             <P>
               Una persona puede participar en la comunidad sin aportar patrimonio. Otra puede

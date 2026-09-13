@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Comunidad Post Singularidad | Propiedad Colectiva';
+export const alt = 'Comunidad Post Singularidad | Propiedad productiva participativa';
 export const size = {
   width: 1200,
   height: 630,
@@ -78,7 +78,7 @@ export default async function Image() {
               marginBottom: 0,
             }}
           >
-            Propiedad Colectiva frente a la Inteligencia Artificial
+            ¿Quién será propietario de la productividad que producen las máquinas?
           </p>
           <p
             style={{
@@ -89,8 +89,8 @@ export default async function Image() {
               lineHeight: 1.4,
             }}
           >
-            Investigación y diseño de un patrimonio productivo colectivo como alternativa
-            estructural frente al desplazamiento laboral tecnológico.
+            Investigamos si una comunidad puede participar de esa productividad siendo propietaria
+            de una parte del capital productivo que la genera.
           </p>
         </div>
 
@@ -106,7 +106,7 @@ export default async function Image() {
           }}
         >
           <span style={{ color: '#cbd5e1', fontSize: '18px', fontWeight: 500 }}>
-            Universal Basic Assets (UBA)
+            Propiedad productiva participativa
           </span>
           <span style={{ color: '#64748b', fontSize: '18px' }}>
             comunidadpostsingularidad.org

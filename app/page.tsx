@@ -29,7 +29,7 @@ const guilds = [
     icon: '⚖️',
     description: 'Diseñar la estructura legal del patrimonio.',
     whyNeeded:
-      'Determinar qué vehículo jurídico permitiría recibir capital, invertirlo, conservar patrimonio, reinvertir rendimientos, distribuir recursos y mantener reglas de gobernanza. Puede ser un fondo, fideicomiso, sociedad, cooperativa o estructura híbrida.',
+      'Determinar qué vehículo jurídico permitiría recibir capital, invertirlo, conservar patrimonio, reinvertir rendimientos, permitir que la comunidad participe de ellos y mantener reglas de gobernanza. Puede ser un fondo, fideicomiso, sociedad, cooperativa o estructura híbrida.',
     questions: [
       '¿Qué vehículo legal permite todo esto sin violar regulaciones?',
       '¿Qué cosas requieren autorización o estructuras separadas?',
@@ -100,7 +100,7 @@ const guilds = [
     icon: '👥',
     description: 'Analizar incentivos, poder y efectos sociales del sistema.',
     whyNeeded:
-      'Analizar incentivos, comportamiento, relaciones de poder, pertenencia y efectos sociales de un sistema donde el acceso a recursos se relaciona con participación comunitaria.',
+      'Analizar incentivos, comportamiento, relaciones de poder, pertenencia y efectos sociales de un sistema donde la comunidad participa de los rendimientos de una propiedad productiva compartida.',
     questions: [
       '¿Qué incentivos produce la participación comunitaria?',
       '¿Cómo evitar que la reputación se transforme en control social?',
@@ -109,7 +109,7 @@ const guilds = [
     ],
     projects: [
       'Diseñar el análisis de incentivos y comportamiento del sistema',
-      'Estudiar efectos sociales de la distribución por participación',
+      'Estudiar los efectos sociales de participar en los rendimientos según la participación comunitaria',
     ],
     href: '/register?category=sociologia',
   },
@@ -170,7 +170,7 @@ const roadmap = [
 
 const foundingSteps = [
   { icon: '👥', title: 'Comunidad fundadora', text: 'Reunir personas capaces de diseñar la estructura.' },
-  { icon: '📋', title: 'Arquitectura jurídica y financiera', text: 'Determinar qué vehículo permite recibir capital, invertirlo, conservarlo y distribuir recursos.' },
+  { icon: '📋', title: 'Arquitectura jurídica y financiera', text: 'Determinar qué vehículo permite recibir capital, invertirlo, conservarlo y regular la participación en los rendimientos.' },
   { icon: '🏛️', title: 'Primer patrimonio', text: 'Crear el vehículo real y comenzar a acumular capital.' },
   { icon: '📈', title: 'Primera cartera', text: 'Invertir inicialmente en activos tradicionales, líquidos, auditables y comprensibles.' },
   { icon: '💵', title: 'Primer rendimiento', text: 'Generar rendimiento financiero real.' },
@@ -209,15 +209,15 @@ export default function LandingPage() {
             Construir capital antes de necesitarlo.
           </h1>
           <p className="text-xl text-gray-300 mb-6 max-w-3xl mx-auto leading-relaxed">
-            La inteligencia artificial puede reducir progresivamente el valor económico de una parte
-            del trabajo humano. Esperar a que eso ocurra para discutir cómo distribuir riqueza sería
-            llegar tarde.
+            La inteligencia artificial puede producir cada vez más riqueza. La pregunta no es
+            solamente cómo distribuirla cuando las máquinas produzcan más: la pregunta es quién
+            será propietario de esa productividad y cómo puede participar de ella una comunidad.
           </p>
           <p className="text-lg sm:text-xl text-blue-300 font-medium mb-10 max-w-3xl mx-auto leading-relaxed">
-            Hoy es un laboratorio comunitario para investigar cómo construir propiedad productiva
-            colectiva y mecanismos de participación frente a una economía cada vez más automatizada.
-            Queremos empezar antes: investigar y diseñar cómo construir un patrimonio productivo
-            colectivo, y experimentar modelos de participación comunitaria.
+            Hoy es un laboratorio comunitario para investigar si las personas pueden participar de
+            esa productividad también siendo propietarias de una parte del capital productivo que
+            la genera. Participar no significa pertenecer exclusivamente: tu trabajo, tus proyectos
+            y tu patrimonio personales siguen siendo tuyos.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -292,7 +292,7 @@ export default function LandingPage() {
             </dl>
             <p className="border-t border-slate-200 bg-slate-50 px-6 py-3 text-xs text-slate-500">
               Laboratorio experimental sobre participación, capacidades humanas, automatización y propiedad
-              colectiva del capital. Hipótesis, no dogma. Experimento, no doctrina. Resultados, no consignas.
+              productiva participativa del capital. Hipótesis, no dogma. Experimento, no doctrina. Resultados, no consignas.
             </p>
           </div>
         </div>
@@ -353,7 +353,7 @@ export default function LandingPage() {
           </p>
           <div className="bg-white border-l-4 border-blue-500 p-6 rounded-r-lg shadow-sm">
             <p className="text-xl sm:text-2xl text-gray-900 font-bold text-center">
-              La pregunta es: ¿quién se beneficia de esa productividad?
+              La pregunta es: ¿quién será propietario de esa productividad?
             </p>
           </div>
         </div>
@@ -366,11 +366,11 @@ export default function LandingPage() {
             La transición que queremos construir
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">
-            Una segunda fuente de acceso a recursos
+            Una segunda fuente de participación en la productividad
           </h2>
           <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-10">
             No necesitamos destruir ni reemplazar los mecanismos existentes. Proponemos construir,
-            en paralelo, una segunda fuente de acceso a recursos basada en la propiedad colectiva
+            en paralelo, una segunda fuente de participación basada en la propiedad compartida
             de capital productivo.
           </p>
 
@@ -398,13 +398,15 @@ export default function LandingPage() {
               children: (
                 <Diagram
                   steps={[
-                    { label: 'PATRIMONIO' },
+                    { label: 'PROPIEDAD' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'INVERSIONES' },
+                    { label: 'CAPITAL PRODUCTIVO' },
+                    { label: '↓', type: 'arrow' },
+                    { label: 'PRODUCCIÓN' },
                     { label: '↓', type: 'arrow' },
                     { label: 'RENDIMIENTOS' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'ACCESO A RECURSOS', type: 'highlight' },
+                    { label: 'PARTICIPACIÓN', type: 'highlight' },
                   ]}
                 />
               ),
@@ -415,8 +417,8 @@ export default function LandingPage() {
             <p className="text-center text-gray-700">
               El trabajo, los mercados, las empresas y el dinero siguen existiendo.{' '}
               <strong>La propuesta no requiere destruirlos.</strong> Lo que queremos es que la
-              comunidad también pueda acceder a recursos porque <strong>posee</strong> parte del
-              capital productivo.
+              comunidad también participe de los rendimientos, porque <strong>posee</strong> parte
+              del capital productivo.
             </p>
           </div>
 
@@ -443,7 +445,14 @@ export default function LandingPage() {
               </p>
               <p>
                 La participación es voluntaria. La propiedad privada, los proyectos personales y las
-                actividades externas a la comunidad continúan siendo independientes de ella.
+                actividades externas a la comunidad continúan siendo independientes de ella. La
+                propiedad compartida que investigamos no reemplaza la propiedad individual: puede
+                coexistir con ella.
+              </p>
+              <p>
+                No buscamos que todos tengan lo mismo. Investigamos si es posible construir una base
+                de autonomía material sin eliminar la libertad de acumular patrimonio, invertir,
+                emprender y vivir de maneras diferentes.
               </p>
               <p>
                 Dentro de la comunidad pueden coexistir ideas económicas y formas de organización
@@ -492,8 +501,8 @@ export default function LandingPage() {
               </p>
               <p className="text-lg text-gray-800 mt-3">
                 Investigar cómo construir un <strong>patrimonio común de inversión</strong> en activos
-                existentes y cómo distribuir parte de sus rendimientos según las reglas que la propia
-                comunidad defina.
+                existentes y cómo la comunidad puede participar de sus rendimientos según las reglas
+                que la propia comunidad defina.
               </p>
             </div>
           </div>
@@ -515,9 +524,9 @@ export default function LandingPage() {
               para que sus miembros trabajen colectivamente en una misma actividad productiva, sino
               para acumular y administrar capital productivo y otros activos, invertirlos y generar
               rendimientos que puedan beneficiar a la comunidad. Lo vemos como una cadena:
-              patrimonio colectivo, inversión, productividad y rendimientos, reinversión más recursos
-              distribuibles, y participación comunitaria. Es la hipótesis económica del proyecto, no
-              una promesa de rentabilidad.
+              patrimonio colectivo, inversión, productividad y rendimientos, reinversión de una
+              parte y participación de la comunidad en los rendimientos. Es la hipótesis económica
+              del proyecto, no una promesa de rentabilidad.
             </p>
             <p className="mt-3">
               Esa larga experiencia cooperativa es parte de lo que queremos estudiar: el proyecto
@@ -746,7 +755,7 @@ export default function LandingPage() {
                     { label: '↓', type: 'arrow' },
                     { label: 'UNA PARTE SE REINVIERTE' },
                     { label: '↓', type: 'arrow' },
-                    { label: 'UNA PARTE PUEDE CONVERTIRSE EN RECURSOS DISPONIBLES', type: 'highlight' },
+                    { label: 'LA COMUNIDAD PARTICIPA DE LOS RENDIMIENTOS', type: 'highlight' },
                   ]}
                 />
               ),
@@ -1149,8 +1158,8 @@ export default function LandingPage() {
               'Qué se invierte y con qué criterios',
               'Qué proporción de rendimientos se reinvierte',
               'Qué proporción se reserva',
-              'Qué proporción se distribuye',
-              'Reglas de acceso a los recursos distribuibles',
+              'Qué proporción de los rendimientos se distribuye',
+              'Reglas de participación en los rendimientos del patrimonio',
               'Cómo se registran las señales de participación (CU)',
               'Cómo funciona la gobernanza',
               'Qué proyectos se financian',
@@ -1237,7 +1246,7 @@ export default function LandingPage() {
             <div className="rounded-xl border border-green-200 bg-green-50 p-5">
               <div className="text-3xl mb-2">🧢</div>
               <h3 className="font-bold text-gray-900">Capa 2 · Participación (CU)</h3>
-              <p className="text-sm text-gray-700 mt-1">Un mecanismo experimental de participación interna. No es dinero, cripto ni participación patrimonial, y no se conecta automáticamente con la distribución (Capa 4).</p>
+              <p className="text-sm text-gray-700 mt-1">Un mecanismo experimental de participación interna. No es dinero, cripto ni participación patrimonial, y no se conecta automáticamente con la participación en rendimientos (Capa 4).</p>
             </div>
             <div className="rounded-xl border border-gray-300 bg-gray-50 p-5">
               <div className="text-3xl mb-2">🏛️</div>
@@ -1246,8 +1255,8 @@ export default function LandingPage() {
             </div>
             <div className="rounded-xl border border-amber-300 bg-amber-50 p-5">
               <div className="text-3xl mb-2">🧪</div>
-              <h3 className="font-bold text-gray-900">Capa 4 · Distribución</h3>
-              <p className="text-sm text-gray-700 mt-1">Investigación sobre cómo podrían usarse recursos generados. No existe mecanismo económico real.</p>
+              <h3 className="font-bold text-gray-900">Capa 4 · Participación en rendimientos</h3>
+              <p className="text-sm text-gray-700 mt-1">Investigación posterior sobre cómo la comunidad podría participar de los rendimientos que genere el patrimonio. No existe mecanismo económico real.</p>
             </div>
           </div>
         </div>
@@ -1551,7 +1560,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 text-center">
           <p className="font-medium text-gray-300">
             Comunidad Post Singularidad · Laboratorio experimental sobre participación, capacidades humanas,
-            automatización y propiedad colectiva del capital
+            automatización y propiedad productiva participativa del capital
           </p>
           <p className="text-sm mt-3">
             Hipótesis, no dogma. Experimento, no doctrina. Resultados, no consignas.

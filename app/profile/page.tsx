@@ -233,7 +233,8 @@ export default function ProfilePage() {
         <h2 className="text-lg font-semibold text-gray-900">Mis CU · registro experimental de participación</h2>
         <p className="mt-1 text-xs text-gray-500">
           Las CU son la unidad experimental de participación de la comunidad. No son dinero,
-          no tienen conversión monetaria, no representan patrimonio y no son una medida del
+          no tienen conversión monetaria, no representan patrimonio, no se conectan
+          automáticamente con los rendimientos del patrimonio y no son una medida del
           valor de las personas. Se registran mediante la participación inicial y la actividad
           comunitaria; no se gastan como pago.
         </p>

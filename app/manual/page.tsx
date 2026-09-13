@@ -69,19 +69,25 @@ export default function ManualPage() {
 
         <Block id="version" eyebrow="Versión vigente" title="Qué es esta versión (RONDA C + RONDA D)">
           <p>
-            El sistema actual estudia dos capas <strong>por separado</strong>: la capacidad material
+            Muchas tareas dejan de depender de personas a medida que las máquinas aprenden:
+            <strong> ¿quién será propietario de la productividad que producen las máquinas?</strong>{' '}
+            El sistema investiga si una comunidad puede participar de esa productividad siendo
+            propietaria de una parte del capital productivo que la genera.
+          </p>
+          <p>
+            Esta versión estudia dos capas <strong>por separado</strong>: la capacidad material
             (patrimonio común de inversión, todavía en estudio) y las señales de capacidad humana (las{' '}
             <strong>CU</strong>). Las CU son una unidad experimental de participación y señal: no son dinero,
-            no representan patrimonio, no tienen precio ni se conectan automáticamente con la distribución de
-            rendimientos. La <strong>Ronda D</strong> introduce un presupuesto de urgencia que reemplaza la
+            no representan patrimonio, no tienen precio ni se conectan automáticamente con la participación
+            en rendimientos. La <strong>Ronda D</strong> introduce un presupuesto de urgencia que reemplaza la
             «apuesta de prioridad» con CU y pone como indicador principal el piso de dignidad (ver{' '}
             <L href="#urgencia">presupuesto de urgencia</L>).
           </p>
           <p>
             Lo que está implementado hoy se concentra en registrar participación, demanda, oferta y acceso, y
             en mostrar las señales que eso produce. La construcción efectiva del patrimonio y cualquier
-            distribución quedan para etapas posteriores, sujetas a una estructura jurídica y económica real
-            que todavía no está definida. Ver <L href="/principios">los principios</L> y la{' '}
+            participación en rendimientos quedan para etapas posteriores, sujetas a una estructura jurídica y
+            económica real que todavía no está definida. Ver <L href="/principios">los principios</L> y la{' '}
             <L href="/">landing</L> para el contexto conceptual.
           </p>
         </Block>
@@ -97,7 +103,7 @@ export default function ManualPage() {
           </ul>
           <p>
             El perfil sirve para que otras personas sepan qué podés aportar. No se usa para calcular cuánto
-            valés ni para asignar cuotas de reparto.
+            valés ni para asignar derechos sobre el patrimonio.
           </p>
         </Block>
 
