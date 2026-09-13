@@ -67,13 +67,15 @@ export default function ManualPage() {
           </p>
         </div>
 
-        <Block id="version" eyebrow="Versión vigente" title="Qué es esta versión (RONDA C)">
+        <Block id="version" eyebrow="Versión vigente" title="Qué es esta versión (RONDA C + RONDA D)">
           <p>
             El sistema actual estudia dos capas <strong>por separado</strong>: la capacidad material
             (patrimonio común de inversión, todavía en estudio) y las señales de capacidad humana (las{' '}
             <strong>CU</strong>). Las CU son una unidad experimental de participación y señal: no son dinero,
             no representan patrimonio, no tienen precio ni se conectan automáticamente con la distribución de
-            rendimientos.
+            rendimientos. La <strong>Ronda D</strong> introduce un presupuesto de urgencia que reemplaza la
+            «apuesta de prioridad» con CU y pone como indicador principal el piso de dignidad (ver{' '}
+            <L href="#urgencia">presupuesto de urgencia</L>).
           </p>
           <p>
             Lo que está implementado hoy se concentra en registrar participación, demanda, oferta y acceso, y
@@ -106,14 +108,16 @@ export default function ManualPage() {
             anti-abuso). No es dinero, no se puede convertir y no representa riqueza.
           </p>
           <p>
-            Las CU también circulan como <strong>apuesta de prioridad</strong>: cuando alguien satisface una
-            solicitud de capacidad, la CU que el solicitante comprometió se le transfiere al proveedor solo
-            al completarse la solicitud. Si la solicitud expira sin resolverse (30 días), no se cobra nada.
+            Desde la <strong>Ronda D</strong> las CU <strong>no se usan para comprar prioridad</strong> y no
+            se transfieren al satisfacer una solicitud: la prioridad se marca con el{' '}
+            <L href="#urgencia">presupuesto de urgencia</L>, que es periódico, no acumulable y con costo
+            creciente. Al completar una solicitud, el proveedor sube su nivel de acceso por{' '}
+            <span className="font-semibold">contribución verificada</span>, no por CU cobradas.
           </p>
           <p>
             En las solicitudes comunitarias (<L href="/community">Comunidad</L>) no se mueven CU: solo se
             registra la participación. No existe emisión automática por controlador, ni minado, ni compra de
-            CU.
+            CU. Una solicitud de capacidad que expira sin resolverse (30 días) se descarta sin ningún cargo.
           </p>
         </Block>
 
@@ -172,11 +176,44 @@ export default function ManualPage() {
           </p>
         </Block>
 
+        <Block id="urgencia" eyebrow="RONDA D" title="Presupuesto de urgencia y piso de dignidad">
+          <p>
+            La <strong>Ronda D</strong> corrige un problema de la «apuesta de prioridad» anterior: apostar CU
+            libres no tenía costo de oportunidad real, la señal de urgencia se saturaba y quien acumulaba CU
+            podía comprar prioridad, reintroduciendo concentración.
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong>Presupuesto de urgencia periódico</strong>: cada persona dispone de una cantidad fija de
+              puntos por período (semanal). Los puntos <strong>no se acumulan</strong> entre períodos: no se
+              pueden ahorrar para después.
+            </li>
+            <li>
+              <strong>Costo creciente (cuadrático)</strong>: marcar una solicitud como urgente en nivel 1
+              cuesta 1 punto, nivel 2 cuesta 4 y nivel 3 cuesta 9. Gritar más fuerte cuesta más caro
+              (adaptación del voto cuadrático).
+            </li>
+            <li>
+              <strong>No transferible ni convertible</strong>: la urgencia gastada no se transfiere a quien
+              satisface la solicitud ni se convierte en CU. El proveedor recibe participación verificada
+              (sube de nivel), no urgencia cobrada.
+            </li>
+          </ul>
+          <p>
+            En paralelo, el indicador principal deja de ser la <strong>desigualdad relativa</strong> (el Gini
+            histórico) y pasa a ser el <strong>piso de dignidad</strong>: cuánta gente queda debajo del piso
+            y cuánto le falta (headcount y brecha). El umbral del piso es una decisión de gobernanza; hoy se
+            usa un umbral operativo provisional (participación verificada reciente) que los gremios pueden
+            discutir y cambiar.
+          </p>
+        </Block>
+
         <Block id="cuestas-cu" eyebrow="Tu registro de CU" title="Ver tus CU en Perfil">
           <p>
             En tu perfil, la sección «Mis CU · registro experimental» muestra tu saldo y el historial de
-            transacciones (emisiones de bienvenida, transferencias por solicitudes satisfechas, consumos).
-            Es un registro interno del experimento, no un monedero.
+            transacciones (emisiones de bienvenida y consumos). Desde la Ronda D las CU ya no se transfieren
+            por solicitudes de capacidad, así que el registro se mantiene como señal de participación, no
+            como un monedero.
           </p>
         </Block>
 
@@ -185,6 +222,7 @@ export default function ManualPage() {
             <li>No hay transferencias directas entre usuarios en la interfaz.</li>
             <li>No se puede comprar, vender, convertir ni retirar CU.</li>
             <li>Las CU no tienen precio, tipo de cambio ni equivalencia con dinero.</li>
+            <li>La urgencia no se puede ahorrar ni acumular: el presupuesto se renueva por período y no se transfiere a otras personas.</li>
             <li>No hay aportes de capital, promesas de rentabilidad ni distribución de rendimientos.</li>
             <li>Nadie es calificado ni rankeado por su saldo de CU.</li>
           </ul>
@@ -202,7 +240,8 @@ export default function ManualPage() {
             </li>
             <li>
               <strong>«Señalización y asignación de capacidad (RONDA C)»</strong>: lectura de la demanda,
-              presión, carga y niveles de acceso por capacidad. No es configurable desde acá.
+              presión, carga, urgencia presupuestada y niveles de acceso por capacidad. Incluye el bloque{' '}
+              <strong>«Piso de dignidad (RONDA D)»</strong> (headcount y brecha). No es configurable desde acá.
             </li>
             <li>
               <strong>«Patrimonio real + economías personales»</strong>: información, no controles. Las CU no

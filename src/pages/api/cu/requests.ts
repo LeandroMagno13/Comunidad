@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'POST') {
-    const { action, capacitySlug, intensity, cuCommitted, requestId } = req.body || {};
+    const { action, capacitySlug, intensity, urgency, requestId } = req.body || {};
 
     if (action === 'satisfy') {
       if (!requestId) return res.status(400).json({ error: 'Falta requestId' });
@@ -48,7 +48,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!capacitySlug) return res.status(400).json({ error: 'Falta capacitySlug' });
     try {
-      const created = await createCapacityRequest(user.id, String(capacitySlug), Number(intensity) || 1, Number(cuCommitted) || 0);
+      // RONDA D: el param legacy `cuCommitted` ya no se usa (las CU no compran
+      // prioridad). La prioridad se marca con el presupuesto de urgencia: `urgency`
+      // (1..maxLevel) consume puntos del período con costo cuadrático.
+      const created = await createCapacityRequest(user.id, String(capacitySlug), Number(intensity) || 1, Number(urgency) || 0);
       return res.status(201).json({ ok: true, solicitud: created });
     } catch (e: any) {
       return res.status(400).json({ error: e?.message || 'No se pudo crear la solicitud' });

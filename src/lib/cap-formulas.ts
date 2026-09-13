@@ -88,3 +88,40 @@ export function accessLevelFrom(context: { asProvider: number; asAsker: number }
   if (context.asAsker >= 1) return 'medio'; // participo solicitando
   return 'basico'; // piso: nadie queda fuera por no tener nada que ofrecer
 }
+
+// ---------------------------------------------------------------------------
+// RONDA D — PRESUPUESTO DE URGENCIA (reemplaza la "apuesta de prioridad" libre)
+//
+// La apuesta libre (RONDA C) no tenia costo de oportunidad real: la senal de
+// urgencia se saturaba y quien acumulaba CU podia comprar prioridad
+// (reintroducia concentracion). RONDA D:
+//   1) presupuesto PERIODICO y NO ACUMULABLE (no se puede ahorrar urgencia);
+//   2) costo CRECIENTE (cuadratico: marcar 2 cuesta 4, marcar 3 cuesta 9) —
+//      adaptacion del quadratic voting: gritar mas fuerte cuesta mas caro;
+//   3) la urgencia NO se transfiere ni se convierte en CU (principio de bancos
+//      del tiempo: el proveedor recibe participacion verificada, no urgencia).
+// ---------------------------------------------------------------------------
+
+// Costo de marcar una solicitud como urgente con nivel 1..N. Cuadratico.
+export function urgencyCost(level: number): number {
+  const l = Math.max(1, Math.floor(level));
+  return l * l;
+}
+
+// Clave de periodo del presupuesto (no acumulable entre periodos). Usa dias de
+// reloj UTC; un usuario no puede "guardar" puntos para el proximo periodo.
+export function urgencyPeriodKey(now: Date, periodDays: number): string {
+  const days = Math.floor(now.getTime() / (periodDays * 24 * 60 * 60 * 1000));
+  return `p${days}`;
+}
+
+// Presupuesto vigente de un usuario: si el periodo cambio, se resetea al tope.
+// El parametro `base` es la asignacion fija por periodo (configurable).
+export function urgencyBudgetFor(
+  base: number,
+  current: { period: string; remaining: number },
+  now: Date,
+  periodDays: number
+): number {
+  return current.period === urgencyPeriodKey(now, periodDays) ? current.remaining : base;
+}

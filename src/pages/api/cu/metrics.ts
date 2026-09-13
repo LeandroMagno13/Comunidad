@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getUserFromRequest, isModerator } from '@/src/lib/auth';
 import { getCuMetrics } from '@/src/lib/cu';
-import { computeSignals, getPatrimonySummary } from '@/src/lib/capacity';
+import { computeSignals, getPatrimonySummary, computeDignityMetrics } from '@/src/lib/capacity';
 import { db } from '@/src/lib/db';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -16,11 +16,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!isModerator(user)) {
     return res.status(403).json({ error: 'No tienes permisos' });
   }
-  const [metrics, signals, patrimonio, nivelCounts] = await Promise.all([
+  const [metrics, signals, patrimonio, nivelCounts, dignidad] = await Promise.all([
     getCuMetrics(),
     computeSignals(),
     getPatrimonySummary(),
     db.user.groupBy({ by: ['cuAccessLevel'], _count: true }),
+    computeDignityMetrics(),
   ]);
   const niveles = { basico: 0, medio: 0, avanzado: 0 } as Record<string, number>;
   for (const n of nivelCounts) niveles[n.cuAccessLevel] = n._count;
@@ -39,6 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       demanda,
       pctSatisfecha: demanda.total > 0 ? Math.round((demanda.satisfecha / demanda.total) * 100) : 100,
       niveles,
+      dignidad,
       capacidades: signals.map((s) => ({
         slug: s.slug,
         name: s.name,

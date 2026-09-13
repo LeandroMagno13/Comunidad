@@ -9,6 +9,8 @@
 //   E  Presión y carga humana son señales independientes.
 //   F  Cambiar patrimonio no altera la dinámica de CU.
 //   G  Engine y producto comparten las mismas reglas de capacidad/niveles.
+//   H  RONDA D: la urgencia es presupuestada (no acumulable, costo cuadrático,
+//      no comprable con CU) y el piso de dignidad es el indicador principal.
 //
 // Hay tests puros (fórmulas canónicas), estructurales (lectura de fuente para
 // garantizar que la arquitectura no reintroduzca la dependencia) y de motor
@@ -31,6 +33,9 @@ import {
   welcomeGrant,
   shouldExpire,
   expiresAtFrom,
+  urgencyCost,
+  urgencyPeriodKey,
+  urgencyBudgetFor,
 } from '@/src/lib/cap-formulas';
 import { runCapacitySim, CapacitySimConfig } from '../capacity/engine';
 
@@ -249,6 +254,81 @@ function runTestG() {
     'avanzado 1.0 · medio 0.5 · básico 0.2', group);
 }
 
+function runTestH() {
+  const group = 'Test H — RONDA D: urgencia presupuestada y piso de dignidad';
+
+  // --- Presupuesto de urgencia: costo cuadrático y no acumulable (puro) ---
+  check('urgencia costo cuadrático 1→1, 2→4, 3→9',
+    urgencyCost(1) === 1 && urgencyCost(2) === 4 && urgencyCost(3) === 9,
+    `costos: ${urgencyCost(1)} / ${urgencyCost(2)} / ${urgencyCost(3)}`, group);
+  check('urgencia costo NO lineal (gritar más cuesta más caro)',
+    urgencyCost(2) !== 2 * urgencyCost(1) && urgencyCost(3) !== 3 * urgencyCost(1),
+    `costo(3)=${urgencyCost(3)} ≠ 3·costo(1)=${3 * urgencyCost(1)}`, group);
+
+  const d0 = new Date('2026-09-12T00:00:00Z');
+  const d1 = new Date('2026-09-13T23:00:00Z');
+  const dW = new Date('2026-09-20T00:00:00Z');
+  check('presupuesto: dentro de la misma semana la clave de período no cambia',
+    urgencyPeriodKey(d0, 7) === urgencyPeriodKey(d1, 7),
+    `d0=${urgencyPeriodKey(d0, 7)} · d1=${urgencyPeriodKey(d1, 7)}`, group);
+  check('presupuesto: al pasar la semana la clave cambia (no hereda puntos)',
+    urgencyPeriodKey(d0, 7) !== urgencyPeriodKey(dW, 7),
+    `siguiente período: ${urgencyPeriodKey(dW, 7)}`, group);
+  const p0 = urgencyPeriodKey(d0, 7);
+  check('presupuesto: no guarda puntos de un período al siguiente (no acumulable)',
+    urgencyBudgetFor(3, { period: p0, remaining: 3 }, dW, 7) === 3 &&
+      urgencyBudgetFor(3, { period: p0, remaining: 0 }, dW, 7) === 3 &&
+      urgencyBudgetFor(3, { period: p0, remaining: 1 }, dW, 7) === 3,
+    'período nuevo → siempre se resetea al tope (3)', group);
+  check('presupuesto: dentro del período conserva el remanente disponible',
+    urgencyBudgetFor(3, { period: p0, remaining: 1 }, d0, 7) === 1 &&
+      urgencyBudgetFor(3, { period: p0, remaining: 0 }, d0, 7) === 0,
+    'mismo período → el gasto parcial (1) o total (0) se mantiene', group);
+
+  // --- Las CU ya no compran prioridad (estructural) ---
+  const capSrc = src('src/lib/capacity.ts');
+  const formsSrc = src('src/lib/cap-formulas.ts');
+  const schema = src('prisma/schema.prisma');
+  const cuSrc = src('src/lib/cu.ts');
+  const metricsSrc = src('src/pages/api/cu/metrics.ts');
+  const requestsSrc = src('src/pages/api/cu/requests.ts');
+  const adminSrc = src('app/admin/page.tsx');
+
+  check('CU no compran prioridad: capacity.ts no importa transferCu', !capSrc.includes('transferCu'),
+    'la apuesta con CU fue eliminada del flujo', group);
+  check('Solicitud se crea con cuCommitted: 0 y urgencia aparte',
+    capSrc.includes('cuCommitted: 0') && capSrc.includes('urgencyCost') && capSrc.includes('urgencyBudgetFor'),
+    'la urgencia consume presupuesto, no CU', group);
+  check('API ya no lee el param legacy cuCommitted', !requestsSrc.includes('Number(cuCommitted)'),
+    'el puerto espera urgency, no CU apostadas', group);
+  check('Schema: User tiene presupuesto de urgencia (no acumulable)',
+    /urgencyBudgetRemaining\s+Int/.test(schema) && /urgencyBudgetPeriod\s+String/.test(schema),
+    'remanente + clave de período en User', group);
+  check('Schema: CapacityRequest registra urgencia (nivel y costo)',
+    /urgencyLevel\s+Int/.test(schema) && /urgencyCost\s+Int/.test(schema),
+    'nivel + costo cuadrático por solicitud', group);
+  check('Schema: CuConfig parametriza la urgencia',
+    /urgencyBudgetBase\s+Int/.test(schema) && /urgencyBudgetMaxLevel\s+Int/.test(schema) && /urgencyBudgetPeriodDays\s+Int/.test(schema),
+    'base, nivel máx. y días de período', group);
+  check('DEFAULT_CU_CONFIG incluye la política de urgencia explícita',
+    cuSrc.includes('urgencyBudgetBase') && cuSrc.includes('urgencyBudgetMaxLevel') && cuSrc.includes('urgencyBudgetPeriodDays'),
+    'parámetros de urgencia junto a la política de bienvenida', group);
+  check('Fórmula de urgencia canónica única (definida una sola vez)',
+    (formsSrc.split('export function urgencyCost').length - 1) === 1,
+    'en cap-formulas.ts, no duplicada', group);
+
+  // --- Piso de dignidad como indicador principal ---
+  check('Piso de dignidad implementado en capacity.ts',
+    capSrc.includes('export async function computeDignityMetrics') && capSrc.includes('PISO_ACTIVIDAD'),
+    'headcount + brecha (suficientarismo)', group);
+  check('metrics.ts expone dignidad al panel',
+    metricsSrc.includes('computeDignityMetrics') && metricsSrc.includes('dignidad'),
+    'el endpoint de admin lo incluye', group);
+  check('Admin: piso de dignidad es el indicador principal',
+    adminSrc.includes('Piso de dignidad (RONDA D)') && adminSrc.includes('indicador principal'),
+    'el Gini queda como contexto secundario/legacy', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -258,6 +338,7 @@ function main() {
   runTestE();
   runTestF();
   runTestG();
+  runTestH();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -273,6 +354,7 @@ function main() {
       'Presión y carga independientes': !failures.join().includes('Test E'),
       'Patrimonio no altera CU': !failures.join().includes('Test F'),
       'Engine y producto comparten reglas': !failures.join().includes('Test G'),
+      'Ronda D: urgencia presupuestada y piso de dignidad': !failures.join().includes('Test H'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

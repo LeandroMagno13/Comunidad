@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.0.0';
+export const MANUAL_VERSION = '1.1.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-12';
 
@@ -19,6 +19,17 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.1.0',
+    date: '2026-09-12',
+    title: 'RONDA D: presupuesto de urgencia y piso de dignidad',
+    notes: [
+      'La «apuesta de prioridad» con CU se reemplaza por un presupuesto de urgencia periódico, no acumulable y con costo cuadrático (1→1, 2→4, 3→9).',
+      'Al satisfacer una solicitud de capacidad ya no se transfieren CU: el proveedor sube su nivel por contribución verificada.',
+      'El indicador principal deja de ser la concentración relativa (Gini) y pasa a ser el piso de dignidad: cuántos quedan debajo del piso y cuánto les falta (headcount + brecha), con un umbral operativo provisional.',
+      'Se actualizan el bloque de bienvenida, los niveles de acceso y el panel de administración del manual.',
+    ],
+  },
   {
     version: '1.0.0',
     date: '2026-09-12',

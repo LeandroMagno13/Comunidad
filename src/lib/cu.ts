@@ -48,6 +48,11 @@ export const DEFAULT_CU_CONFIG = {
   newUserGrantEnabled: true, // política de bienvenida: configurable, NO una emisión fija
   newUserGrantCu: 20, // cantidad "base" en equilibrio (puede ser 0)
   newUserSensitivity: 1, // cuán fuerte se reduce/aumenta la asignación según escasez/abundancia
+  // RONDA D — presupuesto de urgencia (reemplaza la "apuesta de prioridad" libre):
+  // puntos fijos por período, no acumulables, no transferibles, costo cuadrático.
+  urgencyBudgetBase: 3, // puntos por período (semanal)
+  urgencyBudgetMaxLevel: 3, // intensidad máxima marcable (costo 9)
+  urgencyBudgetPeriodDays: 7, // duración del período
   // Capa SupplyPolicy: la señal PID NO es emisión. La política decide.
   // v2 (control real): ganancias activas por defecto → la política actúa sobre la señal.
   expansionGain: 1, // apertura de la válvula de expansión (0 = la política no emite automáticamente)

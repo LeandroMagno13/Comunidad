@@ -40,6 +40,8 @@ model User {
   cuTransactionsReceived     CuTransaction[] @relation("CuToUser")
   postsModerated             Post[]          @relation("PostFulfiller")
   cuAccessLevel              String          @default("basic") // básico | medio | avanzado (asignación, no jerarquía)
+  urgencyBudgetRemaining     Int             @default(0) // presupuesto de urgencia restante del período (RONDA D)
+  urgencyBudgetPeriod        String          @default("") // clave de período en que se asignó (no acumulable entre períodos)
   userCapacities             UserCapacity[]
   capacityRequestsAsker      CapacityRequest[] @relation("CapacityRequestAsker")
   capacityRequestsProvider   CapacityRequest[] @relation("CapacityRequestProvider")
@@ -380,6 +382,9 @@ model CuConfig {
   patrimonyUsd       Float   @default(1000) // patrimonio real simulado (usd), separado de CU
   distributableRate  Float   @default(0.2) // fracción del patrimonio real que las reglas permiten distribuir efectivamente
   grantCap           Int     @default(30) // tope de balance de CU por cuenta (anti-farming)
+  urgencyBudgetBase    Int     @default(3) // RONDA D: puntos de urgencia por período (semanal), fijos y no acumulables
+  urgencyBudgetMaxLevel Int    @default(3) // RONDA D: intensidad de urgencia máxima marcable (costo cuadrático)
+  urgencyBudgetPeriodDays Int  @default(7) // RONDA D: días de cada período de presupuesto de urgencia
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 }
@@ -424,12 +429,14 @@ model CapacityRequest {
   capacityId    String
   providerId    String?
   intensity     Int       @default(1)
-  cuCommitted   Int       @default(0) // prioridad apostada (se transfiere al proveedor SIEMPRE que se satisfaga). No es precio (§Lee.txt)
+  cuCommitted   Int       @default(0) // LEGACY (RONDA A/C): quedó en 0 — las CU ya no compran prioridad (se transfiere al proveedor SIEMPRE que se satisfaga). No es precio (§Lee.txt)
   status        String    @default("registered") // registered | satisfied | expired | cancelled
   holdCycles    Int       @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   satisfiedAt   DateTime?
+  urgencyLevel  Int       @default(0) // RONDA D: intensidad de urgencia marcada (costo cuadrático 1→1, 2→4, 3→9)
+  urgencyCost   Int       @default(0) // RONDA D: puntos de urgencia consumidos del presupuesto del período
   expiresAt     DateTime? // fin de la ventana de demanda vigente (§6 Lee.txt, Test D)
   closedAt      DateTime? // momento de expirar/cancelar (auditoría)
   closedReason  String?   // motivo de cierre: auto-expiración, cancelación, etc.

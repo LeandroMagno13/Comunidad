@@ -1,7 +1,7 @@
 {
-  "fecha": "2026-09-12T20:48:07.720Z",
-  "total": 39,
-  "passed": 39,
+  "fecha": "2026-09-13T00:42:26.333Z",
+  "total": 56,
+  "passed": 56,
   "failed": 0,
   "failures": [],
   "criterios": {
@@ -11,6 +11,7 @@
     "Expiradas no son demanda vigente": true,
     "Presión y carga independientes": true,
     "Patrimonio no altera CU": true,
-    "Engine y producto comparten reglas": true
+    "Engine y producto comparten reglas": true,
+    "Ronda D: urgencia presupuestada y piso de dignidad": true
   }
 }

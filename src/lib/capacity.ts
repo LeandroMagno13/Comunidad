@@ -1,21 +1,26 @@
 import { db } from '@/src/lib/db';
-import { ensureCuConfig, transferCu } from '@/src/lib/cu';
+import { ensureCuConfig } from '@/src/lib/cu';
 import {
   levelWeight,
   presionFrom,
   cargaHumanaFrom,
   accessLevelFrom,
   expiresAtFrom,
+  urgencyCost,
+  urgencyPeriodKey,
+  urgencyBudgetFor,
 } from '@/src/lib/cap-formulas';
 
 // ============================================================================
-// SEÑALIZACIÓN Y ASIGNACIÓN DE CAPACIDAD HUMANA (RONDA C)
+// SEÑALIZACIÓN Y ASIGNACIÓN DE CAPACIDAD HUMANA
 //
-// Las CU nunca fueron dinero ni patrimonio. En esta capa las CU expresan
-// participación, demanda y prioridad dentro de una capacidad real limitada por
-// la oferta humana y la tecnología disponible.
+// RONDA C: capa de señales (demanda + oferta humana + automatización). El PID NO
+// gobierna la oferta de CU. RONDA D: la "apuesta de prioridad" libre (CU con
+// costo de oportunidad nulo) se reemplaza por un PRESUPUESTO DE URGENCIA
+// periódico, NO acumulable, con costo cuadrático; y el indicador principal deja
+// de ser la concentración (Gini) para ser el PISO DE DIGNIDAD (sufficientarismo).
 //
-// La señal de presión es DEMANDA; el PID NO gobierna la oferta de CU.
+// La señal de presión es DEMANDA:
 //   señal(c) = demandaInsatisfecha(c) / ofertaEfectiva(c)
 // (fórmula documentada en REPORTE-CU-CAPACIDAD.md §12, con sus limitaciones)
 // ============================================================================
@@ -163,29 +168,58 @@ export async function refreshAccessLevel(userId: string) {
 
 // ---------------------------------------------------------------------------
 // Solicitudes (DEMANDA REAL).
-// La apuesta de CU es prioridad dentro del nivel. La CU se transfiere al
-// proveedor SÓLO si la solicitud se satisface; si expira, no se cobra.
-// (Divergencia del simulador: en simulación la apuesta queda en hold; en el
-// producto se cobra al satisfacer, para no retener saldos — documentado.)
+// RONDA D — presupuesto de urgencia en lugar de "apuesta de CU":
+//   · periódico y NO acumulable (no se puede ahorrar urgencia para después);
+//   · costo CRECIENTE y cuadrático: marcar 1→1, 2→4, 3→9 (quadratic voting);
+//   · NO se transfiere ni se convierte en CU; el proveedor sube por
+//     participación verificada (nivel de acceso), no por urgencia cobrada.
+// El parámetro `cuCommitted` del modelo (legacy) queda en 0: las CU ya no
+// compran prioridad.
 // ---------------------------------------------------------------------------
-export async function createCapacityRequest(askerId: string, capacitySlug: string, intensity: number, cuCommitted: number) {
+export async function createCapacityRequest(askerId: string, capacitySlug: string, intensity: number, urgencyLevel = 0) {
   const capacity = await db.capacity.findUnique({ where: { slug: capacitySlug } });
   if (!capacity || !capacity.active) throw new Error('Capacidad inexistente o inactiva');
   const intensidad = Math.max(1, Math.round(intensity));
-  const apuesta = Math.max(0, Math.round(cuCommitted));
-  const me = await db.user.findUnique({ where: { id: askerId }, select: { cuAccessLevel: true } });
-  if (me?.cuAccessLevel === 'basico' && apuesta > 0) {
-    // básico: piso garantizado; puede apostar poco sin quedar fuera (§11 Lee.txt)
-    if (apuesta > 5) throw new Error('En nivel básico el tope de apuesta es 5 CU');
+
+  const config = await ensureCuConfig();
+  const nivelUrgencia = Math.max(0, Math.min(Math.floor(urgencyLevel), config.urgencyBudgetMaxLevel));
+
+  let cost = 0;
+  if (nivelUrgencia > 0) {
+    cost = urgencyCost(nivelUrgencia);
+    const me = await db.user.findUnique({
+      where: { id: askerId },
+      select: { urgencyBudgetRemaining: true, urgencyBudgetPeriod: true },
+    });
+    if (!me) throw new Error('Usuario inexistente');
+    const remaining = urgencyBudgetFor(
+      config.urgencyBudgetBase,
+      { period: me.urgencyBudgetPeriod, remaining: me.urgencyBudgetRemaining },
+      new Date(),
+      config.urgencyBudgetPeriodDays
+    );
+    if (remaining < cost) {
+      throw new Error(
+        `Presupuesto de urgencia insuficiente: tenés ${remaining} de ${config.urgencyBudgetBase} puntos este período y marcar nivel ${nivelUrgencia} cuesta ${cost}. No se acumula entre períodos.`
+      );
+    }
+    await db.user.update({
+      where: { id: askerId },
+      data: {
+        urgencyBudgetRemaining: remaining - cost,
+        urgencyBudgetPeriod: urgencyPeriodKey(new Date(), config.urgencyBudgetPeriodDays),
+      },
+    });
   }
-  const account = await db.cuAccount.findUnique({ where: { userId: askerId } });
-  if (account && account.balance < apuesta) throw new Error('No podés apostar más CU de las que tenés');
+
   return db.capacityRequest.create({
     data: {
       askerId,
       capacityId: capacity.id,
       intensity: intensidad,
-      cuCommitted: apuesta,
+      cuCommitted: 0, // LEGACY RONDA C: las CU ya no compran prioridad
+      urgencyLevel: nivelUrgencia,
+      urgencyCost: cost,
       expiresAt: expiresAtFrom(new Date(), WINDOW_DAYS),
     },
   });
@@ -197,11 +231,10 @@ export async function satisfyCapacityRequest(requestId: string, providerId: stri
   if (request.status !== 'registered') throw new Error(`La solicitud ya no está registrada (${request.status})`);
   if (request.askerId === providerId) throw new Error('No podés auto-satisfacer tu solicitud');
 
-  // La transferencia se hace ANTES de marcar satisfecha: si el solicitante no
-  // alcanza la apuesta, la solicitud queda registrada sin cambio (consistente).
-  if (request.cuCommitted > 0) {
-    await transferCu(request.askerId, providerId, request.cuCommitted, `Capacidad satisfecha: ${request.capacity.name}`, { refType: 'capacity', refId: requestId });
-  }
+  // RONDA D: SIN "cobro" de CU al satisfacer. La urgencia ya fue consumida por
+  // el solicitante (no acumulable, no transferible) y el proveedor sube a
+  // avanzado por contribución verificada. No hay premio monetario ni de
+  // urgencia: la señal de urgencia no se puede acumular ni comerciar.
   await db.capacityRequest.update({ where: { id: requestId }, data: { providerId, status: 'satisfied', satisfiedAt: new Date() } });
   await refreshAccessLevel(request.askerId);
   await refreshAccessLevel(providerId);
@@ -236,5 +269,76 @@ export async function getPatrimonySummary() {
     distributablePerPeriod,
     grantCap: config.grantCap,
     pidGoverning: config.pidGoverning,
+    // RONDA D — parámetros de la urgencia presupuestada (para el panel admin).
+    urgencyBudgetBase: config.urgencyBudgetBase,
+    urgencyBudgetMaxLevel: config.urgencyBudgetMaxLevel,
+    urgencyBudgetPeriodDays: config.urgencyBudgetPeriodDays,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// RONDA D — PISO DE DIGNIDAD (indicador principal; en lugar del índice de
+// concentración).
+//
+// La pregunta ya no es "qué tan desigual está la distribución" (enfoque
+// relativo, legacy Gini) sino "cuánta gente queda debajo del piso y cuánto le
+// falta" (enfoque sufficientarista). El piso es una decisión de gobernanza;
+// acá se usa un umbral OPERATIVO explícito y transparente (participación
+// verificada reciente) que los gremios pueden discutir y cambiar. Quien no
+// tiene ninguna actividad registrada también cuenta como debajo del piso: el
+// piso no debe dejar a nadie fuera por falta de datos.
+// ---------------------------------------------------------------------------
+export const PISO_ACTIVIDAD = 2; // participaciones verificadas (asker o provider) en la ventana de 30 días
+
+export interface DignityMetrics {
+  umbral: { descripcion: string; participacionesMin: number; ventanaDias: number };
+  nota: string;
+  activos: number;
+  debajoDelPiso: number;
+  headcount: number; // % de activos por debajo del piso (tasa de incidencia)
+  brecha: number; // distancia promedio normalizada 0..1 hasta el piso (poverty gap)
+}
+
+export async function computeDignityMetrics(): Promise<DignityMetrics> {
+  const since = new Date(Date.now() - WINDOW_DAYS * 24 * 60 * 60 * 1000);
+  const [activos, recientes] = await Promise.all([
+    db.user.count({ where: { status: 'active' } }),
+    db.capacityRequest.findMany({
+      where: { status: 'satisfied', satisfiedAt: { gte: since } },
+      select: { askerId: true, providerId: true },
+    }),
+  ]);
+  const actividad = new Map<string, number>();
+  for (const r of recientes) {
+    const uids = [r.askerId, r.providerId].filter((uid): uid is string => Boolean(uid));
+    for (const uid of uids) {
+      actividad.set(uid, (actividad.get(uid) ?? 0) + 1);
+    }
+  }
+  let debajo = 0;
+  let brechaAcum = 0;
+  actividad.forEach((count) => {
+    if (count < PISO_ACTIVIDAD) {
+      debajo += 1;
+      brechaAcum += (PISO_ACTIVIDAD - count) / PISO_ACTIVIDAD;
+    }
+  });
+  const sinActividad = Math.max(0, activos - actividad.size);
+  debajo += sinActividad;
+  brechaAcum += sinActividad; // gap pleno: no llegaron a sumar actividad alguna
+
+  const headcount = activos > 0 ? round2((debajo / activos) * 100) : 0;
+  const brecha = activos > 0 ? round2(brechaAcum / activos) : 0;
+  return {
+    umbral: {
+      descripcion: `participación verificada reciente (${PISO_ACTIVIDAD} solicitudes satisfechas como solicitante o proveedor en ${WINDOW_DAYS} días)`,
+      participacionesMin: PISO_ACTIVIDAD,
+      ventanaDias: WINDOW_DAYS,
+    },
+    nota: 'el indicador principal ya no es la desigualdad relativa (Gini) sino cuánta gente queda debajo del piso y cuánto le falta (headcount + brecha)',
+    activos,
+    debajoDelPiso: debajo,
+    headcount,
+    brecha,
   };
 }

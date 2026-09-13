@@ -242,8 +242,9 @@ export default function EnsayoDeStress() {
             <p className="text-xs font-semibold tracking-wide text-teal-700 uppercase">El modelo actual (RONDA C)</p>
             <h2 className="mt-1 text-lg font-bold text-teal-900">Señales de demanda, oferta humana y automatización</h2>
             <p className="mt-2 text-sm leading-relaxed text-teal-800">
-              No hay PID ni emisión por error de canasta. Las CU son una señal de participación y prioridad;
-              el patrimonio real es una capa separada y experimental. Este ensayo histórico explica por qué
+              No hay PID ni emisión por error de canasta. Las CU son una señal de participación y nivel de acceso;
+              la prioridad se marca con un presupuesto de urgencia periódico y no acumulable (Ronda D); el
+              patrimonio real es una capa separada y experimental. Este ensayo histórico explica por qué
               el producto se diseñó así.
             </p>
           </div>

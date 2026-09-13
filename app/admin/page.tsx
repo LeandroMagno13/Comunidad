@@ -1103,8 +1103,11 @@ export default function AdminPanel() {
               <div className="mt-4 rounded-lg border border-teal-200 bg-white p-4">
                 <h3 className="text-sm font-semibold text-teal-900">Señalización y asignación de capacidad (RONDA C)</h3>
                 <p className="mt-1 text-xs text-gray-500">
-                  Demandas y señales por capacidad humana. Las CU expresan participación y prioridad;
-                  no convierten a dinero ni a patrimonio. Ranking por presión de demanda — nunca ranking de personas.
+                  Demandas y señales por capacidad humana. Las CU expresan participación y nivel de acceso;
+                  la prioridad se marca con el
+                  <strong> presupuesto de urgencia</strong> (RONDA D: periódico, NO acumulable, costo cuadrático
+                  {eco.señalizacion?.patrimonio?.urgencyBudgetBase != null ? ` — ${eco.señalizacion.patrimonio.urgencyBudgetBase} puntos por período, ${eco.señalizacion.patrimonio.urgencyBudgetMaxLevel ?? 3} niveles máx. (1→1, 2→4, 3→9)` : ''}).
+                  Las CU no convierten a dinero ni a patrimonio. Ranking por presión de demanda — nunca ranking de personas.
                 </p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <Stat label="Patrimonio real (simulado)" value={eco.señalizacion?.patrimonio?.patrimonioUsd != null ? `USD ${eco.señalizacion.patrimonio.patrimonioUsd}` : '—'} tip="Activos reales simulados. No todo es distribuible. Separado por completo de las CU." />
@@ -1117,6 +1120,25 @@ export default function AdminPanel() {
                     <Stat label="Usuarios acceso básico" value={eco.señalizacion.niveles.basico} accent="text-teal-700" tip="Piso protegido: nadie queda fuera por no tener nada para ofrecer." />
                     <Stat label="Usuarios acceso medio" value={eco.señalizacion.niveles.medio} />
                     <Stat label="Usuarios acceso avanzado" value={eco.señalizacion.niveles.avanzado} accent="text-teal-700" tip="Contribución verificada (satisfacer solicitudes de otros). No es 'más CU = mejor persona'." />
+                  </div>
+                )}
+                {eco.señalizacion?.dignidad && (
+                  <div className="mt-3 rounded-lg border border-teal-700/30 bg-teal-50/60 p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h4 className="text-xs font-bold uppercase tracking-wide text-teal-900">Piso de dignidad (RONDA D)</h4>
+                      <span className="rounded-full bg-teal-900 px-2 py-0.5 text-[10px] font-bold text-white">indicador principal</span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-teal-900/80">{eco.señalizacion.dignidad.nota}</p>
+                    <p className="mt-1 text-[11px] text-teal-900/70">
+                      Umbral operativo: {eco.señalizacion.dignidad.umbral.descripcion}. El piso es una
+                      decisión de gobernanza: este umbral es provisional y se define en los gremios.
+                    </p>
+                    <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                      <Stat label="Debajo del piso" value={`${eco.señalizacion.dignidad.debajoDelPiso} de ${eco.señalizacion.dignidad.activos} activos`} accent="text-teal-900" />
+                      <Stat label="Headcount (incidencia)" value={`${eco.señalizacion.dignidad.headcount}%`} accent={eco.señalizacion.dignidad.headcount > 0 ? 'text-amber-700' : 'text-green-700'} tip="% de activos por debajo del piso: quién queda fuera, no qué tan desigual es la cola (enfoque sufficientarista)." />
+                      <Stat label="Brecha (poverty gap)" value={eco.señalizacion.dignidad.brecha} tip="Distancia promedio normalizada hasta el piso (0 = nadie debajo; 1 = piso completo para todos)." />
+                      <Stat label="Concentración (legacy)" value={eco.topDecileShare != null ? `${Math.round(eco.topDecileShare * 100)}%` : '—'} tip="Contexto secundario (Gini / 10% mayor, medición RONDA A). En RONDA D el indicador principal es el piso de dignidad, no la desigualdad relativa." />
+                    </div>
                   </div>
                 )}
                 {Array.isArray(eco.señalizacion?.capacidades) && eco.señalizacion.capacidades.length > 0 && (

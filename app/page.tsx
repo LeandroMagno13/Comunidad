@@ -254,14 +254,15 @@ export default function LandingPage() {
                 </span>
               </div>
               <p className="mt-1 text-sm text-slate-300">
-                Versión experimental actual — <span className="font-bold text-white">Ronda C</span>
+                Versión experimental actual — <span className="font-bold text-white">Ronda C + Ronda D</span>
               </p>
             </div>
             <dl className="grid gap-x-6 gap-y-3 px-6 py-5 sm:grid-cols-2">
               <div>
                 <dt className="text-xs font-semibold text-slate-500">Objetivo</dt>
                 <dd className="mt-0.5 text-sm text-slate-800">
-                  Estudiar señales de demanda, participación y capacidad humana bajo automatización creciente.
+                  Estudiar señales de demanda, participación, capacidad humana y urgencia presupuestada bajo
+                  automatización creciente.
                 </dd>
               </div>
               <div>
@@ -270,11 +271,19 @@ export default function LandingPage() {
               </div>
               <div>
                 <dt className="text-xs font-semibold text-slate-500">CU</dt>
-                <dd className="mt-0.5 text-sm text-slate-800">Unidad interna experimental — no monetaria</dd>
+                <dd className="mt-0.5 text-sm text-slate-800">Unidad interna experimental — no monetaria. No compran prioridad</dd>
               </div>
               <div>
                 <dt className="text-xs font-semibold text-slate-500">PID</dt>
                 <dd className="mt-0.5 text-sm text-slate-800">Legacy / histórico — no utilizado por Ronda C</dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold text-slate-500">Urgencia (Ronda D)</dt>
+                <dd className="mt-0.5 text-sm text-slate-800">Presupuesto periódico, no acumulable, costo cuadrático — reemplaza la apuesta de CU</dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold text-slate-500">Piso de dignidad (Ronda D)</dt>
+                <dd className="mt-0.5 text-sm text-slate-800">Indicador principal (suficientarismo): cuántos quedan debajo del piso y cuánto les falta</dd>
               </div>
             </dl>
             <p className="border-t border-slate-200 bg-slate-50 px-6 py-3 text-xs text-slate-500">
@@ -536,7 +545,7 @@ export default function LandingPage() {
       <Section background="white" id="modelo">
         <div className="max-w-4xl mx-auto">
           <p className="text-sm uppercase tracking-wider text-blue-600 font-semibold text-center mb-3">
-            Ronda C · esta versión
+            Ronda C + urgencia presupuestada (Ronda D) · esta versión
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-3">
             Cómo funciona el modelo
@@ -548,7 +557,8 @@ export default function LandingPage() {
           <p className="text-center text-gray-600 text-lg max-w-3xl mx-auto mb-10">
             Este es un laboratorio. Lo implementado hoy sigue pasos simples: te sumás, recibís un punto de
             partida, participás con tus capacidades y el sistema registra señales (demanda, oferta y
-            utilización) que todavía estamos aprendiendo a leer. Nada de esto es definitivo.
+            utilización) más una señal de urgencia presupuestada que todavía estamos aprendiendo a leer. Nada
+            de esto es definitivo.
           </p>
 
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 mb-8">
@@ -599,12 +609,14 @@ export default function LandingPage() {
             <div className="rounded-2xl border border-gray-200 bg-white p-6">
               <h3 className="font-bold text-gray-900 mb-2">De dónde salen las CU y cómo circulan</h3>
               <p className="text-sm leading-relaxed text-gray-700">
-                No hay una moneda que compre nada ni una emisión mágica. Las CU salen de dos lugares: la{' '}
+                No hay una moneda que compre nada ni una emisión mágica. Las CU salen de la{' '}
                 <span className="font-semibold text-gray-900">política de bienvenida explícita</span> (al
-                registrarte) y las <span className="font-semibold text-gray-900">apuestas de prioridad</span>{' '}
-                que un solicitante compromete: se le transfieren a quien satisface su solicitud solo al
-                completarla; si expira sin resolverse, nadie cobra. En las solicitudes comunitarias no se
-                mueven CU: solo se registra la participación.
+                registrarte, con tope anti-abuso) y se registran como señal de participación y nivel de
+                acceso. No se usan para comprar prioridad: esa señal es ahora un{' '}
+                <span className="font-semibold text-gray-900">presupuesto de urgencia</span> periódico
+                (Ronda D), no acumulable y con costo creciente. Al satisfacer una solicitud no se transfieren
+                CU: el proveedor sube su nivel por contribución verificada. En las solicitudes comunitarias
+                tampoco se mueven CU: solo se registra la participación.
               </p>
             </div>
           </div>
@@ -651,9 +663,12 @@ export default function LandingPage() {
                 el panel de administración.
               </li>
               <li>
-                <span className="font-semibold text-gray-900">El piso se protege</span>: en nivel básico las
-                apuestas tienen un tope (5 CU), de modo que quien no tenga nada todavía pueda participar sin
-                quedar afuera.
+                <span className="font-semibold text-gray-900">El piso se protege</span>: la prioridad no se
+                compra con CU. Marcar una solicitud como urgente consume un{' '}
+                <span className="font-semibold text-gray-900">presupuesto periódico, no acumulable y con
+                costo creciente</span> (1→1, 2→4, 3→9 puntos): gritar más fuerte cuesta más caro, y no se
+                puede ahorrar urgencia para acumular poder. Quien no tenga nada todavía participa igual,
+                sin quedar afuera.
               </li>
             </ul>
           </div>
@@ -661,7 +676,8 @@ export default function LandingPage() {
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-amber-900 text-sm mb-6">
             <p>
               <strong>Esto es un laboratorio.</strong> Llegamos hasta acá: registro, participación, gremios,
-              señales y niveles de acceso. Toda regla es experimental, parametrizada y reversible, y el
+              señales, niveles de acceso, presupuesto de urgencia y piso de dignidad. Toda regla es
+              experimental, parametrizada y reversible, y el
               sistema no se detiene en lo que está escrito hoy:{' '}
               <span className="font-semibold">
                 todo varía según la interacción real de los usuarios
@@ -745,15 +761,15 @@ export default function LandingPage() {
           <div className="rounded-2xl border border-sky-200 bg-sky-50 p-6 mb-6">
             <p className="text-gray-800 leading-relaxed">
               Actualmente se investigan como posible instrumento para registrar aspectos de{' '}
-              <strong>participación, demanda, prioridad, interacción, contribución y acceso</strong> dentro de
+              <strong>participación, demanda, interacción, contribución y acceso</strong> dentro de
               determinadas experiencias. Su significado definitivo todavía no está cerrado.
             </p>
             <p className="mt-3 text-gray-700 leading-relaxed">
-              La hipótesis actual es estudiar si ciertas señales de participación, demanda y prioridad pueden
-              ayudar a detectar qué capacidades humanas continúan siendo necesarias en un contexto de
-              automatización creciente. La CU no crea riqueza, no determina cuánto dinero existe, no determina
-              cuánto patrimonio tiene la comunidad y no convierte automáticamente una contribución humana en
-              dinero.
+              La hipótesis actual es estudiar si ciertas señales de participación, demanda y urgencia
+              presupuestada pueden ayudar a detectar qué capacidades humanas continúan siendo necesarias en un
+              contexto de automatización creciente. La CU no crea riqueza, no determina cuánto dinero existe,
+              no determina cuánto patrimonio tiene la comunidad y no convierte automáticamente una
+              contribución humana en dinero.
             </p>
           </div>
 
@@ -1082,6 +1098,19 @@ export default function LandingPage() {
                 <span className="font-semibold">sin utilizar el PID como controlador</span>. Los experimentos
                 anteriores con PID, canasta y SupplyPolicy se conservan como antecedentes y sirven para entender
                 por qué fueron descartados.
+              </p>
+            </div>
+            <div className="rounded-xl border border-teal-200 bg-teal-50 p-6">
+              <p className="text-xs font-bold tracking-wide text-teal-700 uppercase">Ronda D · en estudio</p>
+              <h3 className="mt-1 text-lg font-bold text-gray-900">Urgencia presupuestada y piso de dignidad</h3>
+              <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                La apuesta libre de CU (Ronda C) no tenía costo de oportunidad real: la señal de urgencia se
+                saturaba y quien acumulaba CU podía comprar prioridad. La Ronda D la reemplaza por un{' '}
+                <span className="font-semibold">presupuesto de urgencia</span> periódico, no acumulable y con
+                costo cuadrático (1→1, 2→4, 3→9), y propone que el indicador principal pase de la desigualdad
+                relativa (Gini) al <span className="font-semibold">piso de dignidad</span>: cuánta gente queda
+                debajo del piso y cuánto le falta (headcount y brecha), no qué tan desigual es la cola. El
+                umbral del piso es una decisión de gobernanza que definirán los gremios.
               </p>
             </div>
           </div>
