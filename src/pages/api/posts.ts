@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest } from '@/src/lib/auth';
+import { sanitizeHtml, htmlToText } from '@/src/lib/sanitize';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
@@ -57,11 +58,21 @@ async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) 
   const { title, content, guildId, type } = req.body;
   const postType = type === 'request' ? 'request' : 'update';
 
-  if (!content || !String(content).trim()) {
+  // Formato enriquecido: se recibe HTML del editor (whitelist) pero nunca se
+  // confía en él. Se sanitiza al guardar y el texto es el que cuenta para
+  // validar contenido y límites (lo que ve la persona, no las etiquetas).
+  const safeHtml = sanitizeHtml(typeof content === 'string' ? content : '');
+  const textContent = htmlToText(safeHtml);
+
+  if (!textContent) {
     return res.status(400).json({ error: 'La publicación no puede estar vacía' });
   }
 
-  if (String(content).length > 10000) {
+  if (textContent.length > 10000) {
+    return res.status(400).json({ error: 'La publicación es demasiado larga' });
+  }
+
+  if (safeHtml.length > 20000) {
     return res.status(400).json({ error: 'La publicación es demasiado larga' });
   }
 
@@ -81,7 +92,7 @@ async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) 
     data: {
       authorId: user.id,
       title: title ? String(title).trim().slice(0, 200) : null,
-      content: String(content).trim(),
+      content: safeHtml,
       guildId: guildId || null,
       type: postType,
       cuOffer: null,

@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import PollCard, { PollData } from '@/src/components/PollCard';
 import PollCreateForm from '@/src/components/PollCreateForm';
+import RichEditor from '@/src/components/RichEditor';
+import RichText from '@/src/components/RichText';
+import { htmlToText } from '@/src/lib/sanitize';
 
 type PostItem = {
   id: string;
@@ -57,7 +60,7 @@ export default function CommunityPage() {
 
   async function createPost(e: React.FormEvent) {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!htmlToText(content).trim()) return;
     setError('');
     setLoading(true);
     // LEGACY: cuOffer eliminado. La CU NO es medio de pago (§Lee.txt).
@@ -126,23 +129,15 @@ export default function CommunityPage() {
           onChange={(e) => setTitle(e.target.value)}
           maxLength={200}
         />
-        <textarea
-          className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-          placeholder={
-            postType === 'request'
-              ? '¿Qué necesitás? Describí brevemente la tarea.'
-              : '¿Qué quieres compartir con la comunidad?'
-          }
-          rows={4}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          maxLength={10000}
-        />
+        <RichEditor onChange={setContent} />
+        <p className="mt-1 text-[10px] text-gray-400">
+          Formato enriquecido con controles: titulares, negritas, listas, citas y enlaces. Sin escribir código.
+        </p>
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         <div className="mt-3 flex justify-end">
           <button
             type="submit"
-            disabled={loading || !content.trim()}
+            disabled={loading || !htmlToText(content).trim()}
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? 'Publicando…' : 'Publicar'}
@@ -219,7 +214,7 @@ export default function CommunityPage() {
                   </span>
                 </div>
                 {post.title && <h2 className="mt-2 text-lg font-semibold text-gray-900">{post.title}</h2>}
-                <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-sm text-gray-600">{post.content}</p>
+                <RichText html={post.content} clamp />
                 <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
                   <span className="text-blue-600 hover:underline">
                     {post._count?.comments || 0} comentarios · ver publicación completa →

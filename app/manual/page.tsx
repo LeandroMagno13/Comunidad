@@ -145,6 +145,12 @@ export default function ManualPage() {
               participación y queda registrada. No hay pago de por medio.
             </li>
             <li>
+              <strong>Publicaciones con formato</strong>: el editor da controles simples — titulares
+              (H1–H3), negrita, cursiva, listas, citas, bloques de código, separadores y enlaces — sin
+              escribir código. Solo se guarda un subconjunto seguro y todo se sanea al guardar y al
+              mostrar: pegar HTML ajeno se ve como texto plano.
+            </li>
+            <li>
               <strong>Oferta de capacidades</strong>: declarás qué capacidades ofrecés y a qué
               disponibilidad y calidad. Esa declaración alimenta la «oferta» de las señales.
             </li>

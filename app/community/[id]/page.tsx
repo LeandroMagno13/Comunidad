@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import RichText from '@/src/components/RichText';
 
 type CommentItem = {
   id: string;
@@ -167,46 +168,53 @@ export default function PostDetailPage() {
         ← Comunidad
       </Link>
 
-      <article className="mt-4 rounded-lg border border-gray-200 bg-white p-6">
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <span className="font-medium text-gray-900">{post.author.name}</span>
-          {post.type === 'request' && (
-            <span
-              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                post.requestStatus === 'completed'
-                  ? 'bg-green-100 text-green-700'
-                  : post.requestStatus === 'on_going'
-                  ? 'bg-blue-100 text-blue-700'
-                  : post.requestStatus === 'cancelled'
-                  ? 'bg-gray-100 text-gray-500'
-                  : 'bg-amber-100 text-amber-700'
-              }`}
-            >
-              {REQUEST_LABEL[post.requestStatus || 'open'] || post.requestStatus}
+      <article className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
+        <div className="border-b border-gray-100 bg-gray-50 px-6 py-4">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+              {post.author.name.trim().charAt(0).toUpperCase() || '?'}
             </span>
-          )}
-          {post.type !== 'request' && (
-            <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-medium text-teal-700">
-              Informativa
+            <span className="font-medium text-gray-900">{post.author.name}</span>
+            {post.type === 'request' && (
+              <span
+                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                  post.requestStatus === 'completed'
+                    ? 'bg-green-100 text-green-700'
+                    : post.requestStatus === 'on_going'
+                    ? 'bg-blue-100 text-blue-700'
+                    : post.requestStatus === 'cancelled'
+                    ? 'bg-gray-100 text-gray-500'
+                    : 'bg-amber-100 text-amber-700'
+                }`}
+              >
+                {REQUEST_LABEL[post.requestStatus || 'open'] || post.requestStatus}
+              </span>
+            )}
+            {post.type !== 'request' && (
+              <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-medium text-teal-700">
+                Informativa
+              </span>
+            )}
+            {post.guild && (
+              <Link href={`/guilds/${post.guild.id}`} className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
+                {post.guild.name}
+              </Link>
+            )}
+            <span className="text-xs text-gray-400">
+              {new Date(post.createdAt).toLocaleString('es', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
             </span>
-          )}
-          {post.guild && (
-            <Link href={`/guilds/${post.guild.id}`} className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
-              {post.guild.name}
-            </Link>
-          )}
-          <span className="text-xs text-gray-400">
-            {new Date(post.createdAt).toLocaleString('es', {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </span>
+          </div>
+          {post.title && <h1 className="mt-3 text-xl font-bold text-gray-900">{post.title}</h1>}
         </div>
-        {post.title && <h1 className="mt-2 text-xl font-bold text-gray-900">{post.title}</h1>}
-        <p className="mt-3 whitespace-pre-wrap text-gray-800">{post.content}</p>
+        <div className="px-6 py-5">
+          <RichText html={post.content} className="text-[15px] leading-relaxed text-gray-800" />
+        </div>
 
         {post.type === 'request' && (
           <div className="mt-4 rounded-md bg-indigo-50 p-4">

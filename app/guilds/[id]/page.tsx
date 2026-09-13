@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import PollCard, { PollData } from '@/src/components/PollCard';
 import PollCreateForm from '@/src/components/PollCreateForm';
+import RichEditor from '@/src/components/RichEditor';
+import RichText from '@/src/components/RichText';
+import { htmlToText } from '@/src/lib/sanitize';
 
 type Member = {
   id: string;
@@ -100,7 +103,7 @@ export default function GuildDetailPage() {
   async function createPost(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    if (!postContent.trim()) return;
+    if (!htmlToText(postContent).trim()) return;
     const res = await fetch('/api/posts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -172,14 +175,10 @@ export default function GuildDetailPage() {
                 </button>
               </div>
             </div>
-            <textarea
-              className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-              placeholder={`Publica en ${guild.name}…`}
-              rows={3}
-              value={postContent}
-              onChange={(e) => setPostContent(e.target.value)}
-              maxLength={10000}
-            />
+            <RichEditor onChange={setPostContent} />
+            <p className="mt-1 text-[10px] text-gray-400">
+              Formato enriquecido con controles: titulares, negritas, listas, citas y enlaces. Sin escribir código.
+            </p>
             {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
             <div className="mt-2 flex justify-end">
               <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
@@ -229,7 +228,7 @@ export default function GuildDetailPage() {
                     </span>
                   </div>
                   {p.title && <h3 className="mt-1 font-semibold text-gray-900">{p.title}</h3>}
-                  <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-sm text-gray-600">{p.content}</p>
+                  <RichText html={p.content} clamp />
                   <div className="mt-2 text-xs text-gray-500">
                     <span className="text-blue-600 hover:underline">
                       {p._count?.comments || 0} comentarios · ver publicación completa →

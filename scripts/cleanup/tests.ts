@@ -14,6 +14,9 @@
 //   I  Herramientas de gestión de gremios (representantes y encuestas con
 //      trazabilidad): representante es un distintivo sobre GuildMembership,
 //      los votos quedan registrados y la gobernanza no toca CU.
+//   J  Publicaciones con formato enriquecido: editor con controles (sin
+//      escribir código), whitelist aplicada al guardar y al mostrar, y
+//      aspecto de foro en detalle y listados.
 //
 // Hay tests puros (fórmulas canónicas), estructurales (lectura de fuente para
 // garantizar que la arquitectura no reintroduzca la dependencia) y de motor
@@ -41,6 +44,7 @@ import {
   urgencyBudgetFor,
 } from '@/src/lib/cap-formulas';
 import { runCapacitySim, CapacitySimConfig } from '../capacity/engine';
+import { sanitizeHtml, htmlToText } from '@/src/lib/sanitize';
 
 const OUT_DIR = 'evidence/capacidad/cleanup';
 
@@ -395,6 +399,69 @@ function runTestI() {
     'sección #modelo coherente con el manual', group);
 }
 
+function runTestJ() {
+  const group = 'Test J — publicaciones con formato enriquecido (whitelist + aspecto de foro)';
+
+  // --- Sanitizador puro: "HTML pero sin código" ---
+  const scriptAttack = '<script>alert(1)</script><h2>Hola</h2><p>texto</p>';
+  const safeScript = sanitizeHtml(scriptAttack);
+  check('Sanitizador elimina script y conserva whitelist (h2/p)',
+    !safeScript.includes('<script') && safeScript.includes('<h2>') && safeScript.includes('<p>'),
+    `input con script y rotulado: “${safeScript}”`, group);
+  check('Sanitizador escapa etiquetas no permitidas como texto plano',
+    sanitizeHtml('<b>X</b> <table><tr><td>celda</td></tr></table>').includes('celda') &&
+      !sanitizeHtml('<b>X</b> <table><tr><td>celda</td></tr></table>').includes('<table'),
+    'pegar HTML ajeno se ve como texto, no se ejecuta', group);
+  check('Sanitizador permite solo enlaces seguros (href whitelist)',
+    !sanitizeHtml('<a href="javascript:alert(1)">a</a>').includes('<a') &&
+      sanitizeHtml('<a href="https://ok.example">ok</a>').includes('https://ok.example'),
+    'protocolos peligrosos descartados, links reales conservados', group);
+  check('htmlToText extrae lo legible de una publicación',
+    htmlToText('<h2>Hola</h2><p>mundo<br>segunda línea</p>').includes('Hola') &&
+      htmlToText('<h2>Hola</h2><p>mundo</p>').includes('mundo'),
+    'preview y validación usan texto, no etiquetas', group);
+  check('Sanitizador cierra bien los enlaces emitidos (pares)',
+    (sanitizeHtml('<a href="/comunidad/abc">ir</a>').match(/<a/g) || []).length ===
+      (sanitizeHtml('<a href="/comunidad/abc">ir</a>').match(/<\/a>/g) || []).length,
+    'sin huecos de etiquetas para links', group);
+
+  // --- Estructural: el puerto de escritura sanea --NUNCA confía en el HTML ---
+  const postsSrc = src('src/pages/api/posts.ts');
+  const communitySrc = src('app/community/page.tsx');
+  const guildSrc = src('app/guilds/[id]/page.tsx');
+  const detailSrc = src('app/community/[id]/page.tsx');
+  const sanitizeSrc = src('src/lib/sanitize.ts');
+  const manualSrc = src('src/lib/manual.ts');
+  const manualPage = src('app/manual/page.tsx');
+
+  check('API posts: sanea al guardar y valida por texto legible',
+    postsSrc.includes('sanitizeHtml') && postsSrc.includes('htmlToText') && postsSrc.includes('safeHtml'),
+    'whitelist en la frontera de escritura', group);
+  check('Sanitizador define whitelist acotada (h1–h4, listas, citas, enlaces)',
+    /const ALLOWED_TAGS = new Set/.test(sanitizeSrc) &&
+      sanitizeSrc.includes("'blockquote'") &&
+      sanitizeSrc.includes("'pre'") &&
+      sanitizeSrc.includes("'a'"),
+    'etiquetas controladas, nada de estilos ni scripts', group);
+  check('Editor con controles en comunidad y gremio (sin escribir código)',
+    communitySrc.includes('RichEditor') && guildSrc.includes('RichEditor'),
+    'barra de formato fácil de usar en ambos muros', group);
+  check('Detalle de publicación renderiza formato de foro',
+    detailSrc.includes('RichText') && detailSrc.includes('flex h-8 w-8'),
+    'autor con avatar + cuerpo tipográfico del hilo', group);
+  check('Listados muestran anticipo del contenido formateado',
+    communitySrc.includes('<RichText') && guildSrc.includes('<RichText'),
+    'preview con aspecto de publicación', group);
+  check('Manual 1.3.0 documenta el formato',
+    manualSrc.includes("version: '1.3.0'") &&
+      manualSrc.includes('Publicaciones con formato enriquecido'),
+    'protocolo de manual cumplido', group);
+  check('Manual explica la sanitización al usuario',
+    manualPage.includes('<strong>Publicaciones con formato</strong>') &&
+      manualPage.includes('se sanea al guardar y al'),
+    'transparencia: el formato es seguro, no magia', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -406,6 +473,7 @@ function main() {
   runTestG();
   runTestH();
   runTestI();
+  runTestJ();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -423,6 +491,7 @@ function main() {
       'Engine y producto comparten reglas': !failures.join().includes('Test G'),
       'Ronda D: urgencia presupuestada y piso de dignidad': !failures.join().includes('Test H'),
       'Gremios: representantes y encuestas con trazabilidad': !failures.join().includes('Test I'),
+      'Publicaciones con formato enriquecido (sanitizado)': !failures.join().includes('Test J'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

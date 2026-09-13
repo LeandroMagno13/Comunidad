@@ -1,7 +1,7 @@
 {
-  "fecha": "2026-09-13T03:34:49.391Z",
-  "total": 71,
-  "passed": 71,
+  "fecha": "2026-09-13T03:51:42.876Z",
+  "total": 83,
+  "passed": 83,
   "failed": 0,
   "failures": [],
   "criterios": {
@@ -13,6 +13,7 @@
     "Patrimonio no altera CU": true,
     "Engine y producto comparten reglas": true,
     "Ronda D: urgencia presupuestada y piso de dignidad": true,
-    "Gremios: representantes y encuestas con trazabilidad": true
+    "Gremios: representantes y encuestas con trazabilidad": true,
+    "Publicaciones con formato enriquecido (sanitizado)": true
   }
 }
