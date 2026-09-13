@@ -3,11 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import PollCard, { PollData } from '@/src/components/PollCard';
-import PollCreateForm from '@/src/components/PollCreateForm';
-import RichEditor from '@/src/components/RichEditor';
-import RichText from '@/src/components/RichText';
-import { htmlToText } from '@/src/lib/sanitize';
+import Cartelera from '@/src/components/Cartelera';
 
 type Member = {
   id: string;
@@ -15,24 +11,6 @@ type Member = {
   status: string;
   isRepresentative: boolean;
   user: { id: string; name: string; profile?: { profession?: string | null; bio?: string | null } | null };
-};
-
-type PostItem = {
-  id: string;
-  title?: string | null;
-  content: string;
-  type: string;
-  requestStatus?: string | null;
-  author: { name: string };
-  createdAt: string;
-  _count?: { comments: number };
-};
-
-const REQUEST_LABEL: Record<string, string> = {
-  open: 'Solicitud abierta',
-  on_going: 'Solicitud en curso',
-  completed: 'Solicitud completada',
-  cancelled: 'Solicitud cancelada',
 };
 
 export default function GuildDetailPage() {
@@ -43,11 +21,6 @@ export default function GuildDetailPage() {
   const [guild, setGuild] = useState<any | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [canModerate, setCanModerate] = useState(false);
-  const [posts, setPosts] = useState<PostItem[]>([]);
-  const [postContent, setPostContent] = useState('');
-  const [postType, setPostType] = useState('update');
-  const [error, setError] = useState('');
-  const [polls, setPolls] = useState<PollData[]>([]);
 
   async function loadMembers() {
     const res = await fetch(`/api/guilds/${guildId}/members`);
@@ -56,16 +29,6 @@ export default function GuildDetailPage() {
       setMembers(data.members || []);
       setCanModerate(data.pendingRequestsVisible || false);
     }
-  }
-
-  async function loadPosts() {
-    const res = await fetch(`/api/posts?guildId=${guildId}`);
-    if (res.ok) setPosts(await res.json());
-  }
-
-  async function loadPolls() {
-    const res = await fetch(`/api/polls?scope=guild&guildId=${guildId}`);
-    if (res.ok) setPolls(await res.json());
   }
 
   async function loadGuild() {
@@ -83,8 +46,6 @@ export default function GuildDetailPage() {
     if (!guildId) return;
     loadGuild();
     loadMembers();
-    loadPosts();
-    loadPolls();
   }, [guildId]);
 
   async function membershipAction(action: string, userId?: string, extra?: Record<string, unknown>) {
@@ -98,25 +59,6 @@ export default function GuildDetailPage() {
 
   function toggleRepresentative(m: Member) {
     membershipAction('set-representative', m.user.id, { isRepresentative: !m.isRepresentative });
-  }
-
-  async function createPost(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-    if (!htmlToText(postContent).trim()) return;
-    const res = await fetch('/api/posts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: postContent, guildId, type: postType }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error || 'Error al publicar');
-      return;
-    }
-    setPostContent('');
-    setPostType('update');
-    await loadPosts();
   }
 
   if (!guild) {
@@ -152,108 +94,8 @@ export default function GuildDetailPage() {
 
       {myStatus === 'active' && (
         <>
-          <form onSubmit={createPost} className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex rounded-md border border-gray-200 p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setPostType('update')}
-                  className={`rounded px-3 py-1 text-xs font-medium ${
-                    postType === 'update' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  Informativa
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPostType('request')}
-                  className={`rounded px-3 py-1 text-xs font-medium ${
-                    postType === 'request' ? 'bg-amber-500 text-white' : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  Solicitud comunitaria
-                </button>
-              </div>
-            </div>
-            <RichEditor onChange={setPostContent} />
-            <p className="mt-1 text-[10px] text-gray-400">
-              Formato enriquecido con controles: titulares, negritas, listas, citas y enlaces. Sin escribir código.
-            </p>
-            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-            <div className="mt-2 flex justify-end">
-              <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-                Publicar
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-6 space-y-3">
-            {posts.length === 0 ? (
-              <p className="text-sm text-gray-500">Aún no hay publicaciones en este gremio.</p>
-            ) : (
-              posts.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/community/${p.id}`}
-                  className="block rounded-lg border border-gray-200 bg-white p-4 hover:border-blue-300 hover:shadow-sm"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-wrap items-center gap-2 text-sm">
-                      <span className="font-medium text-gray-900">{p.author.name}</span>
-                      {p.type === 'request' ? (
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                          p.requestStatus === 'completed'
-                            ? 'bg-green-100 text-green-700'
-                            : p.requestStatus === 'on_going'
-                            ? 'bg-blue-100 text-blue-700'
-                            : p.requestStatus === 'cancelled'
-                            ? 'bg-gray-100 text-gray-500'
-                            : 'bg-amber-100 text-amber-700'
-                        }`}>
-                          {REQUEST_LABEL[p.requestStatus || 'open'] || p.requestStatus}
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-medium text-teal-700">
-                          Informativa
-                        </span>
-                      )}
-                      {p.type === 'request' && (
-                        <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
-                          Solicitud comunitaria
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-xs text-gray-400">
-                      {new Date(p.createdAt).toLocaleString('es', { day: '2-digit', month: 'short' })}
-                    </span>
-                  </div>
-                  {p.title && <h3 className="mt-1 font-semibold text-gray-900">{p.title}</h3>}
-                  <RichText html={p.content} clamp />
-                  <div className="mt-2 text-xs text-gray-500">
-                    <span className="text-blue-600 hover:underline">
-                      {p._count?.comments || 0} comentarios · ver publicación completa →
-                    </span>
-                  </div>
-                </Link>
-              ))
-            )}
-          </div>
-
           <div className="mt-6">
-            <h2 className="text-lg font-semibold text-gray-900">Encuestas del gremio</h2>
-            <p className="mt-1 text-xs text-gray-500">
-              El gremio decide por votación con trazabilidad: cada voto queda registrado y consultable.
-            </p>
-            <div className="mt-3 space-y-4">
-              <PollCreateForm scope="guild" guildId={guildId} onCreated={loadPolls} />
-              {polls.length === 0 ? (
-                <p className="rounded-lg border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
-                  Aún no hay encuestas en este gremio.
-                </p>
-              ) : (
-                polls.map((poll) => <PollCard key={poll.id} poll={poll} onChanged={loadPolls} />)
-              )}
-            </div>
+            <Cartelera scope="guild" guildId={guildId} />
           </div>
         </>
       )}

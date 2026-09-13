@@ -19,6 +19,8 @@
 //      aspecto de foro en detalle y listados.
 //   K  Framing conceptual (comunicación): la propiedad productiva
 //      participativa es el eje, no la redistribución; no hay framing RBU.
+//   L  Cartelera reutilizable: botones por tipo (información, solicitud,
+//      encuesta), filtro por tipo y orden, feed unificado de posts + encuestas.
 //
 // Hay tests puros (fórmulas canónicas), estructurales (lectura de fuente para
 // garantizar que la arquitectura no reintroduzca la dependencia) y de motor
@@ -345,6 +347,7 @@ function runTestI() {
   const membersSrc = src('src/pages/api/guilds/[guildId]/members.ts');
   const pollsSrc = src('src/pages/api/polls.ts');
   const guildPage = src('app/guilds/[id]/page.tsx');
+  const carteleraSrc = src('src/components/Cartelera.tsx');
   const manualSrc = src('src/lib/manual.ts');
   const manualPage = src('app/manual/page.tsx');
   const landing = src('app/page.tsx');
@@ -385,10 +388,9 @@ function runTestI() {
   check('Guild page: lista miembros con badge de representante y toggle',
     guildPage.includes('Representante') && guildPage.includes('Elegir representante') && guildPage.includes('isRepresentative'),
     'identificatorio visible + gestión desde el gremio', group);
-  check('Guild page: sección de encuestas del gremio',
-    guildPage.includes('Encuestas del gremio') && guildPage.includes('PollCreateForm'),
-    'crear y votar dentro del gremio', group);
-
+  check('Gremio: la cartelera ensambla la votación de encuestas dentro del gremio',
+    carteleraSrc.includes('scope === \'guild\'' ) && carteleraSrc.includes('PollCreateForm'),
+    'crear y votar encuestas dentro del gremio, vía cartelera', group);
   check('Manual actualizado a 1.2.0 con changelog',
     manualSrc.includes("version: '1.2.0'") &&
       manualSrc.includes('Herramientas de gestión de gremios: representantes y encuestas'),
@@ -431,6 +433,7 @@ function runTestJ() {
   const postsSrc = src('src/pages/api/posts.ts');
   const communitySrc = src('app/community/page.tsx');
   const guildSrc = src('app/guilds/[id]/page.tsx');
+  const carteleraSrc = src('src/components/Cartelera.tsx');
   const detailSrc = src('app/community/[id]/page.tsx');
   const sanitizeSrc = src('src/lib/sanitize.ts');
   const manualSrc = src('src/lib/manual.ts');
@@ -445,18 +448,17 @@ function runTestJ() {
       sanitizeSrc.includes("'pre'") &&
       sanitizeSrc.includes("'a'"),
     'etiquetas controladas, nada de estilos ni scripts', group);
-  check('Editor con controles en comunidad y gremio (sin escribir código)',
-    communitySrc.includes('RichEditor') && guildSrc.includes('RichEditor'),
+  check('Editor con controles en la cartelera de comunidad y gremio (sin escribir código)',
+    carteleraSrc.includes('RichEditor') && communitySrc.includes('Cartelera') && guildSrc.includes('Cartelera'),
     'barra de formato fácil de usar en ambos muros', group);
   check('Detalle de publicación renderiza formato de foro',
     detailSrc.includes('RichText') && detailSrc.includes('flex h-8 w-8'),
     'autor con avatar + cuerpo tipográfico del hilo', group);
   check('Listados muestran anticipo del contenido formateado',
-    communitySrc.includes('<RichText') && guildSrc.includes('<RichText'),
+    carteleraSrc.includes('<RichText'),
     'preview con aspecto de publicación', group);
-  check('Manual 1.3.0 documenta el formato',
-    manualSrc.includes("version: '1.3.0'") &&
-      manualSrc.includes('Publicaciones con formato enriquecido'),
+  check('Manual documenta el formato',
+    manualSrc.includes('Publicaciones con formato enriquecido'),
     'protocolo de manual cumplido', group);
   check('Manual explica la sanitización al usuario',
     manualPage.includes('<strong>Publicaciones con formato</strong>') &&
@@ -521,6 +523,46 @@ function runTestK() {
     'tarjeta de compatir usa la pregunta de propiedad', group);
 }
 
+function runTestL() {
+  const group = 'Test L — cartelera: botones, filtro y feed unificado (comunidad y gremios)';
+
+  const cartelera = src('src/components/Cartelera.tsx');
+  const community = src('app/community/page.tsx');
+  const guild = src('app/guilds/[id]/page.tsx');
+
+  check('Ambas páginas usan la Cartelera (sin formularios intercalados)',
+    community.includes('Cartelera') && guild.includes('Cartelera'),
+    'los campos de crear no quedan entre el contenido', group);
+  check('Cartelera tiene tres botones por tipo (Información, Solicitud, Encuesta)',
+    cartelera.includes('label: \'Información\'') &&
+      cartelera.includes('label: \'Solicitud comunitaria\'') &&
+      cartelera.includes('label: \'Encuesta\''),
+    'creación colapsada detrás de los botones superiores', group);
+  check('El formulario crea publicaciones con el tipo elegido y el alcance correcto',
+    cartelera.includes('type: composer') &&
+      cartelera.includes("guildId: scope === 'guild' ? guildId : null"),
+    'informativa/solicitud se publican con el alcance de la cartelera', group);
+  check('La encuesta se crea desde el panel con su formulario dedicado',
+    cartelera.includes('PollCreateForm') &&
+      cartelera.includes("composer === 'poll'"),
+    'el botón Encuesta abre el formulario de encuesta', group);
+  check('Filtro por tipo debajo de los botones (todos/información/solicitudes/encuestas)',
+    ['Todos', 'Información', 'Solicitudes', 'Encuestas'].every((f) => cartelera.includes(`label: '${f}'`)) &&
+      cartelera.includes("setFilterType(f.value)"),
+    'filtrar el contenido por tipo', group);
+  check('Cartelera ordenable de más nuevos a más antiguos y viceversa',
+    cartelera.includes("return order === 'desc' ? tb - ta : ta - tb"),
+    'orden ascendente y descendente por fecha', group);  check('El feed une publicaciones y encuestas ordenadas por fecha',
+    cartelera.includes("kind: 'post'") &&
+      cartelera.includes("kind: 'poll'") &&
+      cartelera.includes('PollCard') &&
+      cartelera.includes('<RichText'),
+    'contenido unificado debajo, con el formato de foro', group);
+  check('Pulsar una publicación lleva a su contenido completo',
+    cartelera.includes('/community/') && cartelera.includes('item.data.id'),
+    'clic accede a toda la publicación', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -534,6 +576,7 @@ function main() {
   runTestI();
   runTestJ();
   runTestK();
+  runTestL();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -553,6 +596,7 @@ function main() {
       'Gremios: representantes y encuestas con trazabilidad': !failures.join().includes('Test I'),
       'Publicaciones con formato enriquecido (sanitizado)': !failures.join().includes('Test J'),
       'Framing: propiedad productiva participativa (no redistribución, no RBU)': !failures.join().includes('Test K'),
+      'Cartelera reutilizable con botones, filtro y feed unificado': !failures.join().includes('Test L'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

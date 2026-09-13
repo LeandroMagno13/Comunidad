@@ -1,7 +1,7 @@
 {
-  "fecha": "2026-09-13T14:54:23.335Z",
-  "total": 93,
-  "passed": 93,
+  "fecha": "2026-09-13T16:50:07.742Z",
+  "total": 101,
+  "passed": 101,
   "failed": 0,
   "failures": [],
   "criterios": {
@@ -15,6 +15,7 @@
     "Ronda D: urgencia presupuestada y piso de dignidad": true,
     "Gremios: representantes y encuestas con trazabilidad": true,
     "Publicaciones con formato enriquecido (sanitizado)": true,
-    "Framing: propiedad productiva participativa (no redistribución, no RBU)": true
+    "Framing: propiedad productiva participativa (no redistribución, no RBU)": true,
+    "Cartelera reutilizable con botones, filtro y feed unificado": true
   }
 }

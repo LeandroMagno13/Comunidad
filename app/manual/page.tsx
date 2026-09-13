@@ -151,6 +151,13 @@ export default function ManualPage() {
               participación y queda registrada. No hay pago de por medio.
             </li>
             <li>
+              <strong>Cartelera</strong>: en Comunidad y en cada gremio, los formularios no están
+              intercalados: arriba de cada cartelera elegís con tres botones qué querés publicar
+              (Información, Solicitud comunitaria o Encuesta) y se abre el formulario correspondiente.
+              Debajo hay filtros para ordenar de más antiguo a más nuevo (o al revés) y para mostrar
+              solo información, solicitudes o encuestas.
+            </li>
+            <li>
               <strong>Publicaciones con formato</strong>: el editor da controles simples — titulares
               (H1–H3), negrita, cursiva, listas, citas, bloques de código, separadores y enlaces — sin
               escribir código. Solo se guarda un subconjunto seguro y todo se sanea al guardar y al
@@ -174,6 +181,13 @@ export default function ManualPage() {
               generales, con opciones y un enlace opcional a la publicación referida. Vota quien corresponde
               (miembros activos del gremio; cualquier usuario registrado en la comunidad) y cada voto queda
               registrado con usuario, opción y fecha: los resultados son consultables con trazabilidad.
+            </li>
+            <li>
+              <strong>Cartelera</strong>: en <L href="/community">Comunidad</L> y en cada gremio los
+              formularios no interrumpen el contenido. Arriba hay tres botones — <strong>Información</strong>,{' '}
+              <strong>Solicitud comunitaria</strong> y <strong>Encuesta</strong> — que abren el formulario del
+              tipo elegido, y debajo filtros para ordenar de más antiguas a más nuevas o al revés y para ver
+              solo información, solo solicitudes o solo encuestas. El contenido unificado aparece debajo.
             </li>
             <li>
               <strong>Mensajes</strong> (<L href="/messages">Mensajes</L>): conversaciones directas entre

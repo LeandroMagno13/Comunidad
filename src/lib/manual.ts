@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.4.0';
+export const MANUAL_VERSION = '1.5.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-13';
 
@@ -19,6 +19,16 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.5.0',
+    date: '2026-09-13',
+    title: 'Cartelera unificada en Comunidad y Gremios',
+    notes: [
+      'Los formularios de publicación y de encuestas ya no quedan intercalados con el contenido: arriba de cada cartelera hay tres botones (Información, Solicitud comunitaria y Encuesta) que abren el formulario del tipo elegido.',
+      'Debajo de los botones hay filtros: ordenar de más antiguo a más nuevo o al revés, y mostrar todo, solo información, solo solicitudes o solo encuestas.',
+      'El contenido aparece unificado debajo: publicaciones y encuestas se ordenan por fecha y, al pulsar una publicación, se accede a su contenido completo.',
+    ],
+  },
   {
     version: '1.4.0',
     date: '2026-09-13',
