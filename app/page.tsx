@@ -285,6 +285,10 @@ export default function LandingPage() {
                 <dt className="text-xs font-semibold text-slate-500">Piso de dignidad (Ronda D)</dt>
                 <dd className="mt-0.5 text-sm text-slate-800">Indicador principal (suficientarismo): cuántos quedan debajo del piso y cuánto les falta</dd>
               </div>
+              <div>
+                <dt className="text-xs font-semibold text-slate-500">Gestión de gremios</dt>
+                <dd className="mt-0.5 text-sm text-slate-800">Representantes elegidos entre los miembros y encuestas gremiales/comunitarias con voto registrado y trazabilidad</dd>
+              </div>
             </dl>
             <p className="border-t border-slate-200 bg-slate-50 px-6 py-3 text-xs text-slate-500">
               Laboratorio experimental sobre participación, capacidades humanas, automatización y propiedad
@@ -603,7 +607,10 @@ export default function LandingPage() {
                 Son los círculos de organización por especialidad (economía, derecho, tecnología, cultura…).
                 Ahí la comunidad discute cómo avanzar, propone reglas experimentales y decide el rumbo. No son
                 clubes sociales: son la capa donde el experimento se ejecuta. La estructura definitiva del
-                patrimonio, por ejemplo, la definiría un gremio.
+                patrimonio, por ejemplo, la definiría un gremio. Para gobernarse, los gremios eligen
+                representantes entre sus miembros (con distintivo visible) y deciden por encuestas con
+                trazabilidad: internas de cada gremio y generales de la comunidad, siempre con el voto
+                registrado y consultable.
               </p>
             </div>
             <div className="rounded-2xl border border-gray-200 bg-white p-6">
@@ -676,7 +683,8 @@ export default function LandingPage() {
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-amber-900 text-sm mb-6">
             <p>
               <strong>Esto es un laboratorio.</strong> Llegamos hasta acá: registro, participación, gremios,
-              señales, niveles de acceso, presupuesto de urgencia y piso de dignidad. Toda regla es
+              señales, niveles de acceso, presupuesto de urgencia, piso de dignidad y herramientas de gestión
+              de gremios (representantes y encuestas con trazabilidad). Toda regla es
               experimental, parametrizada y reversible, y el
               sistema no se detiene en lo que está escrito hoy:{' '}
               <span className="font-semibold">
@@ -1168,7 +1176,8 @@ export default function LandingPage() {
           </h2>
           <p className="text-center text-gray-600 text-lg mb-12 max-w-3xl mx-auto">
             Nos agrupamos por profesión o problema concreto. Cada gremio tiene objetivos inmediatos
-            que resolver.
+            que resolver. Para decidir, los gremios eligen representantes entre sus miembros y votan en
+            encuestas internas o generales de la comunidad: cada voto queda registrado y consultable.
           </p>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

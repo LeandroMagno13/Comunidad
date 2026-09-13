@@ -153,6 +153,17 @@ export default function ManualPage() {
               derecho, tecnología, cultura…). Ahí se discute cómo avanzar el experimento y se proponen reglas.
             </li>
             <li>
+              <strong>Representantes</strong>: cada gremio puede elegir uno o varios representantes entre sus
+              miembros activos, con distintivo visible. Solo el creador o admin del gremio designa o quita
+              representantes, siempre entre miembros activos.
+            </li>
+            <li>
+              <strong>Encuestas</strong>: cada gremio crea sus encuestas internas y la comunidad crea encuestas
+              generales, con opciones y un enlace opcional a la publicación referida. Vota quien corresponde
+              (miembros activos del gremio; cualquier usuario registrado en la comunidad) y cada voto queda
+              registrado con usuario, opción y fecha: los resultados son consultables con trazabilidad.
+            </li>
+            <li>
               <strong>Mensajes</strong> (<L href="/messages">Mensajes</L>): conversaciones directas entre
               miembros.
             </li>

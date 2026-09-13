@@ -151,6 +151,38 @@ async function membershipAction(req: NextApiRequest, res: NextApiResponse, guild
       return res.status(200).json({ success: true });
     }
 
+    case 'set-representative': {
+      if (!isCreatorOrAdmin) {
+        return res.status(403).json({ error: 'No tienes permisos para gestionar representantes' });
+      }
+      if (!userId) {
+        return res.status(400).json({ error: 'Falta el usuario' });
+      }
+      const membership = await db.guildMembership.findUnique({
+        where: { userId_guildId: { userId: userId as string, guildId } },
+      });
+      if (!membership || membership.status !== 'active') {
+        return res.status(400).json({ error: 'El usuario debe ser miembro activo' });
+      }
+      const isRepresentative = Boolean(req.body.isRepresentative);
+      await db.guildMembership.update({
+        where: { id: membership.id },
+        data: { isRepresentative },
+      });
+      if (isRepresentative) {
+        await db.notification.create({
+          data: {
+            userId: membership.userId,
+            type: 'guild_representative',
+            title: 'Nuevo representante',
+            content: `La comunidad te eligió representante de ${guild.name}`,
+            link: `/guilds/${guildId}`,
+          },
+        });
+      }
+      return res.status(200).json({ success: true, isRepresentative });
+    }
+
     default:
       return res.status(400).json({ error: 'Acción inválida' });
   }

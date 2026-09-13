@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import PollCard, { PollData } from '@/src/components/PollCard';
+import PollCreateForm from '@/src/components/PollCreateForm';
 
 type PostItem = {
   id: string;
@@ -32,6 +34,7 @@ export default function CommunityPage() {
   const [postType, setPostType] = useState('update');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [polls, setPolls] = useState<PollData[]>([]);
 
   async function load() {
     const res = await fetch('/api/posts');
@@ -42,8 +45,14 @@ export default function CommunityPage() {
     setPosts(await res.json());
   }
 
+  async function loadPolls() {
+    const res = await fetch('/api/polls?scope=community');
+    if (res.ok) setPolls(await res.json());
+  }
+
   useEffect(() => {
     load();
+    loadPolls();
   }, []);
 
   async function createPost(e: React.FormEvent) {
@@ -140,6 +149,24 @@ export default function CommunityPage() {
           </button>
         </div>
       </form>
+
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold text-gray-900">Encuestas de la comunidad</h2>
+        <p className="mt-1 text-xs text-gray-500">
+          La comunidad decide por votación con trazabilidad: cada voto queda registrado y consultable, y puede
+          enlazarse a la publicación que le da contexto.
+        </p>
+        <div className="mt-3 space-y-4">
+          <PollCreateForm scope="community" onCreated={loadPolls} />
+          {polls.length === 0 ? (
+            <p className="rounded-lg border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
+              Aún no hay encuestas comunitarias.
+            </p>
+          ) : (
+            polls.map((poll) => <PollCard key={poll.id} poll={poll} onChanged={loadPolls} />)
+          )}
+        </div>
+      </div>
 
       <div className="mt-8 space-y-4">
         {posts.length === 0 ? (

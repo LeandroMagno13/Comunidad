@@ -42,6 +42,8 @@ model User {
   cuAccessLevel              String          @default("basic") // básico | medio | avanzado (asignación, no jerarquía)
   urgencyBudgetRemaining     Int             @default(0) // presupuesto de urgencia restante del período (RONDA D)
   urgencyBudgetPeriod        String          @default("") // clave de período en que se asignó (no acumulable entre períodos)
+  createdPolls               Poll[]          @relation("PollCreator")
+  pollVotes                  PollVote[]      @relation("PollVoter")
   userCapacities             UserCapacity[]
   capacityRequestsAsker      CapacityRequest[] @relation("CapacityRequestAsker")
   capacityRequestsProvider   CapacityRequest[] @relation("CapacityRequestProvider")
@@ -99,17 +101,19 @@ model Guild {
   projects    Project[]
   discussions Discussion[]
   posts       Post[]
+  polls       Poll[]
 }
 
 model GuildMembership {
-  id       String   @id @default(cuid())
-  userId   String
-  guildId  String
-  role     String   @default("member")
-  status   String   @default("pending")
-  joinedAt DateTime @default(now())
-  user     User     @relation(fields: [userId], references: [id])
-  guild    Guild    @relation(fields: [guildId], references: [id])
+  id               String   @id @default(cuid())
+  userId           String
+  guildId          String
+  role             String   @default("member")
+  status           String   @default("pending")
+  isRepresentative Boolean  @default(false) // representante elegido entre los miembros (gestión de gremios)
+  joinedAt         DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id])
+  guild            Guild    @relation(fields: [guildId], references: [id])
 
   @@unique([userId, guildId])
 }
@@ -249,6 +253,7 @@ model Post {
   comments       Comment[]
   reports        Report[]
   participationEvents ParticipationEvent[]
+  polls          Poll[]
 }
 
 model Comment {
@@ -464,4 +469,50 @@ model ParticipationEvent {
 
   @@index([participantId])
   @@index([postId])
+}
+
+// ============================================================================
+// ENCUESTAS (gremiales y comunitarias) con trazabilidad — §Lee.txt (herramientas
+// de gestión de gremios). Resultados registrados y consultables: cada voto
+// queda como registro inmutable (usuario + opción + timestamp).
+// ============================================================================
+
+model Poll {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  scope       String      @default("guild") // guild | community
+  guildId     String?
+  postId      String? // enlace a la publicación referida (opcional)
+  createdById String
+  isClosed    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+
+  options PollOption[]
+  votes   PollVote[]
+
+  guild     Guild? @relation(fields: [guildId], references: [id], onDelete: SetNull)
+  post      Post?  @relation(fields: [postId], references: [id], onDelete: SetNull)
+  createdBy User   @relation("PollCreator", fields: [createdById], references: [id])
+}
+
+model PollOption {
+  id     String      @id @default(cuid())
+  pollId String
+  text   String
+  poll   Poll        @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes  PollVote[]
+}
+
+model PollVote {
+  id        String     @id @default(cuid())
+  pollId    String
+  optionId  String
+  userId    String
+  createdAt DateTime   @default(now())
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  user      User       @relation("PollVoter", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, userId]) // un voto por usuario por encuesta (trazabilidad íntegra)
 }

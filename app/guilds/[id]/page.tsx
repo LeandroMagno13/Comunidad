@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import PollCard, { PollData } from '@/src/components/PollCard';
+import PollCreateForm from '@/src/components/PollCreateForm';
 
 type Member = {
   id: string;
   role: string;
   status: string;
+  isRepresentative: boolean;
   user: { id: string; name: string; profile?: { profession?: string | null; bio?: string | null } | null };
 };
 
@@ -41,6 +44,7 @@ export default function GuildDetailPage() {
   const [postContent, setPostContent] = useState('');
   const [postType, setPostType] = useState('update');
   const [error, setError] = useState('');
+  const [polls, setPolls] = useState<PollData[]>([]);
 
   async function loadMembers() {
     const res = await fetch(`/api/guilds/${guildId}/members`);
@@ -54,6 +58,11 @@ export default function GuildDetailPage() {
   async function loadPosts() {
     const res = await fetch(`/api/posts?guildId=${guildId}`);
     if (res.ok) setPosts(await res.json());
+  }
+
+  async function loadPolls() {
+    const res = await fetch(`/api/polls?scope=guild&guildId=${guildId}`);
+    if (res.ok) setPolls(await res.json());
   }
 
   async function loadGuild() {
@@ -72,15 +81,20 @@ export default function GuildDetailPage() {
     loadGuild();
     loadMembers();
     loadPosts();
+    loadPolls();
   }, [guildId]);
 
-  async function membershipAction(action: string, userId?: string) {
+  async function membershipAction(action: string, userId?: string, extra?: Record<string, unknown>) {
     const res = await fetch(`/api/guilds/${guildId}/members`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, userId }),
+      body: JSON.stringify({ action, userId, ...extra }),
     });
     if (res.ok) await loadMembers();
+  }
+
+  function toggleRepresentative(m: Member) {
+    membershipAction('set-representative', m.user.id, { isRepresentative: !m.isRepresentative });
   }
 
   async function createPost(e: React.FormEvent) {
@@ -225,6 +239,23 @@ export default function GuildDetailPage() {
               ))
             )}
           </div>
+
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold text-gray-900">Encuestas del gremio</h2>
+            <p className="mt-1 text-xs text-gray-500">
+              El gremio decide por votación con trazabilidad: cada voto queda registrado y consultable.
+            </p>
+            <div className="mt-3 space-y-4">
+              <PollCreateForm scope="guild" guildId={guildId} onCreated={loadPolls} />
+              {polls.length === 0 ? (
+                <p className="rounded-lg border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
+                  Aún no hay encuestas en este gremio.
+                </p>
+              ) : (
+                polls.map((poll) => <PollCard key={poll.id} poll={poll} onChanged={loadPolls} />)
+              )}
+            </div>
+          </div>
         </>
       )}
 
@@ -264,17 +295,34 @@ export default function GuildDetailPage() {
         <ul className="mt-3 divide-y divide-gray-100">
           {active.map((m) => (
             <li key={m.id} className="flex items-center justify-between py-2">
-              <div className="flex items-center gap-2">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{m.user.name}</p>
-                  <p className="text-xs text-gray-500">{m.user.profile?.profession || ''}</p>
-                </div>
-                {m.role === 'admin' && (
-                  <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
-                    admin
-                  </span>
-                )}
-              </div>
+<div className="flex items-center gap-2">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{m.user.name}</p>
+                      <p className="text-xs text-gray-500">{m.user.profile?.profession || ''}</p>
+                    </div>
+                    {m.role === 'admin' && (
+                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
+                        admin
+                      </span>
+                    )}
+                    {m.isRepresentative && (
+                      <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-violet-700">
+                        Representante
+                      </span>
+                    )}
+                  </div>
+                  {canModerate && (
+                    <button
+                      onClick={() => toggleRepresentative(m)}
+                      className={`rounded-md px-3 py-1 text-xs font-medium ${
+                        m.isRepresentative
+                          ? 'border border-violet-200 text-violet-700 hover:bg-violet-50'
+                          : 'text-gray-500 hover:bg-gray-50'
+                      }`}
+                    >
+                      {m.isRepresentative ? 'Quitar representante' : 'Elegir representante'}
+                    </button>
+                  )}
             </li>
           ))}
         </ul>

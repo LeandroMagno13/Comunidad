@@ -11,6 +11,9 @@
 //   G  Engine y producto comparten las mismas reglas de capacidad/niveles.
 //   H  RONDA D: la urgencia es presupuestada (no acumulable, costo cuadrático,
 //      no comprable con CU) y el piso de dignidad es el indicador principal.
+//   I  Herramientas de gestión de gremios (representantes y encuestas con
+//      trazabilidad): representante es un distintivo sobre GuildMembership,
+//      los votos quedan registrados y la gobernanza no toca CU.
 //
 // Hay tests puros (fórmulas canónicas), estructurales (lectura de fuente para
 // garantizar que la arquitectura no reintroduzca la dependencia) y de motor
@@ -329,6 +332,69 @@ function runTestH() {
     'el Gini queda como contexto secundario/legacy', group);
 }
 
+function runTestI() {
+  const group = 'Test I — gremios: representantes y encuestas con trazabilidad';
+
+  const schema = src('prisma/schema.prisma');
+  const membersSrc = src('src/pages/api/guilds/[guildId]/members.ts');
+  const pollsSrc = src('src/pages/api/polls.ts');
+  const guildPage = src('app/guilds/[id]/page.tsx');
+  const manualSrc = src('src/lib/manual.ts');
+  const manualPage = src('app/manual/page.tsx');
+  const landing = src('app/page.tsx');
+
+  check('Schema: GuildMembership tiene distintivo de representante (booleano)',
+    /isRepresentative\s+Boolean\s+@default\(false\)/.test(schema),
+    'representante es una propiedad de la membresía, no un modelo paralelo', group);
+  check('Schema: existe el modelo Poll (scope guild|community)',
+    /model Poll\s*\{/.test(schema) && /scope\s+String\s+@default\("guild"\)/.test(schema),
+    'alcance gremial por defecto, comunitario explícito', group);
+  check('Schema: Poll enlaza publicación referida (postId)',
+    /postId\s+String\?/.test(schema) && /enlace a la publicación referida/.test(schema),
+    'la encuesta puede referir a su publicación de contexto', group);
+  check('Schema: voto único por usuario (trazabilidad íntegra)',
+    /@@unique\(\[pollId,\s*userId\]\)/.test(schema) && /model PollVote\s*\{/.test(schema),
+    'un voto por persona; cada registro conserva usuario/opción/fecha', group);
+  check('Schema: Post y User llevan las relaciones de encuestas',
+    /\bpolls\s+Poll\[\]/.test(schema),
+    'back-relations en Post y Guild', group);
+
+  check('API members: acción set-representative con validación de permisos',
+    membersSrc.includes(`case 'set-representative'`) && membersSrc.includes('isCreatorOrAdmin') && membersSrc.includes('isRepresentative'),
+    'solo creador/admin designa representantes', group);
+  check('API polls: expone crear, votar y cerrar',
+    pollsSrc.includes("action === 'create'") && pollsSrc.includes("action === 'vote'") && pollsSrc.includes("action === 'close'"),
+    'ciclo completo de una encuesta', group);
+  check('API polls: encuesta gremial exige membresía activa para crear y votar',
+    pollsSrc.includes('Debes ser miembro activo del gremio para crear encuestas') &&
+      pollsSrc.includes('Debes ser miembro activo del gremio para votar'),
+    'lo interno del gremio es de sus miembros', group);
+  check('API polls: voto registrado con trazabilidad (usuario+opción+fecha)',
+    pollsSrc.includes('registration') || (pollsSrc.includes('createdAt') && pollsSrc.includes('optionText')),
+    'el serializador expone cada voto con su autor', group);
+  check('API polls: no transfiere CU (gobernanza sin dinero)',
+    !pollsSrc.includes('transferCu') && !pollsSrc.includes('cuCommitted'),
+    'votar y crear encuestas no mueve CU', group);
+
+  check('Guild page: lista miembros con badge de representante y toggle',
+    guildPage.includes('Representante') && guildPage.includes('Elegir representante') && guildPage.includes('isRepresentative'),
+    'identificatorio visible + gestión desde el gremio', group);
+  check('Guild page: sección de encuestas del gremio',
+    guildPage.includes('Encuestas del gremio') && guildPage.includes('PollCreateForm'),
+    'crear y votar dentro del gremio', group);
+
+  check('Manual actualizado a 1.2.0 con changelog',
+    manualSrc.includes("version: '1.2.0'") &&
+      manualSrc.includes('Herramientas de gestión de gremios: representantes y encuestas'),
+    'protocolo de manual cumplido', group);
+  check('Manual explica representantes y encuestas',
+    manualPage.includes('<strong>Representantes</strong>') && manualPage.includes('<strong>Encuestas</strong>'),
+    'participación documentada', group);
+  check('Landing «entender el modelo» describe las herramientas de gestión',
+    landing.includes('representantes') && landing.includes('encuestas') && landing.includes('trazabilidad'),
+    'sección #modelo coherente con el manual', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -339,6 +405,7 @@ function main() {
   runTestF();
   runTestG();
   runTestH();
+  runTestI();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -355,6 +422,7 @@ function main() {
       'Patrimonio no altera CU': !failures.join().includes('Test F'),
       'Engine y producto comparten reglas': !failures.join().includes('Test G'),
       'Ronda D: urgencia presupuestada y piso de dignidad': !failures.join().includes('Test H'),
+      'Gremios: representantes y encuestas con trazabilidad': !failures.join().includes('Test I'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

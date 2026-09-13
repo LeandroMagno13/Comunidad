@@ -1,7 +1,7 @@
 {
-  "fecha": "2026-09-13T00:42:26.333Z",
-  "total": 56,
-  "passed": 56,
+  "fecha": "2026-09-13T03:34:49.391Z",
+  "total": 71,
+  "passed": 71,
   "failed": 0,
   "failures": [],
   "criterios": {
@@ -12,6 +12,7 @@
     "Presión y carga independientes": true,
     "Patrimonio no altera CU": true,
     "Engine y producto comparten reglas": true,
-    "Ronda D: urgencia presupuestada y piso de dignidad": true
+    "Ronda D: urgencia presupuestada y piso de dignidad": true,
+    "Gremios: representantes y encuestas con trazabilidad": true
   }
 }

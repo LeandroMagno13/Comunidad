@@ -7,9 +7,9 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.1.0';
+export const MANUAL_VERSION = '1.2.0';
 
-export const MANUAL_UPDATED_AT = '2026-09-12';
+export const MANUAL_UPDATED_AT = '2026-09-13';
 
 export interface ManualChange {
   version: string;
@@ -19,6 +19,17 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.2.0',
+    date: '2026-09-13',
+    title: 'Herramientas de gestión de gremios: representantes y encuestas',
+    notes: [
+      'Cada gremio puede elegir uno o varios representantes entre sus miembros activos; los representantes llevan identificatorio (distintivo «Representante»).',
+      'Se pueden crear encuestas internas de cada gremio y encuestas generales de la comunidad, con opciones y un enlace opcional a la publicación referida.',
+      'Los resultados quedan registrados y consultables con trazabilidad: cada voto conserva usuario, opción y fecha.',
+      'Los representantes solo pueden ser designados por el creador o admin del gremio; las encuestas internas solo las crean y votan miembros activos del gremio.',
+    ],
+  },
   {
     version: '1.1.0',
     date: '2026-09-12',
