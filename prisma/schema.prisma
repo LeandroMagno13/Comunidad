@@ -48,6 +48,9 @@ model User {
   capacityRequestsAsker      CapacityRequest[] @relation("CapacityRequestAsker")
   capacityRequestsProvider   CapacityRequest[] @relation("CapacityRequestProvider")
   participationEvents        ParticipationEvent[]
+  // ---- Membrana de integraciï¿½n (RONDA F): agentes externos, aditivo, no afecta C/D/E ----
+  agents                     Agent[]         @relation("AgentOwner")
+  agentActionLogs            AgentActionLog[] @relation("AgentActionOwner")
 }
 
 model Profile {
@@ -515,4 +518,77 @@ model PollVote {
   user      User       @relation("PollVoter", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([pollId, userId]) // un voto por usuario por encuesta (trazabilidad Ã­ntegra)
+}
+
+// =====================================================================
+// RONDA F - MEMBRANA DE INTEGRACI?N (agentes externos + API p?blica)
+// Aditivo. No toca ninguna relaci?n/modelo de Rondas C, D ni E.
+// ---------------------------------------------------------------------
+// Reglas de la membrana (Lee.txt §2, §5, §6, §8, §9, §10, §14, §16):
+//   - El agente NUNCA escala a SUPER_ADMIN: el motor verifica y rechaza
+//     cualquier intento de permiso SUPER_ADMIN al crear/editar el agente.
+//   - INTERNAL (interfaz interna, gestionada por c?digo propio) vs
+//     EXTERNAL (creada por el usuario v?a UI/API): la API p?blica de
+//     agentes solo ve EXTERNAL; la interfaz interna solo ve INTERNAL.
+//   - Tokens guardados como hash (nunca en claro); se muestran UNA sola
+//     vez al crear. Revocable de inmediato (valida contra DB en cada req).
+//   - Cada acci?n se registra con trazabilidad: user_id + agent_id +
+//     acci?n + fecha + ip (AgentActionLog).
+//   - La API p?blica (/api/v1/public/*) es READ-ONLY.
+// =====================================================================
+
+model Agent {
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  kind        String             @default("EXTERNAL") // EXTERNAL | INTERNAL (membrana)
+  status      String             @default("active")   // active | revoked | blocked
+  revokedAt   DateTime?
+  blockedAt   DateTime?
+  blockedReason String?
+  permissions String[]           // permisos granulares concedidos (ej: ["READ_POSTS","WRITE_POSTS"])
+  rateLimitPerMinute Int         @default(30) // l?mite de solicitudes/min por token (configurable por agente)
+  lastUsedAt  DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  owner       User               @relation("AgentOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String
+  tokens      AgentToken[]
+  actionLogs  AgentActionLog[]
+
+  @@index([ownerId, status])
+}
+
+model AgentToken {
+  id         String    @id @default(cuid())
+  name       String?
+  hash       String    @unique // sha256 del token en claro; nunca se guarda el token
+  prefix     String // primeros 8 caracteres visibles en la UI (identificaci?n sin exponer secreto)
+  agentId    String
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  expiresAt  DateTime?
+  agent      Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, name])
+  @@index([agentId])
+}
+
+model AgentActionLog {
+  id         String   @id @default(cuid())
+  userId     String // operador real: el humano al que pertenece el agente
+  agentId    String
+  action     String // p.ej. "public.api.read", "agent.posts.create"
+  endpoint   String
+  method     String
+  statusCode Int
+  ip         String?
+  extra      String? // payload resumido/saneado (metadatos, no secretos)
+  createdAt  DateTime @default(now())
+  user       User     @relation("AgentActionOwner", fields: [userId], references: [id], onDelete: Cascade)
+  agent      Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([agentId, createdAt])
 }
