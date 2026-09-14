@@ -72,8 +72,23 @@ Endpoints publicos confirmados (los unicos que existen HOY):
 - GET /api/v1/public/community     -> perfil general de la comunidad
 - GET /api/v1/public/posts         -> posts publicos (READ_PUBLIC)
 - GET /api/v1/public/polls         -> polls visibles (READ_POLLS)
-- GET /api/v1/external/bandeja/*   -> SOLO EXTERNAL autorizado por su dueno
-  (notificaciones | mensajes | solicitudes | polls), cada consulta trazada
+- GET /api/v1/external/bandeja/*   NO EXISTE (correccion RONDA H): jamas hubo
+  y no debe llamarse una ruta publica de bandejas internas. La bandeja que un
+  agente EXTERNAL consulta le pertenece SOLO a su dueno y solo si la membrana
+  lo autoriza; un agente INTERNAL la sirve 24/7 por su ciclo, nunca por aqui.
+
+- GET  /api/v1/external/agents      -> lista tus propios agentes (nunca los de
+                                       otro): clase, estado, permisos, ultima
+                                       actividad. Trazado. (RONDA H)
+- POST /api/v1/external/agents      -> crea un agente EXTERNAL y emite UNA
+                                       credencial en claro UNA unica vez; en
+                                       la base solo el hash (HMAC-SHA256) y un
+                                       prefijo. Trazado. (RONDA H)
+- PATCH /api/v1/external/agents     -> revoca | bloquea | activa un agente de
+                                       tu propiedad (opcion `action`). Las
+                                       credenciales revocadas dejan de servir
+                                       y los bloqueados no emiten intents.
+                                       Trazado. (RONDA H)
 
 No existe hoy (y no debe llamarse): una ruta publica que exponga bandejas
 internas, cambios de rol a SUPER_ADMIN, o el token del agente interno. Si la

@@ -19,7 +19,7 @@
     "sin secretos/privados": true,
     "identidad/auditoria": true
   },
-  "generatedAt": "2026-09-14T00:35:47.423Z",
+  "generatedAt": "2026-09-14T12:40:40.034Z",
   "engine": "src/lib/agents/engine.ts",
   "store": "scripts/agents/membrane-tests.ts::MemoryAgentStore"
 }
