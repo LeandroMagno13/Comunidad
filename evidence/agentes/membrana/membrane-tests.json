@@ -1,0 +1,25 @@
+{
+  "ronda": "G",
+  "suite": "MembraneTestM",
+  "total": 19,
+  "passed": 19,
+  "failed": 0,
+  "failures": [],
+  "criterios": {
+    "verifyAgentToken": true,
+    "permisos AND": true,
+    "INTERNAL vs EXTERNAL": true,
+    "SUPER_ADMIN no por API publica": true,
+    "revocacion": true,
+    "bloqueo": true,
+    "expiracion": true,
+    "IDOR/ownership": true,
+    "rate limiting/429": true,
+    "whitelist API publica": true,
+    "sin secretos/privados": true,
+    "identidad/auditoria": true
+  },
+  "generatedAt": "2026-09-14T00:35:47.423Z",
+  "engine": "src/lib/agents/engine.ts",
+  "store": "scripts/agents/membrane-tests.ts::MemoryAgentStore"
+}

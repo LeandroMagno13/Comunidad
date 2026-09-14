@@ -1,0 +1,97 @@
+{
+  "ronda": "G",
+  "seccion": 2,
+  "suite": "InternalSuperAdminTestN",
+  "total": 11,
+  "passed": 11,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "N1_credenciales_por_ENV",
+      "pass": true,
+      "detail": "no hay token en claro hardcodeado en la suite; se inyecta por ENV/secret"
+    },
+    {
+      "name": "N2_separacion_arquitectonica",
+      "pass": true,
+      "detail": "INTERNAL (sistema/operador 24/7) separado de EXTERNAL (dueno humano)"
+    },
+    {
+      "name": "N3_super_admin_inexpresable_publico",
+      "pass": true,
+      "detail": "SUPER_ADMIN es permiso elevado; no es un MembranePermission de la API publica"
+    },
+    {
+      "name": "N5_bandeja_notificaciones",
+      "pass": true,
+      "detail": "bandeja notificaciones consultable por la membrana interna autorizada (reason=ok)"
+    },
+    {
+      "name": "N6_bandeja_mensajes",
+      "pass": true,
+      "detail": "bandeja mensajes consultable por la membrana interna autorizada (reason=ok)"
+    },
+    {
+      "name": "N7_bandeja_posts",
+      "pass": true,
+      "detail": "bandeja posts consultable por la membrana interna autorizada (reason=ok)"
+    },
+    {
+      "name": "N8_bandeja_solicitudes",
+      "pass": true,
+      "detail": "bandeja solicitudes consultable por la membrana interna autorizada (reason=ok)"
+    },
+    {
+      "name": "N9_bandeja_polls",
+      "pass": true,
+      "detail": "bandeja polls consultable por la membrana interna autorizada (reason=ok)"
+    },
+    {
+      "name": "N11_trazabilidad",
+      "pass": true,
+      "detail": "cada consulta de bandeja queda registrada en el action log (logs=5)"
+    },
+    {
+      "name": "N10_external_no_escala_a_super_admin",
+      "pass": true,
+      "detail": "EXTERNAL con intent admin queda denegado (clase correcta, sin puerta trasera; reason=admin_only)"
+    },
+    {
+      "name": "N12_revocable_inmediato",
+      "pass": true,
+      "detail": "al revocar el token interno, decideMembrane deniega en el acto (reason=revoked)"
+    }
+  ],
+  "trayResults": [
+    {
+      "tray": "notificaciones",
+      "allowed": true,
+      "reason": "ok"
+    },
+    {
+      "tray": "mensajes",
+      "allowed": true,
+      "reason": "ok"
+    },
+    {
+      "tray": "posts",
+      "allowed": true,
+      "reason": "ok"
+    },
+    {
+      "tray": "solicitudes",
+      "allowed": true,
+      "reason": "ok"
+    },
+    {
+      "tray": "polls",
+      "allowed": true,
+      "reason": "ok"
+    }
+  ],
+  "regla_de_oro": {
+    "superAdminNoEsPuertaTrasera": true,
+    "tokenSoloPorENV": true
+  },
+  "generatedAt": "2026-09-14T02:11:46.884Z"
+}

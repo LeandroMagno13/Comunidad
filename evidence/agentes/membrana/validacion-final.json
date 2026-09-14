@@ -1,0 +1,33 @@
+{
+  "ronda": "G",
+  "seccion": 4,
+  "suite": "ValidacionFinalG",
+  "total": 4,
+  "rows": [
+    {
+      "nombre": "G1_solo_archivos_esperados",
+      "valor": "4 rutas"
+    },
+    {
+      "nombre": "G2_tsc_0_errores",
+      "valor": "OK"
+    },
+    {
+      "nombre": "G3_archivos_byte_fieles",
+      "valor": "src/lib/agents/engine.ts=14938B | src/lib/agents/internal-super-admin.ts=3776B | AGENTS.md=6917B"
+    },
+    {
+      "nombre": "G4_evidencias_en_disco",
+      "valor": "TestM=true TestN=true"
+    }
+  ],
+  "regla_de_oro": true,
+  "estados": {
+    "TestM_membrana": 19,
+    "TestN_interno": 11,
+    "AGENTS_contrato": "publicado",
+    "evidencia": "evidence/agentes/membrana/*.json",
+    "commit": "PENDIENTE aprobacion usuario (regla G: no commitear G sin OK)"
+  },
+  "generatedAt": "2026-09-14T02:15:18.969Z"
+}
