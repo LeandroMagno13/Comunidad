@@ -122,6 +122,7 @@ def new_ids(items, previous_ids, initialized):
 def collect_report_data():
     """Hace una sola consulta por recurso en cada ciclo horario."""
     initialized = bool(state.get("initialized"))
+    health = public_get("health")
     community = public_get("community")
     posts = public_get("posts", state.get("since_posts", ""))
     guilds = public_get("guilds", state.get("since_guilds", ""))
@@ -144,7 +145,7 @@ def collect_report_data():
         "requests": len(request_items) if requests and requests.get("ok") else "NO_DISPONIBLE", "requests_new": requests_new if requests and requests.get("ok") else "NO_DISPONIBLE",
         "polls": len(poll_items) if polls and polls.get("ok") else "NO_DISPONIBLE", "polls_new": polls_new if polls and polls.get("ok") else "NO_DISPONIBLE",
         "activity": len(activity_data.get("entries") or []) if activity and activity.get("ok") else "NO_DISPONIBLE",
-        "health": bool(community and community.get("ok")),
+        "health": bool(health and health.get("ok")),
     }
     state["since_posts"], state["since_guilds"], state["since_users"] = newest_cursor(posts, state.get("since_posts", "")), newest_cursor(guilds, state.get("since_guilds", "")), newest_cursor(users, state.get("since_users", ""))
     state["known_request_ids"], state["known_poll_ids"], state["initialized"] = request_ids, poll_ids, True

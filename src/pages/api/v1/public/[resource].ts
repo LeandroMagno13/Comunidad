@@ -33,6 +33,7 @@ export const PUBLIC_MAX_LIMIT = 200;
 // [RONDA H(b)] se agrega `users`. Orden de aparicion es el contrato real.
 // -----------------------------------------------------------------------------
 export const PUBLIC_RESOURCES = [
+  'health',    // disponibilidad básica del servicio público
   'community', // resumen de metricas publicas de la comunidad
   'posts',     // publicaciones visibles
   'guilds',    // gremios con miembros activos
@@ -62,6 +63,13 @@ export function publicLimit(req: NextApiRequest): number {
   const n = typeof raw === 'string' ? parseInt(raw, 10) : NaN;
   if (!Number.isFinite(n) || n < 1) return PUBLIC_DEFAULT_LIMIT;
   return Math.min(n, PUBLIC_MAX_LIMIT);
+}
+
+// -----------------------------------------------------------------------------
+// health: comprobación mínima, pública y sin acceso a datos de la comunidad.
+// -----------------------------------------------------------------------------
+function health() {
+  return { status: 'ok', service: 'postsingular-public-api', version: PUBLIC_VERSION };
 }
 
 // -----------------------------------------------------------------------------
@@ -326,6 +334,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     let data: unknown;
     switch (resource) {
+      case 'health': data = health(); break;
       case 'community': data = await community(db); break;
       case 'posts': data = await posts(db, limit, since); break;
       case 'guilds': data = await guilds(db, limit, since); break;

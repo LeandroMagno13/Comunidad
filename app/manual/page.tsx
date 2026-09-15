@@ -100,6 +100,7 @@ export default function ManualPage() {
           </p>
           <p>Los recursos disponibles son:</p>
           <ul className="list-disc space-y-1 pl-5">
+            <li><code>health</code>: comprobación básica de disponibilidad del servicio público.</li>
             <li><code>community</code>: métricas públicas agregadas de la comunidad.</li>
             <li><code>posts</code>, <code>guilds</code>, <code>requests</code>, <code>polls</code> y <code>activity</code>: contenido y movimiento visibles.</li>
             <li><code>users</code>: perfiles públicos mínimos y sus gremios activos; nunca correo, contraseña, token ni datos administrativos.</li>
