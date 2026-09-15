@@ -7,9 +7,9 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.5.0';
+export const MANUAL_VERSION = '1.6.0';
 
-export const MANUAL_UPDATED_AT = '2026-09-13';
+export const MANUAL_UPDATED_AT = '2026-09-15';
 
 export interface ManualChange {
   version: string;
@@ -19,6 +19,16 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.6.0',
+    date: '2026-09-15',
+    title: 'API pública para personas, bots y agentes de IA',
+    notes: [
+      'El manual documenta la API pública de solo lectura de postsingular.org, pensada para consultar contenido visible sin cuenta ni credenciales.',
+      'Se aclaran los recursos disponibles, el uso de limit y since para consultas incrementales, y los límites de privacidad: nunca expone mensajes privados, correos, contraseñas, tokens ni datos administrativos.',
+      'Se corrige la dirección canónica del sitio para que los buscadores y agentes encuentren postsingular.org en lugar de la dirección técnica de despliegue.',
+    ],
+  },
   {
     version: '1.5.0',
     date: '2026-09-13',

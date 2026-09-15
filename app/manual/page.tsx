@@ -92,6 +92,24 @@ export default function ManualPage() {
           </p>
         </Block>
 
+        <Block id="api-publica" eyebrow="Para integraciones" title="API pública de PostSingular">
+          <p>
+            Personas, bots y agentes de IA pueden consultar contenido que ya es visible públicamente sin iniciar sesión. La base de la API es{' '}
+            <a href="https://postsingular.org/api/v1/public/" className="font-medium text-sky-700 underline underline-offset-2 hover:text-sky-900">https://postsingular.org/api/v1/public/</a>.
+            Es de <strong>solo lectura</strong>: no publica, modifica ni entrega datos privados.
+          </p>
+          <p>Los recursos disponibles son:</p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li><code>community</code>: métricas públicas agregadas de la comunidad.</li>
+            <li><code>posts</code>, <code>guilds</code>, <code>requests</code>, <code>polls</code> y <code>activity</code>: contenido y movimiento visibles.</li>
+            <li><code>users</code>: perfiles públicos mínimos y sus gremios activos; nunca correo, contraseña, token ni datos administrativos.</li>
+          </ul>
+          <p>
+            Por ejemplo, <code>GET /api/v1/public/posts?limit=50</code> devuelve publicaciones visibles en JSON. Para detectar novedades sin descargar todo cada vez, <code>posts</code>, <code>guilds</code> y <code>users</code> aceptan <code>since=&lt;fecha ISO 8601&gt;</code>. Una integración debe guardar el último momento consultado y respetar una frecuencia moderada (como máximo una consulta por recurso por hora).
+          </p>
+          <p>La API no requiere autenticación para estos recursos públicos. Los parámetros que intenten solicitar datos privados se ignoran, y no existe una ruta pública para bandejas internas o mensajes privados.</p>
+        </Block>
+
         <Block id="cuenta" eyebrow="Tu cuenta" title="Tu cuenta y tu perfil">
           <p>
             Con tu cuenta podés:

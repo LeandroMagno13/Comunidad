@@ -32,3 +32,10 @@ Error.txt
 Estilos.txt
 Github.txt
 PRC.docx
+
+.telegram-bot-state.json
+.telegram-bot.log
+BOT/.telegram-hourly-bot-state.json
+BOT/.telegram-hourly-bot.log
+BOT/.env
+BOT/Token nocommit.txt
