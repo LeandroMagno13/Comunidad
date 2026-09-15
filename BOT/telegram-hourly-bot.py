@@ -192,6 +192,8 @@ def main():
 
 if __name__ == "__main__":
     if "--once" in sys.argv: sys.exit(main())
+    try: main()
+    except Exception as error: log(f"initial_cycle_error {error!r}")
     next_hour = time.time() + (3600 - int(time.time()) % 3600)
     while True:
         try:
