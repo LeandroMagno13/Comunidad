@@ -3,7 +3,7 @@ import Navbar from '@/src/components/Navbar';
 import './globals.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://postsingular.org'),
+  metadataBase: new URL('https://www.postsingular.org'),
   alternates: {
     canonical: '/',
   },
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: 'Comunidad Post Singularidad | Capital productivo frente a la Automatización',
     description:
       'No esperes a que la IA produzca cada vez más riqueza para preguntarte quién será propietario de esa productividad. Investigamos si una comunidad puede participar de ella siendo propietaria de una parte del capital productivo.',
-    url: 'https://postsingular.org/',
+    url: 'https://www.postsingular.org/',
     siteName: 'Comunidad Post Singularidad',
     locale: 'es_AR',
     type: 'website',
@@ -68,7 +68,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Organization',
               name: 'Comunidad Post Singularidad',
-              url: 'https://postsingular.org/',
+              url: 'https://www.postsingular.org/',
               description:
                 'Comunidad e instituto de investigación que estudia quién será propietario de la productividad que producen las máquinas y si una comunidad puede participar de ella siendo propietaria de una parte del capital productivo.',
               knowsAbout: [
