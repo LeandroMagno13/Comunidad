@@ -219,6 +219,16 @@ export default function LandingPage() {
             la genera. Participar no significa pertenecer exclusivamente: tu trabajo, tus proyectos
             y tu patrimonio personales siguen siendo tuyos.
           </p>
+          <p className="text-base sm:text-lg text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+            Queremos aclarar además la segunda parte de esa pregunta, porque «participar en comunidad»
+            no es participar de lo mismo que se reparte. Si en algún escenario el acceso a lo material
+            deja de ser escaso, los incentivos para interactuar dejan de apoyarse en la falta de cosas:
+            la pregunta pasa a ser qué incentivos quedan para abastecer necesidades que no son
+            estrictamente materiales, o que una máquina no puede suministrar —reconocimiento,
+            pertenencia, ser útil a otros, cuidado, juicio humano. No damos la respuesta por sabida:
+            queremos observarla con datos reales de nuestro propio laboratorio, no asumirla ni
+            prometerla.
+          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="#modelo"

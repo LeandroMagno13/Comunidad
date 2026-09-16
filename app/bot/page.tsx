@@ -4,8 +4,8 @@ const github = 'https://github.com/LeandroMagno13/Comunidad';
 const raw = 'https://raw.githubusercontent.com/LeandroMagno13/Comunidad/main/BOT';
 
 export const metadata: Metadata = {
-  title: 'Bot de avisos | Comunidad Post Singularidad',
-  description: 'Descargá y configurá el bot de Telegram de PostSingular para recibir avisos cuando cambie la comunidad.',
+  title: 'Bot de avisos y skill de previsión | Comunidad Post Singularidad',
+  description: 'Bot de Telegram de PostSingular para avisos cuando cambia la comunidad, y skill experimental que proyecta sus series públicas con TimesFM como base de estudio para datos futuros.',
 };
 
 export default function BotPage() {
@@ -27,6 +27,47 @@ export default function BotPage() {
           </p>
           <p className="mt-3 text-sm text-slate-600">
             El bot solo consulta la API pública de PostSingular. No inicia sesión en la web, no lee mensajes privados y no puede publicar ni modificar contenido.
+          </p>
+        </section>
+
+        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-bold text-slate-900">
+            Skill de previsión: una base para estudiar datos futuros
+          </h2>
+          <p className="mt-3 text-slate-700">
+            Además del bot de avisos, proponemos una skill experimental (<code>informe_forecast.py</code>, en{' '}
+            <code>BOT/prevision/</code>) que no informa los números del momento sino que intenta
+            estudiarlos: descarga las series públicas de la comunidad, las proyecta con un modelo de
+            pronóstico y publica el resultado como una publicación informativa más en el muro. La
+            ofrecemos como <strong>base metodológica</strong> para estudiar los datos que la comunidad
+            genere en el futuro. Hoy usa únicamente los datos que ya tenemos disponibles, que son pocos,
+            así que corre <strong>a modo demo</strong>: su valor no está en el pronóstico de corto plazo,
+            sino en mostrar el método completo y dejar la infraestructura lista para cuando existan más
+            datos.
+          </p>
+          <p className="mt-3 text-sm text-slate-600">
+            Técnicamente funciona en cuatro pasos.{' '}
+            <span className="font-semibold text-slate-700">1) Descarga</span>: solo lectura sobre la API
+            pública incremental (<code>?since</code> + <code>?limit=200</code>), trayendo publicaciones,
+            usuarios y gremios con su fecha de creación.{' '}
+            <span className="font-semibold text-slate-700">2) Agregación</span>: convierte esos eventos en
+            series diarias usables —nuevos posts, nuevos miembros y nuevos gremios por día—, que es lo
+            único sobre lo que un modelo de series temporales puede operar.{' '}
+            <span className="font-semibold text-slate-700">3) Pronóstico</span>: proyecta los próximos N
+            días con <strong>TimesFM de Google</strong>, un modelo fundacional de series temporales
+            entrenado para extrapolar sin reentrenar (zero-shot), y reporta un{' '}
+            <strong>rango probabilístico</strong> (bajo–alto), no un número puntual.{' '}
+            <span className="font-semibold text-slate-700">4) Redacción y publicación</span>: el informe
+            se escribe con un modelo de lenguaje local (Ollama) o compatible con OpenAI y se publica a
+            pedido como «Información». Si TimesFM o un LLM no están instalados, el script degrada con
+            elegancia: proyección por promedio móvil y plantilla de texto, para que siempre pueda correr.
+          </p>
+          <p className="mt-3 rounded-lg bg-slate-100 p-3 text-sm text-slate-600">
+            Aclaración importante: el pronóstico es <strong>observacional y probabilístico, no causal</strong>,
+            y no decide nada dentro de la comunidad —solo produce un informe de lectura. Ignora
+            características cualitativas (el contenido de los posts, las decisiones humanas) que en una
+            comunidad chica pesan más que cualquier promedio estadístico. Por eso lo presentamos como
+            demostración y base de estudio, no como predicción de lo que va a pasar.
           </p>
         </section>
 
