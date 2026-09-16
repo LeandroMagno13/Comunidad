@@ -109,6 +109,45 @@ export default function ManualPage() {
             Por ejemplo, <code>GET /api/v1/public/posts?limit=50</code> devuelve publicaciones visibles en JSON. Para detectar novedades sin descargar todo cada vez, <code>posts</code>, <code>guilds</code> y <code>users</code> aceptan <code>since=&lt;fecha ISO 8601&gt;</code>. Una integración debe guardar el último momento consultado y respetar una frecuencia moderada (como máximo una consulta por recurso por hora).
           </p>
           <p>La API no requiere autenticación para estos recursos públicos. Los parámetros que intenten solicitar datos privados se ignoran, y no existe una ruta pública para bandejas internas o mensajes privados.</p>
+          <p>
+            Un ejemplo concreto de integración es el <L href="#bot">bot de avisos por Telegram</L>, que usa
+            esta API para avisar a quien participa cuando hay novedades.
+          </p>
+        </Block>
+
+        <Block id="bot" eyebrow="Herramienta opcional" title="Bot de avisos por Telegram">
+          <p>
+            Si participás de la comunidad y no querés estar revisando la página todo el tiempo, podés usar el{' '}
+            <strong>bot de avisos por Telegram</strong> (sección <L href="/bot">Bot</L>). Te avisa cuando
+            detecta cambios públicos y también envía una confirmación diaria a las 20:00, hora Argentina.
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong>Qué recibe</strong>: un informe simple con miembros, publicaciones, gremios,
+              solicitudes, encuestas y actividad reciente. Si llega una notificación, hubo un cambio público
+              o corresponde al informe del día.
+            </li>
+            <li>
+              <strong>Descarga e instalación</strong>: guardá la carpeta <code>BOT</code> en{' '}
+              <code>C:\Comunidad\BOT</code> y ejecutá <code>Instalar.bat</code>. Verifica o instala Python,
+              prepara el archivo <code>.env</code> y arranca el bot. No requiere librerías externas ni clonar
+              repositorios.
+            </li>
+            <li>
+              <strong>Token</strong>: se genera una sola vez con <strong>BotFather</strong> y queda guardado
+              solo en tu PC. No lo compartas, no lo subas a GitHub ni lo envíes por chat.
+            </li>
+            <li>
+              <strong>Arranque automático</strong>: copiá <code>Arrancar.bat</code> a la carpeta de Inicio (
+              <code>shell:startup</code>) para que el bot se inicie junto con Windows.
+            </li>
+            <li>
+              <strong>Solo lectura</strong>: consulta únicamente la <L href="#api-publica">API pública</L> de
+              PostSingular. No inicia sesión, no lee mensajes privados y no puede publicar ni modificar
+              contenido.
+            </li>
+            <li>También podés pedir el informe cuando quieras con <code>/informe</code> o <code>/reporte</code>.</li>
+          </ul>
         </Block>
 
         <Block id="cuenta" eyebrow="Tu cuenta" title="Tu cuenta y tu perfil">

@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.6.0';
+export const MANUAL_VERSION = '1.7.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-15';
 
@@ -19,6 +19,18 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.7.0',
+    date: '2026-09-15',
+    title: 'Bot de avisos por Telegram',
+    notes: [
+      'Nueva página Bot: descargá e instalá un bot de Telegram que te avisa cuando cambia la comunidad, para no tener que revisar la página todo el tiempo.',
+      'El bot consulta solo la API pública de postsingular.org: sin cuenta, sin credenciales, solo lectura. No publica, no lee mensajes privados y no puede modificar contenido.',
+      'Instalación guiada en Windows con Instalar.bat: verifica o instala Python, prepara el archivo .env con el token y arranca el bot.',
+      'El token se genera una sola vez con BotFather y queda guardado solo en cada PC: no se comparte, no se sube a GitHub ni se envía por chat.',
+      'Para el arranque automático con Windows, se copia Arrancar.bat a la carpeta de Inicio (shell:startup); el bot además responde a /informe y /reporte.',
+    ],
+  },
   {
     version: '1.6.0',
     date: '2026-09-15',
