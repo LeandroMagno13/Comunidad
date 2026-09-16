@@ -175,7 +175,7 @@ export default function Cartelera({
                 <RichEditor onChange={setContent} />
               </div>
               <p className="mt-1 text-[10px] text-gray-400">
-                Formato enriquecido con controles: titulares, negritas, listas, citas y enlaces. Sin escribir código.
+                Formato enriquecido con controles: titulares, negritas, listas, citas, código, enlaces, videos de YouTube y posts de X. Sin escribir código.
               </p>
               {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
               <div className="mt-3 flex justify-end gap-2">

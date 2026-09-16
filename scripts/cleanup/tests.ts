@@ -428,6 +428,18 @@ function runTestJ() {
     (sanitizeHtml('<a href="/comunidad/abc">ir</a>').match(/<a/g) || []).length ===
       (sanitizeHtml('<a href="/comunidad/abc">ir</a>').match(/<\/a>/g) || []).length,
     'sin huecos de etiquetas para links', group);
+  check('Sanitizador permite solo embeds seguros (YouTube y X)',
+    sanitizeHtml('<iframe src="https://www.youtube.com/embed/abc123" allowfullscreen></iframe>')
+      .includes('youtube-nocookie.com/embed/abc123') &&
+      sanitizeHtml('<iframe src="https://platform.twitter.com/embed/Tweet.html?id=12345&theme=dark"></iframe>')
+        .includes('platform.twitter.com/embed/Tweet.html?id=12345') &&
+      !sanitizeHtml('<iframe src="https://evil.example/x" allowfullscreen></iframe>').includes('<iframe') &&
+      !sanitizeHtml('<iframe src="javascript:alert(1)"></iframe>').includes('<iframe'),
+    'solo iframes de videos de YouTube y posts de X, sin src ajenos ni scripts', group);
+  check('htmlToText marca un embed para que un post solo-video no sea vacío',
+    htmlToText('<p>Mirá esto</p><iframe src="https://www.youtube.com/embed/abc123" allowfullscreen></iframe>').includes('Mirá esto') &&
+      htmlToText('<iframe src="https://www.youtube.com/embed/abc123" allowfullscreen></iframe>').includes('video'),
+    'previews y validación: el embed aporta un marcador de texto', group);
 
   // --- Estructural: el puerto de escritura sanea --NUNCA confía en el HTML ---
   const postsSrc = src('src/pages/api/posts.ts');
@@ -451,6 +463,11 @@ function runTestJ() {
   check('Editor con controles en la cartelera de comunidad y gremio (sin escribir código)',
     carteleraSrc.includes('RichEditor') && communitySrc.includes('Cartelera') && guildSrc.includes('Cartelera'),
     'barra de formato fácil de usar en ambos muros', group);
+  check('Editor permite embeber video de YouTube y post de X',
+    carteleraSrc.includes('RichEditor') &&
+      src('src/components/RichEditor.tsx').includes('youtube-nocookie.com/embed') &&
+      src('src/components/RichEditor.tsx').includes('platform.twitter.com/embed/Tweet.html'),
+    'botones de embed en la barra de la cartelera', group);
   check('Detalle de publicación renderiza formato de foro',
     detailSrc.includes('RichText') && detailSrc.includes('flex h-8 w-8'),
     'autor con avatar + cuerpo tipográfico del hilo', group);

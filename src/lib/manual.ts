@@ -78,7 +78,7 @@ export const MANUAL_CHANGELOG: ManualChange[] = [
     date: '2026-09-13',
     title: 'Publicaciones con formato enriquecido (aspecto de foro)',
     notes: [
-      'Las publicaciones del muro y de los gremios admiten formato enriquecido con controles simples: titulares (H1–H3), negrita, cursiva, subrayado, tachado, listas, citas, bloques de código, separadores y enlaces.',
+      'Las publicaciones del muro y de los gremios admiten formato enriquecido con controles simples: titulares (H1–H3), negrita, cursiva, subrayado, tachado, listas, citas, bloques de código, separadores, enlaces, videos de YouTube y posts de X (Twitter).',
       'Nada se escribe a mano en código: el editor solo guarda un subconjunto acotado y todo lo que entra se sanea (whitelist) al guardar y al mostrar.',
       'El detalle de publicación adopta el aspecto de un foro: autor con avatar, cabecera del hilo y cuerpo tipográfico; los listados muestran un anticipo del contenido.',
     ],

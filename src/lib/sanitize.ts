@@ -39,6 +39,11 @@ const ALLOWED_TAGS = new Set([
 
 const SAFE_HREF = /^(https?:\/\/|mailto:|#|\/)/i;
 
+// Embeds permitidos: SOLO iframes de videos de YouTube y posts de X (Twitter).
+// Se reconstruye un src canónico y nada más: jamás se copian atributos ajenos.
+const YT_EMBED_RE = /^https:\/\/(www\.)?(youtube\.com|youtube-nocookie\.com)\/embed\/([A-Za-z0-9_-]{6,})/i;
+const X_EMBED_RE = /^https:\/\/platform\.twitter\.com\/embed\/Tweet\.html\?(?:[^#]*[&])?id=(\d+)(?:[&#].*)?$/i;
+
 const TAG_RE = /<\/?([a-zA-Z][a-zA-Z0-9]*)(\s[^>]*)?>/g;
 
 function escapeText(s: string): string {
@@ -59,6 +64,24 @@ function unescapeText(s: string): string {
     .replace(/&amp;/g, '&');
 }
 
+// Extrae el valor de un atributo (src, href…) de un fragmento de atributos.
+function attrValue(attrs: string, name: string): string {
+  const re = new RegExp(`${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'i');
+  const m = re.exec(attrs);
+  return m ? (m[1] ?? m[2] ?? '') : '';
+}
+
+// ¿El src de un iframe entra en la whitelist de embeds? Devuelve el src
+// canónico (solo id de video / id de post) o null si no es un embed seguro.
+function safeEmbedSrc(src: string): string | null {
+  if (!src) return null;
+  const yt = YT_EMBED_RE.exec(src.trim());
+  if (yt) return `https://www.youtube-nocookie.com/embed/${yt[3]}`;
+  const x = X_EMBED_RE.exec(src.trim());
+  if (x) return `https://platform.twitter.com/embed/Tweet.html?id=${x[1]}`;
+  return null;
+}
+
 function forEachTag(html: string, cb: (match: RegExpExecArray) => void) {
   const re = new RegExp(TAG_RE.source, 'g');
   let m: RegExpExecArray | null;
@@ -72,6 +95,7 @@ export function sanitizeHtml(html: string): string {
   let out = '';
   let last = 0;
   let anchorOpen = false;
+  let iframeOpen = false;
 
   forEachTag(html, (m) => {
     const start = m.index;
@@ -97,6 +121,21 @@ export function sanitizeHtml(html: string): string {
           anchorOpen = true;
         }
       }
+    } else if (name === 'iframe') {
+      if (isClosing) {
+        if (iframeOpen) {
+          out += '</iframe>';
+          iframeOpen = false;
+        }
+      } else {
+        const attrs = m[2] || '';
+        const safe = safeEmbedSrc(attrValue(attrs, 'src'));
+        if (safe !== null) {
+          const title = safe.includes('youtube-nocookie.com') ? 'Video de YouTube' : 'Post de X';
+          out += `<iframe src="${escapeText(safe)}" title="${title}" loading="lazy" allowfullscreen></iframe>`;
+          iframeOpen = true;
+        }
+      }
     } else if (!ALLOWED_TAGS.has(name)) {
       // Etiqueta fuera de whitelist: se descarta, su texto se conserva (escapado).
     } else if (isClosing) {
@@ -117,7 +156,10 @@ export function sanitizeHtml(html: string): string {
 
 // Texto plano legible (para resúmenes y validación): quita etiquetas y
 // decodifica entidades. No cifra, no convierte: solo extrae lo que se lee.
+// Los embeds de video/post aportan un marcador para que una publicación
+// "solo embed" no se considere vacía.
 export function htmlToText(html: string): string {
-  const withoutTags = html.replace(TAG_RE, ' ');
+  const withEmbed = html.replace(/<iframe\b[^>]*><\/iframe>|<iframe\b[^>]*\/>/gi, ' [video] ');
+  const withoutTags = withEmbed.replace(TAG_RE, ' ');
   return unescapeText(withoutTags).replace(/\s+/g, ' ').trim();
 }

@@ -246,9 +246,10 @@ export default function ManualPage() {
             </li>
             <li>
               <strong>Publicaciones con formato</strong>: el editor da controles simples — titulares
-              (H1–H3), negrita, cursiva, listas, citas, bloques de código, separadores y enlaces — sin
-              escribir código. Solo se guarda un subconjunto seguro y todo se sanea al guardar y al
-              mostrar: pegar HTML ajeno se ve como texto plano.
+              (H1–H3), negrita, cursiva, listas, citas, bloques de código, separadores, enlaces,
+              videos de YouTube y posts de X — sin escribir código. Solo se guarda un subconjunto
+              seguro (los videos y posts se incrustan solo desde sus dominios oficiales) y todo
+              se sanea al guardar y al mostrar: pegar HTML ajeno se ve como texto plano.
             </li>
             <li>
               <strong>Oferta de capacidades</strong>: declarás qué capacidades ofrecés y a qué

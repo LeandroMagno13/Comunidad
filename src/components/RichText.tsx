@@ -25,6 +25,10 @@ export default function RichText({
     cls = `${cls} [&>p]:mb-3 [&>p:last-child]:mb-0 [&>div]:mb-3 [&>div:last-child]:mb-0`;
   }
 
+  const embedCls = clamp
+    ? '[&_iframe]:hidden'
+    : '[&_iframe]:my-4 [&_iframe]:aspect-video [&_iframe]:w-full [&_iframe]:rounded-lg [&_iframe]:border [&_iframe]:border-gray-200';
+
   return (
     <div
       className={`[&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-700
@@ -39,7 +43,7 @@ export default function RichText({
         [&_pre]:p-3 [&_pre]:text-sm [&_pre]:text-gray-100 [&_code]:rounded [&_code]:bg-gray-100
         [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_code]:text-gray-800
         [&_hr]:my-4 [&_hr]:border-gray-200 [&_u]:underline [&_s]:line-through
-        ${cls}`}
+        ${embedCls} ${cls}`}
       dangerouslySetInnerHTML={{ __html: safe }}
     />
   );
