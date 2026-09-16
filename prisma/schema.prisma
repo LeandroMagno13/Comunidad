@@ -489,6 +489,7 @@ model Poll {
   postId      String? // enlace a la publicación referida (opcional)
   createdById String
   isClosed    Boolean     @default(false)
+  closesAt    DateTime? // cierre temporal (modo temporal): se cierra sola al vencer el tiempo
   createdAt   DateTime    @default(now())
 
   options PollOption[]

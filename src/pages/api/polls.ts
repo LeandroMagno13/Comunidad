@@ -8,9 +8,25 @@ function isGuildModerator(membership?: { role?: string | null } | null) {
   return membership?.role === 'admin' || membership?.role === 'moderator';
 }
 
+function nowMs() {
+  return Date.now();
+}
+
+function effectiveClosed(poll: any) {
+  return poll.isClosed || (poll.closesAt ? new Date(poll.closesAt).getTime() <= nowMs() : false);
+}
+
+async function autoCloseExpired() {
+  await db.poll.updateMany({
+    where: { isClosed: false, closesAt: { lte: new Date() } },
+    data: { isClosed: true },
+  });
+}
+
 function serializePoll(poll: any, myUserId: string) {
   const totalVotes = poll.votes?.length ?? 0;
   const myVote = poll.votes?.find((v: any) => v.userId === myUserId);
+  const closed = effectiveClosed(poll);
   return {
     id: poll.id,
     title: poll.title,
@@ -18,18 +34,19 @@ function serializePoll(poll: any, myUserId: string) {
     scope: poll.scope,
     guildId: poll.guildId,
     postId: poll.postId,
-    isClosed: poll.isClosed,
+    isClosed: closed,
+    closesAt: poll.closesAt,
     createdAt: poll.createdAt,
     createdBy: { id: poll.createdBy.id, name: poll.createdBy.name },
     post: poll.post ? { id: poll.post.id, title: poll.post.title, type: poll.post.type, status: poll.post.status } : null,
     options: (poll.options ?? []).map((o: any) => ({
       id: o.id,
       text: o.text,
-      votes: o.votes?.length ?? 0,
+      votes: o._count?.votes ?? 0,
     })),
     totalVotes,
     myOptionId: myVote?.optionId ?? null,
-    canVote: !poll.isClosed && !myVote,
+    canVote: !closed && !myVote,
     canManage: poll.createdById === myUserId,
     // Trazabilidad íntegra: cada voto con usuario, opción y timestamp.
     registro: (poll.votes ?? [])
@@ -65,6 +82,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 async function listPolls(req: NextApiRequest, res: NextApiResponse, user: any) {
   const scope = typeof req.query.scope === 'string' && (POLL_SCOPES as readonly string[]).includes(req.query.scope) ? req.query.scope : undefined;
   const guildId = typeof req.query.guildId === 'string' ? req.query.guildId : undefined;
+  const postId = typeof req.query.postId === 'string' ? req.query.postId : undefined;
 
   const include = {
     createdBy: { select: { id: true, name: true } },
@@ -74,7 +92,11 @@ async function listPolls(req: NextApiRequest, res: NextApiResponse, user: any) {
   };
 
   let polls;
-  if (scope === 'guild') {
+  if (postId) {
+    // Encuestas ligadas a una publicación concreta (dentro de la publicación).
+    await autoCloseExpired();
+    polls = await db.poll.findMany({ where: { postId }, include, orderBy: { createdAt: 'desc' } });
+  } else if (scope === 'guild') {
     if (!guildId) return res.status(400).json({ error: 'Falta el gremio' });
     const membership = await db.guildMembership.findUnique({
       where: { userId_guildId: { userId: user.id, guildId } },
@@ -82,14 +104,17 @@ async function listPolls(req: NextApiRequest, res: NextApiResponse, user: any) {
     if (!membership || membership.status !== 'active') {
       return res.status(403).json({ error: 'Debes ser miembro activo para ver encuestas de este gremio' });
     }
+    await autoCloseExpired();
     polls = await db.poll.findMany({
       where: { scope: 'guild', guildId },
       include,
       orderBy: { createdAt: 'desc' },
     });
   } else if (scope === 'community') {
+    await autoCloseExpired();
     polls = await db.poll.findMany({ where: { scope: 'community' }, include, orderBy: { createdAt: 'desc' } });
   } else {
+    await autoCloseExpired();
     const mine = await db.guildMembership.findMany({ where: { userId: user.id, status: 'active' }, select: { guildId: true } });
     const guildIds = mine.map((m) => m.guildId);
     polls = await db.poll.findMany({
@@ -106,7 +131,7 @@ async function pollAction(req: NextApiRequest, res: NextApiResponse, user: any) 
   const { action } = req.body || {};
 
   if (action === 'create') {
-    const { title, description, scope, guildId, postId, options } = req.body || {};
+    const { title, description, scope, guildId, postId, options, closeMode, durationH } = req.body || {};
 
     const finalScope = scope === 'community' ? 'community' : 'guild';
     const finalTitle = typeof title === 'string' ? title.trim() : '';
@@ -145,6 +170,16 @@ async function pollAction(req: NextApiRequest, res: NextApiResponse, user: any) 
       }
     }
 
+    // Modo de cierre: manual (closesAt null) o temporal (closesAt = now + durationH).
+    let closesAt: Date | null = null;
+    if (closeMode === 'temporal') {
+      const h = Number(durationH ?? 0);
+      if (!Number.isFinite(h) || h <= 0 || h > 24 * 90) {
+        return res.status(400).json({ error: 'La duración debe ser mayor a 0 y menor a 90 días' });
+      }
+      closesAt = new Date(nowMs() + h * 60 * 60 * 1000);
+    }
+
     const poll = await db.poll.create({
       data: {
         title: finalTitle,
@@ -153,6 +188,7 @@ async function pollAction(req: NextApiRequest, res: NextApiResponse, user: any) 
         guildId: finalScope === 'guild' ? String(guildId) : null,
         postId: linkedPost ? linkedPost.id : null,
         createdById: user.id,
+        closesAt,
         options: { create: texts.map((t) => ({ text: t })) },
       },
       include: {
@@ -175,7 +211,7 @@ async function pollAction(req: NextApiRequest, res: NextApiResponse, user: any) 
       include: { options: { select: { id: true } } },
     });
     if (!poll) return res.status(404).json({ error: 'Encuesta inexistente' });
-    if (poll.isClosed) return res.status(400).json({ error: 'La encuesta está cerrada' });
+    if (effectiveClosed(poll)) return res.status(400).json({ error: 'La encuesta está cerrada' });
     if (!poll.options.some((o: any) => o.id === String(optionId))) {
       return res.status(400).json({ error: 'La opción no pertenece a esta encuesta' });
     }

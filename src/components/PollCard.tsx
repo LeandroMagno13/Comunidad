@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export type PollData = {
@@ -11,6 +11,7 @@ export type PollData = {
   guildId?: string | null;
   postId?: string | null;
   isClosed: boolean;
+  closesAt?: string | null;
   createdAt: string;
   createdBy: { id: string; name: string };
   post?: { id: string; title?: string | null; type?: string | null; status?: string | null } | null;
@@ -32,6 +33,18 @@ export default function PollCard({
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [showRegistro, setShowRegistro] = useState(false);
+
+  useEffect(() => {
+    // Cierre temporal: cuando vence el tiempo, recargar para que quede cerrada.
+    if (!poll.closesAt || poll.isClosed) return;
+    const ms = new Date(poll.closesAt).getTime() - Date.now();
+    if (ms <= 0) {
+      onChanged();
+      return;
+    }
+    const t = setTimeout(onChanged, ms);
+    return () => clearTimeout(t);
+  }, [poll.closesAt, poll.isClosed, onChanged]);
 
   async function vote(optionId: string) {
     setError('');
@@ -67,6 +80,8 @@ export default function PollCard({
     onChanged();
   }
 
+  const closed = poll.isClosed;
+  const closesAt = poll.closesAt ? new Date(poll.closesAt) : null;
   const maxVotes = Math.max(...poll.options.map((o) => o.votes), 1);
   const isGuild = poll.scope === 'guild';
 
@@ -85,11 +100,16 @@ export default function PollCard({
           )}
           <span
             className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-              poll.isClosed ? 'bg-gray-100 text-gray-500' : 'bg-green-100 text-green-700'
+              closed ? 'bg-gray-100 text-gray-500' : 'bg-green-100 text-green-700'
             }`}
           >
-            {poll.isClosed ? 'Cerrada' : 'Abierta'}
+            {closed ? 'Cerrada' : 'Abierta'}
           </span>
+          {!closed && closesAt && (
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+              Cierra el {new Date(closesAt).toLocaleString('es', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+            </span>
+          )}
         </div>
         <span className="text-xs text-gray-400">
           {new Date(poll.createdAt).toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -104,8 +124,11 @@ export default function PollCard({
 
       {poll.post && (
         <div className="mt-2 rounded-md border border-blue-100 bg-blue-50 px-3 py-2">
-          <Link href={`/community/${poll.post.id}`} className="text-xs text-blue-700 hover:underline">
-            Publicación referida{poll.post.title ? `: ${poll.post.title}` : ''} →
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-blue-500">
+            Publicación referida
+          </span>
+          <Link href={`/community/${poll.post.id}`} className="block text-sm font-medium text-blue-700 hover:underline">
+            {poll.post.title || 'Ver publicación'} →
           </Link>
         </div>
       )}
@@ -150,7 +173,7 @@ export default function PollCard({
         <button onClick={() => setShowRegistro((s) => !s)} className="text-gray-500 hover:text-gray-700 hover:underline">
           {showRegistro ? 'Ocultar trazabilidad' : `Ver trazabilidad (${poll.registro.length})`}
         </button>
-        {poll.canManage && !poll.isClosed && (
+        {poll.canManage && !closed && (
           <button onClick={close} disabled={busy} className="text-amber-600 hover:underline disabled:opacity-50">
             Cerrar encuesta
           </button>

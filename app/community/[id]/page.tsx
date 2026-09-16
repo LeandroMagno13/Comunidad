@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import RichText from '@/src/components/RichText';
+import PollCard, { PollData } from '@/src/components/PollCard';
 
 type CommentItem = {
   id: string;
@@ -46,6 +47,7 @@ export default function PostDetailPage() {
   const [currentUserId, setCurrentUserId] = useState('');
   const [actionMsg, setActionMsg] = useState('');
   const [actionMsgOk, setActionMsgOk] = useState(false);
+  const [polls, setPolls] = useState<PollData[]>([]);
 
   async function load() {
     const res = await fetch(`/api/posts/${params?.id}`);
@@ -56,8 +58,14 @@ export default function PostDetailPage() {
     setPost(await res.json());
   }
 
+  async function loadPolls() {
+    const res = await fetch(`/api/polls?postId=${params?.id}`);
+    if (res.ok) setPolls(await res.json());
+  }
+
   useEffect(() => {
     load();
+    loadPolls();
     fetch('/api/auth/me')
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => setCurrentUserId(d?.user?.id || ''));
@@ -215,6 +223,14 @@ export default function PostDetailPage() {
         <div className="px-6 py-5">
           <RichText html={post.content} className="text-[15px] leading-relaxed text-gray-800" />
         </div>
+
+        {polls.length > 0 && (
+          <div className="space-y-4 px-6 pb-4">
+            {polls.map((p) => (
+              <PollCard key={p.id} poll={p} onChanged={loadPolls} />
+            ))}
+          </div>
+        )}
 
         {post.type === 'request' && (
           <div className="mt-4 rounded-md bg-indigo-50 p-4">

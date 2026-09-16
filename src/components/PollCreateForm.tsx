@@ -15,8 +15,21 @@ export default function PollCreateForm({
   const [description, setDescription] = useState('');
   const [options, setOptions] = useState<string[]>(['', '']);
   const [postRef, setPostRef] = useState('');
+  const [closeMode, setCloseMode] = useState<'manual' | 'temporal'>('manual');
+  const [durationH, setDurationH] = useState(24);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+
+  const DURATIONS: { h: number; label: string }[] = [
+    { h: 1, label: '1 hora' },
+    { h: 6, label: '6 horas' },
+    { h: 12, label: '12 horas' },
+    { h: 24, label: '1 día' },
+    { h: 72, label: '3 días' },
+    { h: 168, label: '7 días' },
+    { h: 336, label: '14 días' },
+    { h: 720, label: '30 días' },
+  ];
 
   function setOption(i: number, value: string) {
     setOptions((prev) => prev.map((o, idx) => (idx === i ? value : o)));
@@ -44,6 +57,8 @@ export default function PollCreateForm({
         guildId: scope === 'guild' ? guildId : null,
         postId,
         options,
+        closeMode,
+        durationH: closeMode === 'temporal' ? durationH : undefined,
       }),
     });
     const data = await res.json();
@@ -56,6 +71,7 @@ export default function PollCreateForm({
     setDescription('');
     setOptions(['', '']);
     setPostRef('');
+    setCloseMode('manual');
     onCreated();
   }
 
@@ -116,6 +132,53 @@ export default function PollCreateForm({
         value={postRef}
         onChange={(e) => setPostRef(e.target.value)}
       />
+
+      <div className="mt-3 rounded-md border border-gray-200 bg-gray-50 p-3">
+        <p className="text-xs font-semibold text-gray-700">Cómo se cierra la encuesta</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {(
+            [
+              { value: 'manual', label: 'Manual: la cierro yo' },
+              { value: 'temporal', label: 'Temporal: dura un tiempo' },
+            ] as { value: 'manual' | 'temporal'; label: string }[]
+          ).map((m) => (
+            <button
+              key={m.value}
+              type="button"
+              onClick={() => setCloseMode(m.value)}
+              className={`rounded-full px-3 py-1 text-xs font-medium ${
+                closeMode === m.value
+                  ? 'bg-blue-600 text-white'
+                  : 'border border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+        {closeMode === 'temporal' && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {DURATIONS.map((d) => (
+              <button
+                key={d.h}
+                type="button"
+                onClick={() => setDurationH(d.h)}
+                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                  durationH === d.h
+                    ? 'bg-indigo-600 text-white'
+                    : 'border border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                {d.label}
+              </button>
+            ))}
+            <p className="mt-1 w-full text-[10px] text-gray-500">
+              La encuesta se cierra sola al vencer el tiempo (máximo 90 días).
+            </p>
+          </div>
+        )}
+      </div>
+
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
       <div className="mt-3 flex justify-end">
         <button
