@@ -525,7 +525,7 @@ model PollVote {
 // RONDA F - MEMBRANA DE INTEGRACI?N (agentes externos + API p?blica)
 // Aditivo. No toca ninguna relaci?n/modelo de Rondas C, D ni E.
 // ---------------------------------------------------------------------
-// Reglas de la membrana (Lee.txt ง2, ง5, ง6, ง8, ง9, ง10, ง14, ง16):
+// Reglas de la membrana (Lee.txt ยง2, ยง5, ยง6, ยง8, ยง9, ยง10, ยง14, ยง16):
 //   - El agente NUNCA escala a SUPER_ADMIN: el motor verifica y rechaza
 //     cualquier intento de permiso SUPER_ADMIN al crear/editar el agente.
 //   - INTERNAL (interfaz interna, gestionada por c?digo propio) vs
