@@ -16,3 +16,24 @@ En la otra PC:
 El bot se inicia de inmediato y luego consulta cada hora. Informa cuando hay
 cambios, siempre a las 20:00 hora Argentina (UTC-3), y responde a /informe o
 /reporte. Lee solamente la API publica: https://postsingular.org/api/v1/public/
+
+SKILL PREVISION (extra, a pedido)
+---------------------------------
+En BOT\prevision\ hay un segundo script: informe_forecast.py. Baja datos
+publicos, arma series diarias usables, las pronostica con TimesFM (Google)
+y redacta un informe informativo con un LLM estandar (Ollama local u
+OpenAI-compatible) que se publica automaticamente en la pagina como
+publicacion de tipo "Informacion". Se ejecuta SOLO cuando alguien lo pide:
+
+- Por Telegram: enviar /prevision al bot (lanza el informe en segundo plano
+  y publica; el bot avisa cuando arranco).
+- Por consola (desde C:\Comunidad\BOT):
+    python prevision\informe_forecast.py --preview   (no publica, probar)
+    python prevision\informe_forecast.py             (baja+pronostica+publica)
+    python prevision\informe_forecast.py --no-llm --horizon 21
+
+Requisitos opcionales (si no estan, funciona por plantilla): TimesFM
+(instalar-prevision.bat) y Ollama para la redaccion. Credenciales del dueno
+para publicar: POSTS_USER y POSTS_PASSWORD en .env. Detalles en
+BOT\prevision\leeme.txt. El pronostico es probabilistico y observacional,
+no causal: es un experimento del laboratorio, no una autoridad.

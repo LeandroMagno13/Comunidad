@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 import os
+import subprocess
 import sys
 import time
 import urllib.error
@@ -17,7 +18,7 @@ LOG_FILE = os.path.join(BOT_DIR, ".telegram-hourly-bot.log")
 UA = "postsingular-hourly-bot/2.0 (public read-only)"
 ARGENTINA = timezone(timedelta(hours=-3))
 HORA_CIERRE = 20
-DEFAULT_STATE = {"chat_id": None, "update_id": 0, "last_fingerprint": "", "since_posts": "", "since_guilds": "", "since_users": "", "known_request_ids": [], "known_poll_ids": [], "snapshot": {}, "initialized": False, "report_requested": False}
+DEFAULT_STATE = {"chat_id": None, "update_id": 0, "last_fingerprint": "", "since_posts": "", "since_guilds": "", "since_users": "", "known_request_ids": [], "known_poll_ids": [], "snapshot": {}, "initialized": False, "report_requested": False, "prevision_requested": False}
 state = dict(DEFAULT_STATE)
 
 def log(message):
@@ -102,8 +103,40 @@ def ingest_updates(token, accept_commands=False):
         if chat.get("id") is not None: state["chat_id"] = chat["id"]
         command = str(message.get("text", "")).strip().lower().split("@")[0]
         if accept_commands and command in ("/start", "/informe", "/reporte"): requested = True
+        if accept_commands and command == "/prevision": state["prevision_requested"] = True
     save_state()
     return requested
+
+def run_prevision_skill(token=None, chat_id=None):
+    """Lanza el informe de previsión en segundo plano (publica a pedido del dueño)."""
+    script = os.path.join(BOT_DIR, "prevision", "informe_forecast.py")
+    if not os.path.exists(script):
+        log("prevision_missing_script")
+        return False
+    started = False
+    try:
+        flag = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+        proc = subprocess.Popen(
+            [sys.executable, script],
+            cwd=BOT_DIR,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=flag,
+        )
+        started = bool(proc and proc.pid)
+    except OSError as error:
+        log(f"prevision_launch_error {error!r}")
+        started = False
+    try:
+        with open(os.path.join(BOT_DIR, "prevision", ".prevision-launch.log"), "a", encoding="utf-8") as file:
+            file.write(f"{datetime.now(timezone.utc).isoformat()} start={started}\n")
+    except OSError:
+        pass
+    if started and token and chat_id:
+        send_report(token, chat_id, "Generando informe de previsión… (en segundo plano). En cuanto termine, se publica en la página como Información.")
+    log(f"prevision_started={started}")
+    return started
 
 def iso_after(value):
     try: return (datetime.fromisoformat(value.replace("Z", "+00:00")) + timedelta(milliseconds=1)).isoformat().replace("+00:00", "Z")
@@ -198,7 +231,15 @@ if __name__ == "__main__":
     while True:
         try:
             token = get_token()
-            if token and ingest_updates(token, accept_commands=True): state["report_requested"] = True; main()
+            if token:
+                ingest_updates(token, accept_commands=True)
+                if state.get("prevision_requested"):
+                    state["prevision_requested"] = False
+                    save_state()
+                    run_prevision_skill(token, state.get("chat_id"))
+                if state.get("report_requested"):
+                    state["report_requested"] = True
+                    main()
         except Exception as error: log(f"poll_error {error!r}")
         time.sleep(20)
         if time.time() >= next_hour:

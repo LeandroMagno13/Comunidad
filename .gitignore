@@ -39,3 +39,9 @@ BOT/.telegram-hourly-bot-state.json
 BOT/.telegram-hourly-bot.log
 BOT/.env
 BOT/Token nocommit.txt
+
+# Skill prevision (bot)
+BOT/prevision/.prevision-state.json
+BOT/prevision/.prevision.log
+__pycache__/
+*.pyc

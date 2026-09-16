@@ -1,0 +1,69 @@
+SKILL PREVISION del bot de PostSingular (informe_forecast.py)
+=============================================================
+
+QUÉ HACE
+--------
+Baja los datos públicos de la página (solo lectura, sin credenciales),
+arma series diarias usables (posts nuevos, miembros nuevos, gremios nuevos
+y solicitudes nuevas por día), las pronostica con TimesFM (Google) para
+los próximos N días (por defecto 14), redacta un informe informativo con
+un modelo de lenguaje "estándar" y lo publica en la página como
+publicación de tipo "Información".
+
+Es una skill de laboratorio hecha a demanda: NO corre sola, solo cuando un
+humano (o el comando /prevision del bot) lo pide.
+
+QUÉ INSTALAR
+------------
+Opcional pero recomendado (pronóstico fino):
+  1. Python 3.10+ (se usa el del sistema).
+  2. `instalar-prevision.bat`  -> instala timesfm[torch] con torch CPU.
+     El modelo (~800 MB) se baja solo a HuggingFace en la primera corrida.
+  Opcional, para redacción con LLM local: Ollama (https://ollama.com)
+  con el modelo que prefieras (ej. llama3.1).
+  Sin TimesFM ni Ollama, el script no falla: pronostica por plantilla y
+  redacta por plantilla con los mismos números.
+
+CREDENCIALES
+------------
+En BOT/.env (o BOT/prevision/.env), copiando BOT/prevision/env.prevision.example:
+  POSTS_USER / POSTS_PASSWORD  -> credenciales del dueno para publicar el
+                                  informe como "Información" en el muro.
+  POSTSINGULAR_BASE            -> https://postsingular.org (default).
+  PREVISION_HORIZON            -> dias de pronostico (default 14).
+  LLM_OLLAMA_URL/MODEL         -> si Ollama esta corriendo, se usa.
+  LLM_API_URL/KEY/MODEL        -> si no hay Ollama y esto esta seteado, se usa.
+  TELEGRAM_BOT_TOKEN/CHAT_ID   -> opcional, avisa al publicar.
+Nunca comitees un .env con valores reales (ya esta en .gitignore).
+
+CÓMO CORRER (desde BOT\)
+------------------------
+  python prevision\informe_forecast.py --preview   # prueba: baja+pronostica+redacta, NO publica
+  python prevision\informe_forecast.py             # igual y además publica (dedupe por huella)
+  python prevision\informe_forecast.py --no-llm    # fuerza plantilla
+  python prevision\informe_forecast.py --horizon 21
+  python prevision\informe_forecast.py --force     # publica aunque ya esté el mismo informe
+  python prevision\informe_forecast.py --base http://localhost:3000
+
+Códigos de salida: 0 ok, 1 error (login/post), 2 ya publicado sin cambios, 3 faltan credenciales.
+
+DESDE TELEGRAM
+--------------
+Escribile al bot:  /prevision  -> lanza el informe en segundo plano y, al
+terminar, lo publica automáticamente como "Información" en el muro (el
+disparo del humano es el "a pedido"; la publicación es automática). El bot
+avisa por Telegram cuando arranca la corrida. Para probar sin publicar,
+corré por consola con --preview antes de tocar el comando.
+
+NOTA SOBRE LOS DATOS
+--------------------
+La API pública de posts y usuarios ordena DESCENDENTE (los 200 más nuevos,
+máximo permitido); gremios página completa. Con el ritmo actual de la
+comunidad eso cubre la ventana reciente de sobra. El informe presenta
+"rango de pronóstico" (bajo-alto) porque el pronóstico es probabilístico y
+observacional, NO causal.
+
+ARCHIVOS QUE GENERA (no versionar)
+----------------------------------
+  prevision\.prevision-state.json  -> huella del ultimo informe publicado.
+  prevision\.prevision.log         -> traza de cada corrida.
