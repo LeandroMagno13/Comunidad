@@ -101,7 +101,10 @@ export async function getFeedEntries(limit: number): Promise<FeedEntry[]> {
       },
     }),
     db.poll.findMany({
-      where: { status: 'visible' },
+      where: {
+        status: 'visible',
+        OR: [{ postId: null }, { post: { is: { status: 'visible' } } }],
+      },
       orderBy: { createdAt: 'desc' },
       take: half,
       select: {

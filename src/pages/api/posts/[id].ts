@@ -131,6 +131,9 @@ async function deletePost(_req: NextApiRequest, res: NextApiResponse, id: string
     return res.status(403).json({ error: 'No tienes permisos' });
   }
 
+  // Las encuestas vinculadas dejan de mostrarse aunque el borrado corte el
+  // enlace (onDelete SetNull): ocultar ANTES de eliminar.
+  await db.poll.updateMany({ where: { postId: id }, data: { status: 'hidden' } });
   await db.post.delete({ where: { id } });
   return res.status(200).json({ success: true });
 }

@@ -230,7 +230,10 @@ async function requests(db_: typeof db, limit: number) {
 // -----------------------------------------------------------------------------
 async function polls(db_: typeof db, limit: number) {
   const rows = await db_.poll.findMany({
-    where: { status: 'visible' },
+    where: {
+      status: 'visible',
+      OR: [{ postId: null }, { post: { is: { status: 'visible' } } }],
+    },
     orderBy: { createdAt: 'desc' },
     take: limit,
     select: {
@@ -277,14 +280,22 @@ async function activity(db_: typeof db, limit: number) {
       },
     }),
     db_.poll.findMany({
-      where: { status: 'visible' },
+      where: {
+        status: 'visible',
+        OR: [{ postId: null }, { post: { is: { status: 'visible' } } }],
+      },
       orderBy: { createdAt: 'desc' },
       take: half,
       select: { id: true, title: true, createdAt: true },
     }),
     Promise.all([
       db_.post.count({ where: { status: 'visible' } }),
-      db_.poll.count({ where: { status: 'visible' } }),
+      db_.poll.count({
+        where: {
+          status: 'visible',
+          OR: [{ postId: null }, { post: { is: { status: 'visible' } } }],
+        },
+      }),
       db_.user.count({ where: { status: 'active' } }),
     ]),
   ]);

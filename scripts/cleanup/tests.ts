@@ -603,6 +603,8 @@ function runTestM() {
   const feedsSrc = src('src/lib/feeds.ts');
   const adminPage = src('app/admin/page.tsx');
   const manualSrc = src('src/lib/manual.ts');
+  const packageJson = src('package.json');
+  const syncScript = src('scripts/sync-poll-status.js');
 
   check('Schema: Poll tiene estado de moderación (visible|hidden|blocked|deleted)',
     /model Poll\s*\{/.test(schema) &&
@@ -634,6 +636,27 @@ function runTestM() {
   check('API polls: solo lista encuestas visibles',
     pollsSrc.includes("status: 'visible'") && !pollsSrc.includes('where: { postId }'),
     'las encuestas ocultas desaparecen de cartelera y detalle', group);
+  check('API polls: self-healing — encuesta ligada a publicación oculta no se muestra',
+    pollsSrc.includes('post: { is: { status: \'visible\' } }') &&
+      pollsSrc.includes('postId: null'),
+    'aunque el campo status se quede visible, la referencia a contenido moderado la oculta', group);
+  check('Voto bloqueado también si la publicación vinculada está oculta',
+    pollsSrc.includes('poll.post?.status !==') || pollsSrc.includes('poll.post.status !=='),
+    'ni el voto ni la lectura resucitan contenido moderado', group);
+  check('Feeds y API pública aplican el mismo filtro por publicación vinculada',
+    feedsSrc.includes('post: { is: { status: \'visible\' } }') &&
+      publicSrc.includes('post: { is: { status: \'visible\' } }'),
+    'la realidad pública es coherente en canales y API', group);
+  check('Borrar publicación oculta sus encuestas antes del onDelete SetNull',
+    postsIdSrc.includes('db.poll.updateMany') &&
+      postsIdSrc.includes("data: { status: 'hidden' }") &&
+      postsIdSrc.includes('db.post.delete'),
+    'borrar no deja encuestas huérfanas visibles', group);
+  check('Backfill de encuestas en el build (sync-poll-status, idempotente)',
+    packageJson.includes('sync-poll-status.js') &&
+      syncScript.includes('postId: { not: null }') &&
+      syncScript.includes("=== 'visible' ? 'visible' : 'hidden'"),
+    'los datos creados antes del campo Poll.status se alinean al desplegar', group);
   check('API polls: no se puede votar una encuesta oculta',
     pollsSrc.includes('La encuesta no está disponible') && pollsSrc.includes('poll.status !=='),
     'el voto queda bloqueado en contenido moderado', group);

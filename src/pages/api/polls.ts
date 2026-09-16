@@ -97,9 +97,11 @@ async function listPolls(req: NextApiRequest, res: NextApiResponse, user: any) {
   let polls;
   if (postId) {
     // Encuestas ligadas a una publicación concreta (dentro de la publicación).
+    // Además del status propio, se exige que la publicación vinculada esté
+    // visible: una encuesta referida a contenido moderado no se muestra.
     await autoCloseExpired();
     polls = await db.poll.findMany({
-      where: { postId, status: 'visible' },
+      where: { postId, status: 'visible', post: { is: { status: 'visible' } } },
       include,
       orderBy: { createdAt: 'desc' },
     });
@@ -113,14 +115,23 @@ async function listPolls(req: NextApiRequest, res: NextApiResponse, user: any) {
     }
     await autoCloseExpired();
     polls = await db.poll.findMany({
-      where: { scope: 'guild', guildId, status: 'visible' },
+      where: {
+        scope: 'guild',
+        guildId,
+        status: 'visible',
+        OR: [{ postId: null }, { post: { is: { status: 'visible' } } }],
+      },
       include,
       orderBy: { createdAt: 'desc' },
     });
   } else if (scope === 'community') {
     await autoCloseExpired();
     polls = await db.poll.findMany({
-      where: { scope: 'community', status: 'visible' },
+      where: {
+        scope: 'community',
+        status: 'visible',
+        OR: [{ postId: null }, { post: { is: { status: 'visible' } } }],
+      },
       include,
       orderBy: { createdAt: 'desc' },
     });
@@ -129,7 +140,13 @@ async function listPolls(req: NextApiRequest, res: NextApiResponse, user: any) {
     const mine = await db.guildMembership.findMany({ where: { userId: user.id, status: 'active' }, select: { guildId: true } });
     const guildIds = mine.map((m) => m.guildId);
     polls = await db.poll.findMany({
-      where: { OR: [{ scope: 'community' }, { scope: 'guild', guildId: { in: guildIds } }], status: 'visible' },
+      where: {
+        AND: [
+          { OR: [{ scope: 'community' }, { scope: 'guild', guildId: { in: guildIds } }] },
+          { OR: [{ postId: null }, { post: { is: { status: 'visible' } } }] },
+        ],
+        status: 'visible',
+      },
       include,
       orderBy: { createdAt: 'desc' },
     });
@@ -219,10 +236,13 @@ async function pollAction(req: NextApiRequest, res: NextApiResponse, user: any) 
 
     const poll = await db.poll.findUnique({
       where: { id: String(pollId) },
-      include: { options: { select: { id: true } } },
+      include: { options: { select: { id: true } }, post: { select: { status: true } } },
     });
     if (!poll) return res.status(404).json({ error: 'Encuesta inexistente' });
     if (poll.status !== 'visible') return res.status(403).json({ error: 'La encuesta no está disponible' });
+    if (poll.postId && poll.post?.status !== 'visible') {
+      return res.status(403).json({ error: 'La encuesta no está disponible' });
+    }
     if (effectiveClosed(poll)) return res.status(400).json({ error: 'La encuesta está cerrada' });
     if (!poll.options.some((o: any) => o.id === String(optionId))) {
       return res.status(400).json({ error: 'La opción no pertenece a esta encuesta' });

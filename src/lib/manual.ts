@@ -25,7 +25,7 @@ export const MANUAL_CHANGELOG: ManualChange[] = [
     title: 'Moderación de encuestas y ocultamiento en cascada',
     notes: [
       'Las encuestas se pueden moderar desde el panel administrativo: ocultarlas o restaurarlas sin eliminarlas, igual que las publicaciones y comentarios.',
-      'Si una publicación vinculada a una encuesta se oculta, sus encuestas también se ocultan automáticamente (y al mostrarla de nuevo, reaparecen).',
+      'Si una publicación vinculada a una encuesta se oculta, sus encuestas también se ocultan automáticamente (y al mostrarla de nuevo, reaparecen). Esto vale incluso para encuestas creadas antes de esta norma.',
       'Una encuesta oculta deja de votarse y no se muestra en la cartelera, en la API pública ni en los canales RSS/Atom; el enlace a la publicación moderada no queda en el aire.',
     ],
   },
