@@ -424,6 +424,16 @@ function runTestJ() {
     htmlToText('<h2>Hola</h2><p>mundo<br>segunda línea</p>').includes('Hola') &&
       htmlToText('<h2>Hola</h2><p>mundo</p>').includes('mundo'),
     'preview y validación usan texto, no etiquetas', group);
+  check('htmlToText no filtra br/hr autocerrados del sanitizador',
+    htmlToText('<h1>Titulo</h1><div><br/></div><p>mundo<br/>linea</p><hr/><p>fin</p>')
+      .includes('Titulo') &&
+      htmlToText('<h1>Titulo</h1><div><br/></div><p>mundo<br/>linea</p><hr/><p>fin</p>')
+        .includes('linea') &&
+      !htmlToText('<h1>Titulo</h1><div><br/></div><p>mundo<br/>linea</p><hr/><p>fin</p>')
+        .includes('br/') &&
+      !htmlToText('<h1>Titulo</h1><div><br/></div><p>mundo<br/>linea</p><hr/><p>fin</p>')
+        .includes('hr/'),
+    'los `<br/>` / `<hr/>` (XHTML autocerrado) del editor no se ven como texto', group);
   check('Sanitizador cierra bien los enlaces emitidos (pares)',
     (sanitizeHtml('<a href="/comunidad/abc">ir</a>').match(/<a/g) || []).length ===
       (sanitizeHtml('<a href="/comunidad/abc">ir</a>').match(/<\/a>/g) || []).length,

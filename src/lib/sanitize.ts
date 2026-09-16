@@ -44,7 +44,9 @@ const SAFE_HREF = /^(https?:\/\/|mailto:|#|\/)/i;
 const YT_EMBED_RE = /^https:\/\/(www\.)?(youtube\.com|youtube-nocookie\.com)\/embed\/([A-Za-z0-9_-]{6,})/i;
 const X_EMBED_RE = /^https:\/\/platform\.twitter\.com\/embed\/Tweet\.html\?(?:[^#]*[&])?id=(\d+)(?:[&#].*)?$/i;
 
-const TAG_RE = /<\/?([a-zA-Z][a-zA-Z0-9]*)(\s[^>]*)?>/g;
+// Captura tanto `<br>` como el `<br/>` autocerrado (XHTML) que emite el propio
+// sanitizador; si no se reconociera, el HTML quedaría como texto literal.
+const TAG_RE = /<\/?([a-zA-Z][a-zA-Z0-9]*)\s*([^>]*?)\/?>/g;
 
 function escapeText(s: string): string {
   return s

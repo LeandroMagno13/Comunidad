@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MANUAL_VERSION } from '@/src/lib/manual';
+import { htmlToText } from '@/src/lib/sanitize';
 
 type Tab = 'dashboard' | 'users' | 'guilds' | 'reports' | 'content' | 'economy';
 
@@ -639,7 +640,7 @@ export default function AdminPanel() {
                 <div key={p.id} className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-gray-900">
-                      {p.title || p.content.slice(0, 60)}
+                      {p.title || htmlToText(p.content).slice(0, 60)}
                     </p>
                     <p className="text-xs text-gray-500">
                       {p.author?.name} · {new Date(p.createdAt).toLocaleString('es')} ·{' '}
@@ -870,7 +871,7 @@ export default function AdminPanel() {
                         Publicación de {r.post.author?.name}
                         {r.post.title ? ` · ${r.post.title}` : ''}
                       </p>
-                      <p className="mt-1 line-clamp-2 text-sm text-gray-700">{r.post.content}</p>
+                      <p className="mt-1 line-clamp-2 text-sm text-gray-700">{htmlToText(r.post.content) || 'Publicación sin texto visible'}</p>
                     </div>
                   )}
                   {r.comment && (
@@ -936,7 +937,7 @@ export default function AdminPanel() {
                 <div key={p.id} className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-gray-900">
-                      {p.title || p.content.slice(0, 60)}
+                      {p.title || htmlToText(p.content).slice(0, 60)}
                     </p>
                     <p className="line-clamp-1 text-xs text-gray-500">
                       {p.author?.name} · {new Date(p.createdAt).toLocaleString('es')}
