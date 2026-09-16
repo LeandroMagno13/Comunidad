@@ -4,133 +4,95 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+type Metrics = {
+  id: string;
+  demandaTotal: number;
+  demandaSatisfecha: number;
+  demandaInsatisfecha: number;
+  pctSatisfecha: number;
+  presionMax: number;
+  presionMedia: number;
+  accesoBasicoPct: number;
+  accesoMedioPct: number;
+  accesoAvanzadoPct: number;
+  excluidosBasicoPct: number;
+  cuTop10: number;
+  cuGini: number;
+  urgenciaMarcadaPct: number;
+  urgenciaGastoPct: number;
+  urgenciaAgotadaPct: number;
+  urgenciaEficaciaPct: number;
+  dignidadHeadcountPct: number;
+  dignidadBrecha: number;
+  capacidadUtilizadaPct: number;
+  escasezCapacidades: string;
+  corrCuUrgencia: number | null;
+};
+
 type Escenario = {
   id: string;
   label: string;
-  mae: number;
-  maxAbsError: number;
-  peakOver: number;
-  peakUnder: number;
-  recovery5: number;
-  osc: number;
-  meanAccessPct: number;
-  finalAccessPct: number;
-  finalGini: number;
-  finalTop10: number;
-  meanVelocity: number;
-  finalUsers: number;
-  finalSupply: number;
-  netSupply: number;
-  estado: 'critico' | 'alerta' | 'estable';
+  metrics: Metrics;
 };
+
+type BarridoCaso = { id: string; label: string; metrics: Metrics };
+type Barrido = { id: string; label: string; cases: BarridoCaso[] };
 
 type Presentacion = {
   version: number;
+  ronda: string;
   titulo: string;
   generado: string;
+  seed: number;
   meta: {
-    corridas: number;
-    escenariosMinimos: number;
-    monteCarloRuns: number;
-    monteCarloCycles: number;
     seedBase: number;
-    fecha: string;
+    experimentos: number;
+    sweeps: number;
+    monteCarloRuns: number;
+    generado: string;
+    ms: number;
+  };
+  escenarios: Escenario[];
+  barridos: Barrido[];
+  monteCarlo: {
+    runs: number;
+    metricas: {
+      keys: string[];
+      agg: Record<string, { media: number; min: number; p05: number; p95: number; max: number }>;
+    };
   };
   charts: {
-    cuadricula: Array<{ id: string; label: string; panel: string }>;
+    paneles: Array<{ id: string; label: string; panel: string }>;
     overlays: Array<{ file: string; name: string }>;
   };
-  datos: {
-    summaryCsv: string;
-    monteCarloJson: string;
-    traces: Array<{ file: string; name: string }>;
-    reporte: string;
-    autoResumen: string;
-  };
-  rondaA: number;
-  rondaB: number;
   tablas: {
     escenarios: Escenario[];
-    barridos: number;
+    barridos: Barrido[];
   };
-  monteCarlo: {
-    metrics: Record<string, { mean: number; p5: number; p95: number; min: number; max: number }>;
-  };
+  hallazgos: string[];
+  referencia: { rondaA: string; etiquetaRondaA: string };
 };
 
-const HALLAZGOS: Array<{ titulo: string; texto: string; severidad: 'critico' | 'alto' | 'medio' }> = [
-  {
-    titulo: 'Sensor de canasta casi ciego',
-    texto:
-      'El costo observado se mueve < 0,5 CU sobre un setpoint de 100 incluso cuando la oferta cae 88 % (E4). El PID monitorea un termómetro roto.',
-    severidad: 'critico',
-  },
-  {
-    titulo: 'Lazo de control desconectado',
-    texto:
-      'La política de oferta tiene ganancias 0: ignora la señal del PID. Siete combinaciones de Kp/Ki/Kd producen resultados idénticos.',
-    severidad: 'critico',
-  },
-  {
-    titulo: 'Acceso estructuralmente bajo',
-    texto:
-      'Con 20 CU por usuario y canasta en 100, el acceso medio es 0,4–1,7 %. Nadie puede comprar la canasta en la mayoría de los escenarios.',
-    severidad: 'alto',
-  },
-  {
-    titulo: 'Concentración robusta',
-    texto:
-      'Gini 65–96 y top-10 ≥ 50 % en toda la familia. Monte Carlo: Gini medio 75, top-10 54 %. El sistema concentra por diseño.',
-    severidad: 'alto',
-  },
-  {
-    titulo: 'Shocks de demanda invisibles',
-    texto:
-      'E8 y E9 son numéricamente idénticos: sumar +100 % de demanda a un sistema con acceso ~0 no mueve nada.',
-    severidad: 'medio',
-  },
-  {
-    titulo: 'Oleadas de usuarios desestabilizan',
-    texto:
-      'Entrada masiva (100/ciclo) nunca recupera la banda ±5 % (rec5 = 80) con error máximo 5,02 CU. La perturbación más grande vista.',
-    severidad: 'medio',
-  },
+const VARDIAS_MC: Array<{ key: string; label: string; fmt?: (v: number) => string }> = [
+  { key: 'pctSatisfecha', label: 'Demanda satisfecha (%)', fmt: (v) => v.toFixed(1) + ' %' },
+  { key: 'presionMax', label: 'Presión máxima', fmt: (v) => v.toFixed(1) },
+  { key: 'presionMedia', label: 'Presión media', fmt: (v) => v.toFixed(1) },
+  { key: 'excluidosBasicoPct', label: 'Excluidos nivel básico (%)', fmt: (v) => v.toFixed(1) + ' %' },
+  { key: 'dignidadHeadcountPct', label: 'Bajo piso de dignidad (%)', fmt: (v) => v.toFixed(1) + ' %' },
+  { key: 'dignidadBrecha', label: 'Brecha de dignidad media', fmt: (v) => v.toFixed(2) },
+  { key: 'urgenciaGastoPct', label: 'Presupuesto urgencia gastado (%)', fmt: (v) => v.toFixed(1) + ' %' },
+  { key: 'urgenciaAgotadaPct', label: 'Agentes con urgencia agotada (%)', fmt: (v) => v.toFixed(1) + ' %' },
 ];
-
-const VARDIAS_MC: Array<{ key: string; label: string }> = [
-  { key: 'mae', label: 'Error medio absoluto' },
-  { key: 'maxAbsError', label: 'Error máximo' },
-  { key: 'stdError', label: 'Desviación del error' },
-  { key: 'recovery10', label: 'Tiempo de recuperación (banda 10%)' },
-  { key: 'meanAccessPct', label: 'Acceso medio (%)' },
-  { key: 'finalGini', label: 'Gini final' },
-  { key: 'finalTop10', label: 'Top-10 %' },
-  { key: 'meanVelocity', label: 'Velocidad media' },
-];
-
-const SEVERIDAD_ESTILO: Record<Escenario['estado'], { label: string; cls: string }> = {
-  critico: { label: 'Crítico', cls: 'bg-red-100 text-red-800 border-red-200' },
-  alerta: { label: 'Alerta', cls: 'bg-amber-100 text-amber-800 border-amber-200' },
-  estable: { label: 'Estable', cls: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-};
-
-const JERINGA: Record<string, string> = {
-  critico: 'text-red-600',
-  alto: 'text-orange-500',
-  medio: 'text-amber-500',
-};
 
 export default function EnsayoDeStress() {
   const router = useRouter();
   const [data, setData] = useState<Presentacion | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [sel, setSel] = useState(0);
+  const [selPanel, setSelPanel] = useState(0);
   const [selOverlay, setSelOverlay] = useState(0);
+  const [selBarrido, setSelBarrido] = useState(0);
 
   useEffect(() => {
-    // LEGACY / NO USAR: ensayo histórico del antiguo control PID. Solo
-    // accesible desde el panel de administración (Lee.txt §9: el legacy no
-    // debe estar accesible desde el producto normal).
     fetch('/api/auth/me')
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
@@ -153,9 +115,10 @@ export default function EnsayoDeStress() {
     return (
       <main className="mx-auto max-w-6xl px-4 py-16">
         <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-          <h1 className="text-lg font-semibold text-red-800">Ensayo de Stress — RONDA A (histórico)</h1>
+          <h1 className="text-lg font-semibold text-red-800">Ensayo de Stress — RONDA C+D</h1>
           <p className="mt-2 text-sm text-red-700">
-            No se pudieron cargar los datos del ensayo ({error}). Ejecutá el export: <code>pnpm dlx tsx scripts/stress/export-web.ts</code>
+            No se pudieron cargar los datos del ensayo ({error}). Ejecutá el export:{' '}
+            <code>pnpm dlx tsx scripts/stress-capacity/export-web.ts</code>
           </p>
         </div>
       </main>
@@ -170,9 +133,20 @@ export default function EnsayoDeStress() {
     );
   }
 
-  const selPanel = data.charts.cuadricula[sel];
+  const paneles = data.charts.paneles;
+  const selPanelInfo = paneles[selPanel];
   const overlays = data.charts.overlays;
   const selOverlayFile = overlays[selOverlay];
+  const escDs = data.escenarios.filter((e) => !e.id.startsWith('L-'));
+  const barridos = data.barridos;
+  const selBarridoInfo = barridos[selBarrido];
+
+  const agg = data.monteCarlo.metricas.agg;
+  const aggOf = (k: string) => agg[k] ?? { media: 0, p05: 0, p95: 0, min: 0, max: 0 };
+  const mcPresion = aggOf('presionMedia');
+  const mcSat = aggOf('pctSatisfecha');
+  const mcDignidad = aggOf('dignidadHeadcountPct');
+  const mcBrecha = aggOf('dignidadBrecha');
 
   return (
     <main>
@@ -182,85 +156,96 @@ export default function EnsayoDeStress() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-xs font-semibold tracking-[0.2em] text-sky-300 uppercase">Laboratorio de participación</p>
-              <h1 className="mt-2 max-w-2xl text-3xl font-bold sm:text-4xl">Ensayo de Stress · RONDA A (histórico)</h1>
+              <h1 className="mt-2 max-w-3xl text-3xl font-bold sm:text-4xl">{data.titulo}</h1>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
-                Simulación retrospectiva del antiguo controlador PID (legado RONDA A), conservada por reproducibilidad.
-                Buscábamos romperlo, no demostrar que funciona. Sus hallazgos motivaron el rediseño del modelo actual
-                (RONDA C: señales de demanda, oferta humana y automatización, sin PID).
+                Ensayo de stress de capacidad sobre el modelo vigente: señales de demanda, oferta humana y automatización
+                (RONDA C) y la apuesta de urgencia periódica no acumulable (RONDA D). Cada escenario corrió en modo D
+                (con presupuesto de urgencia) y en modo C espejo (apuesta libre), para medir qué cambia la urgencia.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full border border-sky-400/40 bg-sky-500/10 px-3 py-1 text-sky-200">{data.meta.corridas} corridas</span>
-              <span className="rounded-full border border-indigo-400/40 bg-indigo-500/10 px-3 py-1 text-indigo-200">{data.meta.escenariosMinimos} escenarios mínimos</span>
+              <span className="rounded-full border border-sky-400/40 bg-sky-500/10 px-3 py-1 text-sky-200">
+                {data.meta.experimentos} escenarios
+              </span>
+              <span className="rounded-full border border-indigo-400/40 bg-indigo-500/10 px-3 py-1 text-indigo-200">
+                {data.meta.sweeps} barridos de sensibilidad
+              </span>
               <span className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-1 text-emerald-200">
                 Monte Carlo ×{data.meta.monteCarloRuns} · semilla {data.meta.seedBase}
               </span>
-              <span className="rounded-full border border-slate-500/40 bg-slate-500/10 px-3 py-1 text-slate-300">{data.meta.fecha}</span>
+              <span className="rounded-full border border-slate-500/40 bg-slate-500/10 px-3 py-1 text-slate-300">
+                v{data.version} · {data.meta.generado.slice(0, 10)}
+              </span>
             </div>
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-xl border border-slate-700 bg-slate-900/60 p-4">
-              <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">RONDA A · histórico</p>
-              <p className="mt-1 text-3xl font-bold text-white">{data.rondaA}</p>
-              <p className="mt-1 text-[11px] text-slate-400">corridas con política inerte (gains 0)</p>
+              <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">Escenarios mínimos</p>
+              <p className="mt-1 text-3xl font-bold text-white">{data.meta.experimentos}</p>
+              <p className="mt-1 text-[11px] text-slate-400">{data.meta.experimentos / 2} en modo D + {data.meta.experimentos / 2} espejo C</p>
             </div>
             <div className="rounded-xl border border-slate-700 bg-slate-900/60 p-4">
-              <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">RONDA B · alternativas</p>
-              <p className="mt-1 text-3xl font-bold text-white">{data.rondaB}</p>
-              <p className="mt-1 text-[11px] text-slate-400">corridas exploratorias (sin aplicar)</p>
+              <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">Presión media (MC)</p>
+              <p className="mt-1 text-3xl font-bold text-amber-300">{fmt(mcPresion.media)}</p>
+              <p className="mt-1 text-[11px] text-slate-400">P5–P95 {fmt(mcPresion.p05)}–{fmt(mcPresion.p95)}</p>
             </div>
             <div className="rounded-xl border border-slate-700 bg-slate-900/60 p-4">
-              <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">Error máx. típico</p>
-              <p className="mt-1 text-3xl font-bold text-amber-300">&lt; {Math.max(...data.tablas.escenarios.map((e) => e.maxAbsError)).toFixed(1)} CU</p>
-              <p className="mt-1 text-[11px] text-slate-400">sobre un setpoint de 100 CU</p>
+              <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">Demanda satisfecha</p>
+              <p className="mt-1 text-3xl font-bold text-sky-300">{fmt(mcSat.media)} %</p>
+              <p className="mt-1 text-[11px] text-slate-400">P5–P95 {fmt(mcSat.p05)}–{fmt(mcSat.p95)}</p>
             </div>
             <div className="rounded-xl border border-slate-700 bg-slate-900/60 p-4">
-              <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">Acceso medio</p>
-              <p className="mt-1 text-3xl font-bold text-sky-300">
-                {Math.max(...data.tablas.escenarios.map((e) => e.meanAccessPct)).toFixed(1)} %
-              </p>
-              <p className="mt-1 text-[11px] text-slate-400">el máximo de los 16 escenarios</p>
+              <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">Dignidad · bajo piso</p>
+              <p className="mt-1 text-3xl font-bold text-emerald-300">{fmt(mcDignidad.media)} %</p>
+              <p className="mt-1 text-[11px] text-slate-400">brecha media {fmt(mcBrecha.media)}</p>
             </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-2 text-xs">
+            <Link
+              href={data.referencia.rondaA}
+              className="rounded-full border border-slate-600 bg-slate-900/70 px-3 py-1 text-slate-300 hover:border-slate-400"
+            >
+              RONDA A archivada →
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* CONTEXTO: experimentos históricos vs modelo actual */}
+      {/* RONDA C vs D */}
       <section className="mx-auto max-w-6xl px-4 pt-10">
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-6">
-            <p className="text-xs font-semibold tracking-wide text-red-700 uppercase">Qué fue este experimento (RONDA A)</p>
-            <h2 className="mt-1 text-lg font-bold text-red-900">Controlador PID + canasta representativa + SupplyPolicy</h2>
-            <p className="mt-2 text-sm leading-relaxed text-red-800">
-              Un lazo de control intentaba ajustar la emisión de CU según el desvío del costo de una canasta frente
-              a un set point. El ensayo mostró que el sensor era casi ciego, la política estaba inerte y el acceso
-              era estructuralmente bajo. <span className="font-semibold">Ese camino se descartó.</span>
+          <div className="rounded-2xl border-2 border-teal-200 bg-teal-50 p-6">
+            <p className="text-xs font-semibold tracking-wide text-teal-700 uppercase">RONDA C · apuesta libre</p>
+            <h2 className="mt-1 text-lg font-bold text-teal-900">Señales de capacidad y prioridad sin costo</h2>
+            <p className="mt-2 text-sm leading-relaxed text-teal-800">
+              Los pedidos compiten por recursos humanos escasos; las CU de compromiso marcan la prioridad de cada
+              apuesta sin costo virtual. Reproduce la realidad de RONDA C: la oferta efectiva la dan los participantas
+              con capacidad ofrecida y horas disponibles.
             </p>
           </div>
-          <div className="rounded-2xl border-2 border-teal-200 bg-teal-50 p-6">
-            <p className="text-xs font-semibold tracking-wide text-teal-700 uppercase">El modelo actual (RONDA C)</p>
-            <h2 className="mt-1 text-lg font-bold text-teal-900">Señales de demanda, oferta humana y automatización</h2>
-            <p className="mt-2 text-sm leading-relaxed text-teal-800">
-              No hay PID ni emisión por error de canasta. Las CU son una señal de participación y nivel de acceso;
-              la prioridad se marca con un presupuesto de urgencia periódico y no acumulable (Ronda D); el
-              patrimonio real es una capa separada y experimental. Este ensayo histórico explica por qué
-              el producto se diseñó así.
+          <div className="rounded-2xl border-2 border-sky-200 bg-sky-50 p-6">
+            <p className="text-xs font-semibold tracking-wide text-sky-700 uppercase">RONDA D · urgencia</p>
+            <h2 className="mt-1 text-lg font-bold text-sky-900">Presupuesto de urgencia periódico y no acumulable</h2>
+            <p className="mt-2 text-sm leading-relaxed text-sky-800">
+              Cada participante recibe un presupuesto periódico de urgencia (base 3, tope 3, costo cuadrático por
+              nivel). Marcar una urgencia gasta presupuesto real; agotarlo excluye de marcar más. La hipótesis: la
+              escasez sin costo expulsa exactamente a quienes más necesitan ser oídos.
             </p>
           </div>
         </div>
       </section>
 
       {/* NAV ANCLA */}
-      <nav className="sticky top-16 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <nav className="mt-8 border-b border-slate-200 bg-white/95 backdrop-blur sticky top-16 z-40">
         <div className="mx-auto flex max-w-6xl gap-4 overflow-x-auto px-4 py-2 text-sm text-slate-600">
           {[
-            ['#veredicto', 'Veredicto'],
             ['#hallazgos', 'Hallazgos'],
             ['#comparativa', 'Comparativa'],
+            ['#barridos', 'Barridos'],
             ['#montecarlo', 'Monte Carlo'],
             ['#graficos', 'Gráficos'],
-            ['#rondab', 'RONDA B'],
             ['#metodologia', 'Metodología'],
             ['#datos', 'Datos'],
           ].map(([href, label]) => (
@@ -271,38 +256,20 @@ export default function EnsayoDeStress() {
         </div>
       </nav>
 
-      {/* VEREDICTO */}
-      <section id="veredicto" className="mx-auto max-w-6xl px-4 py-12">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Veredicto experimental</p>
-          <h2 className="mt-1 text-2xl font-bold text-slate-900">Estable por ceguera, no por control</h2>
-          <p className="mt-3 max-w-4xl text-sm leading-relaxed text-slate-600">
-            El costo de la canasta nunca desestabiliza porque el sensor casi no lo mueve, no porque el PID lo corrija. La política de oferta está
-            inerte (ganancias 0), de modo que la emisión depende solo de los grants de usuarios nuevos. La consecuencia estructural es una economía
-            concentrada con acceso minoritario a la canasta: se comporta como un registro de saldos con transferencias, no como una moneda con
-            propósito de intercambio.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-3 text-xs">
-            <span className="rounded-full bg-emerald-50 px-3 py-1 font-medium text-emerald-700">Convergencia del sensor: siempre dentro de banda</span>
-            <span className="rounded-full bg-red-50 px-3 py-1 font-medium text-red-700">Política inerte: el PID no dispara emisión</span>
-            <span className="rounded-full bg-orange-50 px-3 py-1 font-medium text-orange-700">Acceso a canasta &lt; 2 % en 264/265 corridas</span>
-          </div>
-        </div>
-      </section>
-
       {/* HALLAZGOS */}
-      <section id="hallazgos" className="mx-auto max-w-6xl px-4 pb-12">
-        <h2 className="text-xl font-bold text-slate-900">Hallazgos clave</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {HALLAZGOS.map((h) => (
-            <div key={h.titulo} className={`rounded-xl border-l-4 bg-white p-5 shadow-sm ${h.severidad === 'critico' ? 'border-l-red-500' : h.severidad === 'alto' ? 'border-l-orange-400' : 'border-l-amber-400'}`}>
-              <div className="flex items-start gap-3">
-                <span className={`mt-0.5 text-lg ${JERINGA[h.severidad]}`}>{h.severidad === 'critico' ? '🛑' : h.severidad === 'alto' ? '⚠️' : '📊'}</span>
-                <div>
-                  <h3 className="font-semibold text-slate-900">{h.titulo}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-slate-600">{h.texto}</p>
-                </div>
-              </div>
+      <section id="hallazgos" className="mx-auto max-w-6xl px-4 pb-12 pt-12">
+        <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Veredicto experimental</p>
+        <h2 className="mt-1 text-2xl font-bold text-slate-900">La urgencia elimina la exclusión por escasez</h2>
+        <p className="mt-3 max-w-4xl text-sm leading-relaxed text-slate-600">
+          En escasez, la apuesta libre sin costo expulsa a los que menos pueden: excluidos de nivel básico 52 %
+          (C) frente a 11 % (D) en escasez extrema, y 76,5 % frente a 16 % en escasez persistente. La presión indica
+          dónde falta oferta; la urgencia y el piso de dignidad capturan quién queda fuera. Ningún modo aumenta el
+          acceso a nivel básico con automatización creciente: el acceso estructural requiere más que oferta.
+        </p>
+        <div className="mt-6 grid gap-3 md:grid-cols-2">
+          {data.hallazgos.map((h, i) => (
+            <div key={i} className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
+              {h}
             </div>
           ))}
         </div>
@@ -311,53 +278,55 @@ export default function EnsayoDeStress() {
       {/* COMPARATIVA */}
       <section id="comparativa" className="bg-slate-50 py-12">
         <div className="mx-auto max-w-6xl px-4">
-          <h2 className="text-xl font-bold text-slate-900">Tabla comparativa · escenarios mínimos</h2>
+          <h2 className="text-xl font-bold text-slate-900">Comparativa D vs C · escenarios mínimos</h2>
           <p className="mt-1 text-sm text-slate-500">
-            RONDA A histórica (política inerte). Setpoint 100 CU. Clic en cada fila para abrir su panel de gráficos.
+            Cada escenario D enfrenta a su espejo C. Las columnas de urgencia solo aplican a la variante D.
           </p>
           <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-            <table className="w-full min-w-[900px] text-left text-sm">
+            <table className="w-full min-w-[1000px] text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-xs text-slate-500">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Escenario</th>
-                  <th className="px-3 py-3 text-right font-semibold">Estado</th>
-                  <th className="px-3 py-3 text-right font-semibold">Err. medio</th>
-                  <th className="px-3 py-3 text-right font-semibold">Err. máx</th>
-                  <th className="px-3 py-3 text-right font-semibold">Recupera ±5%</th>
-                  <th className="px-3 py-3 text-right font-semibold">Osc.</th>
-                  <th className="px-3 py-3 text-right font-semibold">Acceso %</th>
-                  <th className="px-3 py-3 text-right font-semibold">Gini</th>
-                  <th className="px-3 py-3 text-right font-semibold">Top-10 %</th>
-                  <th className="px-3 py-3 text-right font-semibold">Velocidad</th>
-                  <th className="px-3 py-3 text-right font-semibold">CU fin de juego</th>
+                  <th className="px-3 py-3 text-right font-semibold">% sat</th>
+                  <th className="px-3 py-3 text-right font-semibold">presMed</th>
+                  <th className="px-3 py-3 text-right font-semibold">presMax</th>
+                  <th className="px-3 py-3 text-right font-semibold">exclBas D</th>
+                  <th className="px-3 py-3 text-right font-semibold">exclBas C</th>
+                  <th className="px-3 py-3 text-right font-semibold">dig HC D</th>
+                  <th className="px-3 py-3 text-right font-semibold">urg gasto D</th>
+                  <th className="px-3 py-3 text-right font-semibold">urg efic D</th>
+                  <th className="px-3 py-3 text-right font-semibold">corr CU·urg</th>
                 </tr>
               </thead>
               <tbody>
-                {data.tablas.escenarios.map((e, i) => {
-                  const st = SEVERIDAD_ESTILO[e.estado];
-                  const recup = e.recovery5 === 0 ? '—' : `nunca${e.recovery5 >= 40 ? '' : ' (' + e.recovery5 + ' ciclos)'}`;
+                {escDs.map((d) => {
+                  const l = data.escenarios.find((e) => e.id === 'L-' + d.id);
+                  const m = d.metrics;
                   return (
                     <tr
-                      key={e.id}
+                      key={d.id}
                       onClick={() => {
-                        setSel(i);
+                        setSelPanel(paneles.findIndex((p) => p.id === d.id) >= 0 ? paneles.findIndex((p) => p.id === d.id) : 0);
                         document.getElementById('graficos')?.scrollIntoView({ behavior: 'smooth' });
                       }}
                       className="cursor-pointer border-b border-slate-100 hover:bg-sky-50/60"
                     >
-                      <td className="px-4 py-3 font-medium text-slate-800">{e.label.replace(/E\d+ · /, '')}</td>
-                      <td className="px-3 py-3 text-right">
-                        <span className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${st.cls}`}>{st.label}</span>
+                      <td className="px-4 py-3 font-medium text-slate-800">{d.label}</td>
+                      <td className="px-3 py-3 text-right text-slate-600">{m.pctSatisfecha.toFixed(1)}</td>
+                      <td className="px-3 py-3 text-right text-slate-600">{m.presionMedia.toFixed(1)}</td>
+                      <td className="px-3 py-3 text-right text-slate-600">{m.presionMax.toFixed(1)}</td>
+                      <td className={`px-3 py-3 text-right font-semibold ${m.excluidosBasicoPct > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                        {m.excluidosBasicoPct.toFixed(1)} %
                       </td>
-                      <td className="px-3 py-3 text-right text-slate-600">{e.mae.toFixed(3)}</td>
-                      <td className="px-3 py-3 text-right text-slate-600">{e.maxAbsError.toFixed(2)}</td>
-                      <td className="px-3 py-3 text-right text-slate-600">{recup}</td>
-                      <td className="px-3 py-3 text-right text-slate-600">{e.osc}</td>
-                      <td className="px-3 py-3 text-right text-slate-600">{e.finalAccessPct.toFixed(1)}</td>
-                      <td className="px-3 py-3 text-right text-slate-600">{e.finalGini.toFixed(1)}</td>
-                      <td className="px-3 py-3 text-right text-slate-600">{e.finalTop10.toFixed(1)}</td>
-                      <td className="px-3 py-3 text-right text-slate-600">{e.meanVelocity.toFixed(2)}</td>
-                      <td className="px-3 py-3 text-right text-slate-600">{fmt(e.finalSupply)}</td>
+                      <td className={`px-3 py-3 text-right ${l ? (l.metrics.excluidosBasicoPct > 0 ? 'text-orange-500' : 'text-emerald-600') : 'text-slate-400'}`}>
+                        {l ? l.metrics.excluidosBasicoPct.toFixed(1) + ' %' : '—'}
+                      </td>
+                      <td className={`px-3 py-3 text-right ${m.dignidadHeadcountPct > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                        {m.dignidadHeadcountPct.toFixed(1)} %
+                      </td>
+                      <td className="px-3 py-3 text-right text-slate-600">{m.urgenciaGastoPct.toFixed(1)} %</td>
+                      <td className="px-3 py-3 text-right text-slate-600">{m.urgenciaEficaciaPct.toFixed(1)} %</td>
+                      <td className="px-3 py-3 text-right text-slate-600">{m.corrCuUrgencia === null ? '—' : m.corrCuUrgencia.toFixed(2)}</td>
                     </tr>
                   );
                 })}
@@ -367,58 +336,117 @@ export default function EnsayoDeStress() {
         </div>
       </section>
 
+      {/* BARRIDOS */}
+      <section id="barridos" className="mx-auto max-w-6xl px-4 py-12">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">Barridos de sensibilidad</h2>
+            <p className="mt-1 text-sm text-slate-500">Un parámetro a la vez. Haz clic en el gráfico para ver la serie completa.</p>
+          </div>
+          <select
+            value={selBarrido}
+            onChange={(e) => setSelBarrido(Number(e.target.value))}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:ring-2 focus:ring-sky-500"
+          >
+            {barridos.map((b, i) => (
+              <option key={b.id} value={i}>
+                {b.id} · {b.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        {selBarridoInfo && (
+          <>
+            <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+              <table className="w-full min-w-[800px] text-left text-sm">
+                <thead className="border-b border-slate-200 bg-slate-50 text-xs text-slate-500">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold">Caso</th>
+                    <th className="px-3 py-3 text-right font-semibold">% sat</th>
+                    <th className="px-3 py-3 text-right font-semibold">exclBas %</th>
+                    <th className="px-3 py-3 text-right font-semibold">dig HC %</th>
+                    <th className="px-3 py-3 text-right font-semibold">urg gasto %</th>
+                    <th className="px-3 py-3 text-right font-semibold">presMax</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selBarridoInfo.cases.map((c) => (
+                    <tr key={c.id} className="border-b border-slate-100">
+                      <td className="px-4 py-3 font-medium text-slate-800">{c.id}</td>
+                      <td className="px-3 py-3 text-right text-slate-600">{c.metrics.pctSatisfecha.toFixed(1)}</td>
+                      <td className={`px-3 py-3 text-right ${c.metrics.excluidosBasicoPct > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                        {c.metrics.excluidosBasicoPct.toFixed(1)}
+                      </td>
+                      <td className={`px-3 py-3 text-right ${c.metrics.dignidadHeadcountPct > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                        {c.metrics.dignidadHeadcountPct.toFixed(1)}
+                      </td>
+                      <td className="px-3 py-3 text-right text-slate-600">{c.metrics.urgenciaGastoPct.toFixed(1)}</td>
+                      <td className="px-3 py-3 text-right text-slate-600">{c.metrics.presionMax.toFixed(1)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </section>
+
       {/* MONTE CARLO */}
-      <section id="montecarlo" className="mx-auto max-w-6xl px-4 py-12">
-        <h2 className="text-xl font-bold text-slate-900">Monte Carlo · 200 corridas con semilla reproducible</h2>
-        <p className="mt-1 text-sm text-slate-500">
-          Jitter en demanda, transferencias, crecimiento y shocks (semilla base {data.meta.seedBase} · {data.meta.monteCarloCycles} ciclos). La banda
-          de recuperación nunca se rompe: no hay caos, hay ceguera.
-        </p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {VARDIAS_MC.map((v) => {
-            const m = data.monteCarlo?.metrics?.[v.key];
-            if (!m) return null;
-            return (
-              <div key={v.key} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">{v.label}</p>
-                <p className="mt-1 text-2xl font-bold text-slate-900">{fmt(m.mean)}</p>
-                <p className="mt-1 text-[11px] text-slate-500">
-                  P5–P95: {fmt(m.p5)} – {fmt(m.p95)} · min {fmt(m.min)} / max {fmt(m.max)}
-                </p>
-              </div>
-            );
-          })}
+      <section id="montecarlo" className="bg-slate-50 py-12">
+        <div className="mx-auto max-w-6xl px-4">
+          <h2 className="text-xl font-bold text-slate-900">
+            Monte Carlo · {data.monteCarlo.runs} corridas con semilla reproducible
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Jitter en demanda, oferta, participación y shocks (semilla base {data.meta.seedBase}). La dignidad agrega
+            una capa que la presión no ve: registra exclusión aun cuando la presión es pequeña.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {VARDIAS_MC.map((v) => {
+              const m = data.monteCarlo.metricas.agg[v.key];
+              if (!m) return null;
+              return (
+                <div key={v.key} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <p className="text-[11px] font-semibold tracking-wide text-slate-400 uppercase">{v.label}</p>
+                  <p className="mt-1 text-2xl font-bold text-slate-900">{fmt(m.media)}</p>
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    P5–P95: {fmt(m.p05)} – {fmt(m.p95)} · min {fmt(m.min)} / max {fmt(m.max)}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
       {/* GRAFICOS */}
-      <section id="graficos" className="mx-auto max-w-6xl px-4 pb-12">
+      <section id="graficos" className="mx-auto max-w-6xl px-4 pb-12 pt-12">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-xl font-bold text-slate-900">Gráficos por escenario</h2>
-            <p className="mt-1 text-sm text-slate-500">Paneles generados en SVG · 11 métricas por escenario.</p>
+            <p className="mt-1 text-sm text-slate-500">Paneles SVG por escenario con las trazas de RONDA C+D.</p>
           </div>
           <select
-            value={sel}
-            onChange={(e) => setSel(Number(e.target.value))}
+            value={selPanel}
+            onChange={(e) => setSelPanel(Number(e.target.value))}
             className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:ring-2 focus:ring-sky-500"
           >
-            {data.charts.cuadricula.map((c, i) => (
+            {paneles.map((c, i) => (
               <option key={c.id} value={i}>
                 {c.label}
               </option>
             ))}
           </select>
         </div>
-        {selPanel && (
+        {selPanelInfo && (
           <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-            <img src={`/stress-test/${selPanel.panel}`} alt={`Panel ${selPanel.label}`} className="w-full" />
+            <img src={`/stress-test/${selPanelInfo.panel}`} alt={`Panel ${selPanelInfo.label}`} className="w-full" />
           </div>
         )}
 
         <div className="mt-10">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h3 className="text-lg font-bold text-slate-900">Series superpuestas (all escenarios)</h3>
+            <h3 className="text-lg font-bold text-slate-900">Series superpuestas (barridos)</h3>
             <select
               value={selOverlay}
               onChange={(e) => setSelOverlay(Number(e.target.value))}
@@ -439,55 +467,32 @@ export default function EnsayoDeStress() {
         </div>
       </section>
 
-      {/* RONDA B */}
-      <section id="rondab" className="bg-indigo-950 py-12 text-white">
-        <div className="mx-auto max-w-6xl px-4">
-          <h2 className="text-xl font-bold">RONDA B · propuestas (simuladas, no aplicadas)</h2>
-          <p className="mt-2 max-w-3xl text-sm text-slate-300">
-            Se exploraron variantes de política activa (ganancias 1 y 3, asimétrica, tope de emisión, cuotas a nuevos vs históricos). Resultado:
-            todas prácticamente idénticas — la señal del sensor es tan pequeña que la emisión base domina y la política no puede manifestarse. En
-            los términos de ese experimento, haber activado la política habría exigido sensibilizar el sensor y alinear el setpoint con la dotación
-            real. Eso, junto con los demás hallazgos, es parte de lo que llevó a descartar el PID en la RONDA C.
-          </p>
-          <div className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {[
-              ['Sensibilizar el sensor', 'Añadir sensibilidad al acceso real, no solo al costo de la canasta.'],
-              ['Setpoint coherente', 'Derivar el setpoint de la distribución de saldos (p. ej. mediana), no fijarlo en 100.'],
-              ['Emisión de mantenimiento', 'Vincularla a población activa, no al error micro del PID.'],
-              ['Grant condicional', 'CU nuevos solo por actividad verificada (publicación/comentario).'],
-              ['Freno a la concentración', 'Costo por transferencia o límite de tenencia, si el objetivo es no-moneda.'],
-              ['KPI de acceso', 'Sustituir el error de canasta por acceso a la canasta como variable de control.'],
-            ].map(([t, d]) => (
-              <div key={t} className="rounded-xl border border-slate-700 bg-slate-900/60 p-4">
-                <h3 className="font-semibold text-sky-300">{t}</h3>
-                <p className="mt-1 text-sm text-slate-300">{d}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* METODOLOGIA */}
-      <section id="metodologia" className="mx-auto max-w-6xl px-4 py-12">
+      <section id="metodologia" className="mx-auto max-w-6xl px-4 pb-12">
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-bold text-slate-900">Metodología</h2>
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-slate-600">
-              <li>16 escenarios mínimos + barridos de población, dotación, crecimiento, demanda, oferta, PID y policy.</li>
-              <li>200 corridas Monte Carlo con semilla reproducible (mulberry32, semilla 101).</li>
-              <li>El harness reutiliza el código del experimento histórico RONDA A (PidController, evaluateSupplyPolicy, computeNewUserGrant).</li>
-              <li>Para cada escenario: 30+ métricas de estabilidad, trazas ciclo a ciclo y gráficos SVG.</li>
+              <li>16 escenarios mínimos en modo D (urgencia activa) + espejo C (apuesta libre sin costo), sobre el motor RONDA C.</li>
+              <li>10 barridos de sensibilidad (población, demanda, oferta, participación, propensión a urgencia, presupuesto, nivel máximo, automatización, patrimonio, shocks).</li>
+              <li>200 corridas Monte Carlo con semilla reproducible (mulberry32, semilla {data.meta.seedBase}) y jitter de segmento.</li>
+              <li>Métricas por escenario: demanda, presión, acceso, CU, urgencia y piso de dignidad (PISO_ACTIVIDAD = 2).</li>
+              <li>El motor es el mismo de la producción (src/lib/agents/engine.ts + cap-formulas), no una réplica aproximada.</li>
             </ol>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-bold text-slate-900">Notas de interpretación</h2>
             <ul className="mt-3 space-y-2 text-sm text-slate-600">
-              <li>• Las CU <span className="font-semibold">no son dinero</span>. La «velocidad» es actividad, no valor.</li>
-              <li>• Resultados separados en RONDA A (histórico) y RONDA B (propuestas) para saber qué cambio produjo qué resultado.</li>
-              <li>• El objetivo era romper el modelo: que esté «estable» en el costo de canasta sin acceso es un fallo, no un éxito.</li>
+              <li>• RONDA C es el espejo de control: mismo escenario sin urgencia. La diferencia D−C es el efecto de la urgencia.</li>
+              <li>• La exclusión de nivel básico se define sobre el acceso: quienes no logran ningún pedido satisfecho a ese nivel.</li>
+              <li>• El piso de dignidad (headcount bajo PISO_ACTIVIDAD) detecta exclusión que la presión de capacidades no muestra.</li>
+              <li>• Las CU <span className="font-semibold">no son dinero</span>: son señal de compromiso/participación, no medio de cambio.</li>
               <li>
-                • Estos hallazgos motivaron el <span className="font-semibold">descarte del PID</span> y el rediseño del
-                modelo: señales de demanda / oferta humana / automatización, con patrimonio separado (RONDA C).
+                • Este ensayo sustituye al histórico RONDA A (controlador PID). Sus datos permanecen archivados en{' '}
+                <Link href={data.referencia.rondaA} className="text-sky-600 underline">
+                  ronda-a/
+                </Link>
+                .
               </li>
             </ul>
           </div>
@@ -500,29 +505,43 @@ export default function EnsayoDeStress() {
           <h2 className="text-xl font-bold text-slate-900">Datos y entregables</h2>
           <p className="mt-1 text-sm text-slate-500">Archivos reutilizables para auditar y analizar posteriormente.</p>
           <div className="mt-4 flex flex-wrap gap-3">
-            <a href={`/stress-test/${data.datos.summaryCsv}`} className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
-              summary.csv · {data.meta.corridas} corridas
+            <a
+              href="/stress-test/data/summary_capacidad_stress.csv"
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+            >
+              summary_capacidad_stress.csv
             </a>
-            <a href={`/stress-test/${data.datos.monteCarloJson}`} className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
+            <a
+              href="/stress-test/data/montecarlo.json"
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+            >
               montecarlo.json
             </a>
-            <a href={`/stress-test/${data.datos.reporte}`} className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
+            <a
+              href="/stress-test/data/presentation.json"
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+            >
+              presentation.json
+            </a>
+            <a
+              href="/stress-test/REPORTE.md"
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+            >
               REPORTE.md · análisis completo
             </a>
-            <a href={`/stress-test/${data.datos.autoResumen}`} className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
-              _auto-summary.md
+            <a
+              href="/stress-test/ronda-a/REPORTE.md"
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+            >
+              REPORTE RONDA A (archivado)
             </a>
             <Link href="/admin" className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">
               ← Panel de administración
             </Link>
           </div>
-          <div className="mt-6 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-4">
-            {data.datos.traces.map((t) => (
-              <a key={t.file} href={`/stress-test/${t.file}`} className="truncate rounded-md border border-slate-200 bg-white px-3 py-2 text-slate-600 hover:border-sky-300">
-                {t.name}
-              </a>
-            ))}
-          </div>
+          <p className="mt-4 text-xs text-slate-400">
+            Trazas ciclo a ciclo disponibles en <code>/stress-test/data/</code> (un CSV por escenario y por caso de barrido).
+          </p>
         </div>
       </section>
     </main>
@@ -532,5 +551,5 @@ export default function EnsayoDeStress() {
 function fmt(v: number): string {
   if (Math.abs(v) >= 1000) return (v / 1000).toFixed(1) + 'k';
   if (Math.abs(v) >= 100) return v.toFixed(0);
-  return v.toFixed(2);
+  return v.toFixed(1);
 }

@@ -1,0 +1,18 @@
+[
+  "E01-equilibrio",
+  "E02-equilibrio-grande",
+  "E03-escasez-extrema",
+  "E04-abundancia-extrema",
+  "E05-crecimiento",
+  "E06-shock-demanda",
+  "E07-shock-oferta",
+  "E08-shock-escasez",
+  "E09-shock-combinado",
+  "E10-alta-volatilidad",
+  "E11-nuevos-usuarios-masivos",
+  "E12-concentracion",
+  "E13-consumo-extremo",
+  "E14-transferencia-extrema",
+  "E15-sistema-casi-vacio",
+  "E16-sistema-enorme"
+]

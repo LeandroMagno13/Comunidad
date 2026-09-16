@@ -28,7 +28,7 @@
 //       participaciÃ³n, con topes y reglas anti-farming) â€” nunca PID.
 // ============================================================================
 
-import { levelWeightFromIndex, presionFrom, cargaHumanaFrom } from '@/src/lib/cap-formulas';
+import { levelWeightFromIndex, presionFrom, cargaHumanaFrom, urgencyCost, urgencyPeriodKey } from '@/src/lib/cap-formulas';
 
 export type AccessLevel = 0 | 1 | 2; // 0=bÃ¡sico 1=medio 2=avanzado
 
@@ -60,6 +60,10 @@ export interface Agent {
   requestsSatisfied: number;
   requestsUnsatisfied: number;
   skills: string[];
+  // RONDA D: presupuesto de urgencia periodico (no acumulable)
+  urgencyBudgetRemaining: number; // puntos disponibles en el periodo vigente
+  urgencyPeriod: number; // periodo en curso (indice de ciclos)
+  urgencySpent: number; // urgencia gastada en lo que va de la corrida
 }
 
 export interface CapacityRequest {
@@ -69,7 +73,9 @@ export interface CapacityRequest {
   agent: number; // solicitante
   capacityId: string;
   intensity: number; // 1..3
-  cuCommitted: number; // apuesta (prioridad)
+  cuCommitted: number; // apuesta (prioridad) — LEGACY RONDA C (0 en RONDA D)
+  urgencyLevel: number; // RONDA D: nivel de urgencia 0..maxLevel (0 = sin marcar)
+  urgencyCost: number; // costo cuadrático gastado del presupuesto periódico
   provider: number | null; // agente que satisface
   status: 'registered' | 'satisfied' | 'expired';
 }
@@ -101,7 +107,20 @@ export interface CycleSnapshot {
   pctSatisfecha: number;
   recursosUsados: number;
   recursosDistribuidos: number;
-  participants: number;
+participants: number;
+  // RONDA D (solo cuando urgencyEnabled): presupuesto de urgencia y dignidad
+  urgencia?: {
+    marcadas: number; // solicitudes con urgencyLevel > 0 en el ciclo
+    urgenteSatisfecha: number; // urgentes satisfechas (humanas o tecnologicas)
+    urgenteInsatisfecha: number; // urgentes no satisfechas al cierre del ciclo
+    presupuestoTotal: number; // puntos disponibles por periodo (todos los agentes)
+    presupuestoGastado: number; // urgencia consumida acumulada
+    agotados: number; // agentes con presupuesto en 0
+    costoMedio: number; // costo medio de las solicitudes marcadas
+    eficaciaUrgente: number; // % de urgentes satisfechas (0..100)
+prioridadBasicoSatisfecho: number; // urgentes del nivel basico satisfechas
+  };
+  dignidad?: { headcount: number; brecha: number }; // piso de dignidad (RONDA D)
 }
 
 export interface CapacitySimConfig {
@@ -133,6 +152,16 @@ export interface CapacitySimConfig {
   cuCap: number; // tope de balance (anti-reserva de valor; 0 = sin tope)
   maxHoldCycles: number; // ventana de espera antes de expirar solicitud
   accessRule: { basicFloor: number; agentBasicQuota: number }; // R5
+  // RONDA D (opcional): presupuesto de urgencia periodico no acumulable.
+  // Si no se define, el engine corre en modo RONDA C (apuesta de CU libre).
+  urgency?: {
+    enabled: boolean;
+    budgetBase: number; // puntos de urgencia por periodo por agente (default 3)
+    maxLevel: number; // nivel maximo de urgencia (default 3; costo cuadratico)
+    periodCycles: number; // duracion del periodo en ciclos (default 7)
+    propensity: number; // prob. de marcar urgencia en una solicitud (0..1)
+    useBudget: true; // siempre true en RONDA D; se deja en config por claridad
+  };
 }
 
 export const DEFAULT_CAPACITY_CONFIG: CapacitySimConfig = {
@@ -245,7 +274,7 @@ function buildAgents(cfg: CapacitySimConfig, rng: () => number): Agent[] {
       }
     }
     const capacityWeight = offers.reduce((s, o) => s + o.disponibilidad * o.calidad, 0);
-    const cuShare = 0.5 + rng() * cfg.cuInit;
+const cuShare = 0.5 + rng() * cfg.cuInit;
     agents.push({
       id: i,
       wealth: wealths[i]!,
@@ -261,6 +290,9 @@ function buildAgents(cfg: CapacitySimConfig, rng: () => number): Agent[] {
       requestsSatisfied: 0,
       requestsUnsatisfied: 0,
       skills,
+      urgencyBudgetRemaining: 0,
+      urgencyPeriod: -1,
+      urgencySpent: 0,
     });
     void cuShare;
   }
@@ -317,6 +349,11 @@ export function pearson(a: number[], b: number[]): number | null {
 // ---------------------------------------------------------------------------
 export function runCapacitySim(cfg: CapacitySimConfig): CapacitySim {
   const rng = mulberry32(cfg.seed);
+  const urgencyEnabled = cfg.urgency?.enabled ?? false;
+  const uBase = cfg.urgency?.budgetBase ?? 3;
+  const uMaxLevel = cfg.urgency?.maxLevel ?? 3;
+  const uPeriodCycles = cfg.urgency?.periodCycles ?? 7;
+  const uPropensity = cfg.urgency?.propensity ?? 0.5;
   const agents = buildAgents(cfg, rng);
   // recursos distribuibles por agente por ciclo (regla: solo fracciÃ³n del patrimonio
   // disponible, tras reservas/reinversiÃ³n/costos) â€” R8
@@ -401,8 +438,19 @@ const offer = effProviders(c.id).reduce((s, a) => {
     });
   }
 
-  for (let cycle = 1; cycle <= cfg.cycles; cycle++) {
+for (let cycle = 1; cycle <= cfg.cycles; cycle++) {
     currentCycle = cycle;
+    // RONDA D: reset del presupuesto de urgencia al cambiar de periodo (no acumulable).
+    // Se resetea ANTES de generar demanda: el gasto del periodo anterior no arrastra puntos.
+    if (urgencyEnabled) {
+      const period = Math.floor((cycle - 1) / uPeriodCycles);
+      for (const a of agents) {
+        if (a.urgencyPeriod !== period) {
+          a.urgencyPeriod = period;
+          a.urgencyBudgetRemaining = uBase;
+        }
+      }
+    }
     // 1) expiraciÃ³n de solicitudes (R7: devuelve apuesta)
     for (const r of requests) {
       if (r.status === 'registered' && cycle > r.expiryCycle) {
@@ -434,11 +482,41 @@ const offer = effProviders(c.id).reduce((s, a) => {
         // la nueva capacidad tecnolÃ³gica absorbe parte de la demanda automatizable
         void d;
       }
-      const intensity = 1 + Math.floor(rng() * 3);
-      const stake = Math.min(a.cu, Math.max(0, Math.round(intensity * (0.5 + rng()))));
-      if (a.cu >= intensity * 0.5) {
-        a.cu -= stake;
-        a.committedCu += stake;
+const intensity = 1 + Math.floor(rng() * 3);
+      if (!urgencyEnabled) {
+        // RONDA C: la apuesta libre de CU es la senal de prioridad (sin costo real)
+        const stake = Math.min(a.cu, Math.max(0, Math.round(intensity * (0.5 + rng()))));
+        if (a.cu >= intensity * 0.5) {
+          a.cu -= stake;
+          a.committedCu += stake;
+          a.requestsCreated += 1;
+          requests.push({
+            id: nextReqId++,
+            cycle,
+            expiryCycle: cycle + cfg.maxHoldCycles,
+            agent: a.id,
+            capacityId: capId,
+            intensity,
+            cuCommitted: stake,
+            urgencyLevel: 0,
+            urgencyCost: 0,
+            provider: null,
+            status: 'registered',
+          });
+        }
+      } else {
+        // RONDA D: pedir no requiere CU. La urgencia marca prioridad con costo
+        // cuadratico (1,4,9) pagado del presupuesto periodico (no acumulable).
+        let urgencyLevel = 0;
+        if (rng() < uPropensity) {
+          const cand = 1 + Math.floor(rng() * uMaxLevel);
+          const cost = urgencyCost(cand);
+          if (a.urgencyBudgetRemaining >= cost) {
+            urgencyLevel = cand;
+            a.urgencyBudgetRemaining -= cost;
+            a.urgencySpent += cost;
+          }
+        }
         a.requestsCreated += 1;
         requests.push({
           id: nextReqId++,
@@ -447,7 +525,9 @@ const offer = effProviders(c.id).reduce((s, a) => {
           agent: a.id,
           capacityId: capId,
           intensity,
-          cuCommitted: stake,
+          cuCommitted: 0,
+          urgencyLevel,
+          urgencyCost: urgencyLevel > 0 ? urgencyCost(urgencyLevel) : 0,
           provider: null,
           status: 'registered',
         });
@@ -478,10 +558,12 @@ const offer = effProviders(c.id).reduce((s, a) => {
       const basic = humanPend.filter((r) => agents[r.agent]!.nivelAcceso === 0);
       const medium = humanPend.filter((r) => agents[r.agent]!.nivelAcceso === 1);
       const advanced = humanPend.filter((r) => agents[r.agent]!.nivelAcceso === 2);
-      const quota = cfg.accessRule.basicFloor;
+const quota = cfg.accessRule.basicFloor;
       const basicCap = Math.min(capacityUnits * quota, basic.length);
       const orderly = (list: CapacityRequest[]) =>
-        [...list].sort((a, b) => b.cuCommitted - a.cuCommitted);
+        urgencyEnabled
+          ? [...list].sort((a, b) => b.urgencyLevel - a.urgencyLevel || a.id - b.id)
+          : [...list].sort((a, b) => b.cuCommitted - a.cuCommitted);
       for (const r of orderly(basic).slice(0, Math.ceil(basicCap))) {
         if (capacityUnits <= 0) break;
         serve(r, capacityUnits, providers, rng);
@@ -552,12 +634,12 @@ const offer = effProviders(c.id).reduce((s, a) => {
       for (const a of agents) a.cu += cfg.grantNewUserCu;
     }
 
-    // 8) snapshot y mÃ©tricas por ciclo
+// 8) snapshot y mÃ©tricas por ciclo
     const stats = statsOf();
     const cuBal = agents.map((a) => a.cu).sort((x, y) => x - y);
     const top10 = Math.ceil(agents.length / 10);
     const cumTop = cuBal.slice(-top10).reduce((s, v) => s + v, 0) / (cuBal.reduce((s, v) => s + v, 0) || 1);
-    history.push({
+    const snap: CycleSnapshot = {
       cycle,
       stats,
       acceso: {
@@ -576,7 +658,37 @@ const offer = effProviders(c.id).reduce((s, a) => {
       recursosUsados: agents.reduce((s, a) => s + a.requestsSatisfied, 0),
       recursosDistribuidos: round2(distributablePerAgent.reduce((s, v) => s + v, 0)),
       participants: agents.filter((a) => a.requestsCreated > 0).length,
-    });
+    };
+    if (urgencyEnabled) {
+      const marcadas = requests.filter((r) => r.urgencyLevel > 0 && r.cycle === cycle);
+      const urgentes = requests.filter((r) => r.urgencyLevel > 0);
+      const uSat = urgentes.filter((r) => r.status === 'satisfied');
+      const uPending = urgentes.filter((r) => r.status === 'registered' || r.status === 'expired');
+      // PISO DE DIGNIDAD (periodo vigente de 30 dias ~ PJ K): participaciones =
+      // satisfecho como solicitante + entregas como proveedor (verificadas).
+      const PISO_ACTIVIDAD = 2;
+      const brechas: number[] = [];
+      for (const a of agents) {
+        const act = a.requestsSatisfied + a.contributions;
+        if (act < PISO_ACTIVIDAD) brechas.push((PISO_ACTIVIDAD - act) / PISO_ACTIVIDAD);
+      }
+      snap.urgencia = {
+        marcadas: marcadas.length,
+        urgenteSatisfecha: uSat.length,
+        urgenteInsatisfecha: uPending.length,
+        presupuestoTotal: uBase * agents.length,
+        presupuestoGastado: agents.reduce((s, a) => s + a.urgencySpent, 0),
+        agotados: agents.filter((a) => a.urgencyBudgetRemaining === 0).length,
+        costoMedio: round2(urgentes.reduce((s, r) => s + r.urgencyCost, 0) / Math.max(1, urgentes.length)),
+        eficaciaUrgente: round2((uSat.length / Math.max(1, urgentes.length)) * 100),
+        prioridadBasicoSatisfecho: uSat.filter((r) => agents[r.agent]!.nivelAcceso === 0).length,
+      };
+      snap.dignidad = {
+        headcount: round2((brechas.length / agents.length) * 100),
+        brecha: round2(brechas.reduce((s, b) => s + b, 0) / Math.max(1, brechas.length)),
+      };
+    }
+    history.push(snap);
   }
 
   return {

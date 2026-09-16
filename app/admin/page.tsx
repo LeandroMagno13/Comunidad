@@ -1061,7 +1061,7 @@ export default function AdminPanel() {
               href="/ensayo-de-stress"
               className="ml-2 mt-3 inline-block rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
             >
-              Ver informe completo: Ensayo de Stress (legado RONDA A) →
+              Ver informe completo: Ensayo de Stress (RONDA C+D) →
             </a>
             <a
               href="/capacidad/REPORTE-CU-CAPACIDAD.md"
