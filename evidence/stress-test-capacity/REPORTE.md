@@ -26,12 +26,13 @@ mejora la asignación o solo la reordena.
 ## Resumen ejecutivo
 
 1. **La señal de presión NO se enciende en falso en abundancia** (E04: presMax ~4 con oferta x3) y **responde fuerte en escasez** (E03: presMax 54,6; E08: 114,9). Vida del sensor heredado de RONDA A resuelta.
-2. **La urgencia elimina la exclusión basal que la apuesta libre causaba.** En escasez extrema E03: excluidos-básico cae de **52% (C) a 11% (D)**, y en escasez persistente E08 de **76,5% (C) a 16% (D)**. El piso de dignidad hace su trabajo.
-3. **La urgencia es eficaz y su presupuesto se agota limpiamente.** En E14 (presupuesto mínimo, base 1) se gasta el **45,9%** del presupuesto y la eficacia urgente se mantiene en ~54%. En E13 (saturación) marcadas al 100% sin colapso del %sat.
-4. **Costo cuadrático acota el grito.** Con nivel máximo (3 → costo 9) y base 3, un agente no puede marcar urgencia máxima repetida en el mismo período: el presupuesto fuerza reparto (E14 con base 1).
-5. **La dignidad es el indicador que falla antes que la presión.** En E08 el %sat es 87,6% y la presión 114,9, pero el piso de dignidad sube a 16,5% headcount: la señal de presión por sí sola no ve la exclusión; dignidad sí.
-6. **La automatización no crea acceso humano.** E07 (traducción automatizada) no reduce la presión global: la demanda se traslada, no desaparece.
-7. **Monte Carlo (200 corridas, seed 101):** %sat media **65.7%** [p05=50.0, p95=87.3]; dignidad headcount media **2.0%** (p95 10.5%).
+2. **La urgencia reduce la exclusión basal que la apuesta libre causaba.** En escasez extrema E03: excluidos-básico cae de **52% (C) a 11% (D)**, y en escasez persistente E08 de **76,5% (C) a 16% (D)**. El piso de dignidad hace su trabajo. La palabra correcta es *reduce*: no demuestra *eliminar*. En el Monte Carlo hay corridas con hasta **30,5%** bajo el piso (p95 10,5%), y en el sistema casi vacío (E15) D y C empatan en 60% -- la urgencia no fabrica capacidad que no existe.
+3. **D no gana sistemáticamente, y eso es señal de que el experimento no fue construido para que gane.** En E03 la satisfacción es 86,23% (D) vs 89,23% (C): D asigna distinto (4,7× menos exclusión) a costa de un punto y medio menos de satisfacción agregada. La urgencia redistribuye la escasez: no la elimina ni la crea.
+4. **La urgencia es eficaz y su presupuesto se agota limpiamente.** En E14 (presupuesto mínimo, base 1) se gasta el **45,9%** del presupuesto y la eficacia urgente se mantiene en ~54%. En E13 (saturación) marcadas al 100% sin colapso del %sat.
+5. **Costo cuadrático acota el grito.** Con nivel máximo (3 → costo 9) y base 3, un agente no puede marcar urgencia máxima repetida en el mismo período: el presupuesto fuerza reparto (E14 con base 1).
+6. **La dignidad es el indicador que falla antes que la presión.** En E08 el %sat es 87,6% y la presión 114,9, pero el piso de dignidad sube a 16,5% headcount: la señal de presión por sí sola no ve la exclusión; dignidad sí. La presión dice *dónde falta oferta*; la urgencia y el piso capturan *quién queda fuera*.
+7. **La automatización no crea acceso humano.** E07 (traducción automatizada) no reduce la presión global: la demanda se traslada, no desaparece. Ningún modo aumenta el acceso a nivel básico con automatización creciente: la urgencia cambia *cómo se asigna* la escasez, no *de dónde sale* la capacidad.
+8. **Monte Carlo (200 corridas, seed 101):** %sat media **65.7%** [p05=50.0, p95=87.3]; dignidad headcount media **2.0%** (p95 10.5%, max 30.5%). El 65,7% de satisfacción NO es un KPI de producto: es un punto de 200 simulaciones bajo una distribución concreta de parámetros y shocks. Lo informativo es la forma de la respuesta (oferta, demanda, población, participación, automatización, patrimonio, urgencia), no el número absoluto.
 
 ## Escenarios mínimos (D con urgencia vs L=C legacy), final del horizonte
 
@@ -87,6 +88,9 @@ El presupuesto de urgencia + piso básico (R5) reducen fuertemente la exclusión
 | E03 L (legacy C) | 52% | — (sin campo) | — |
 | E08 D (escasez persistente) | 16% | 16.5% | 0.98 |
 | E08 L (legacy C) | 76.5% | — | — |
+| E15 D (sistema casi vacío) | 60% | 100% | 1 |
+
+**Límite explícito del mecanismo:** en el sistema casi vacío (E15, 5 participantes) D y C dan el MISMO resultado de exclusión (60%): no hay presupuesto ni apuesta que fabrique capacidad, demanda ni oferta donde no existen. La urgencia **reduce la exclusión asociada a la escasez**, no la exclusión estructural por ausencia de sistema. Esa es la frontera natural: probar cómo la capacidad real (patrimonio/productividad) modifica presion → satisfaccion → dignidad.
 
 ## Hallazgos (se generan del engine, no de la memoria)
 

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 type Metrics = {
   id: string;
@@ -85,21 +84,11 @@ const VARDIAS_MC: Array<{ key: string; label: string; fmt?: (v: number) => strin
 ];
 
 export default function EnsayoDeStress() {
-  const router = useRouter();
   const [data, setData] = useState<Presentacion | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selPanel, setSelPanel] = useState(0);
   const [selOverlay, setSelOverlay] = useState(0);
   const [selBarrido, setSelBarrido] = useState(0);
-
-  useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (!d?.user || d.user.role !== 'SUPER_ADMIN') router.replace('/admin');
-      })
-      .catch(() => router.replace('/admin'));
-  }, [router]);
 
   useEffect(() => {
     fetch('/stress-test/data/presentation.json')
@@ -162,6 +151,11 @@ export default function EnsayoDeStress() {
                 (RONDA C) y la apuesta de urgencia periódica no acumulable (RONDA D). Cada escenario corrió en modo D
                 (con presupuesto de urgencia) y en modo C espejo (apuesta libre), para medir qué cambia la urgencia.
               </p>
+              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-400">
+                Esto es un laboratorio, no un informe de rendimiento: el 65,7 % de satisfacción del Monte Carlo no
+                significa que la comunidad &ldquo;funcione al 65,7 %&rdquo; — es un punto de 200 simulaciones bajo parámetros
+                concretos. Lo informativo es la forma de la respuesta del sistema, no el número absoluto.
+              </p>
             </div>
             <div className="flex flex-wrap gap-2 text-xs">
               <span className="rounded-full border border-sky-400/40 bg-sky-500/10 px-3 py-1 text-sky-200">
@@ -221,7 +215,7 @@ export default function EnsayoDeStress() {
             <h2 className="mt-1 text-lg font-bold text-teal-900">Señales de capacidad y prioridad sin costo</h2>
             <p className="mt-2 text-sm leading-relaxed text-teal-800">
               Los pedidos compiten por recursos humanos escasos; las CU de compromiso marcan la prioridad de cada
-              apuesta sin costo virtual. Reproduce la realidad de RONDA C: la oferta efectiva la dan los participantas
+              apuesta sin costo virtual. Reproduce la realidad de RONDA C: la oferta efectiva la dan los participantes
               con capacidad ofrecida y horas disponibles.
             </p>
           </div>
@@ -259,12 +253,15 @@ export default function EnsayoDeStress() {
       {/* HALLAZGOS */}
       <section id="hallazgos" className="mx-auto max-w-6xl px-4 pb-12 pt-12">
         <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Veredicto experimental</p>
-        <h2 className="mt-1 text-2xl font-bold text-slate-900">La urgencia elimina la exclusión por escasez</h2>
+        <h2 className="mt-1 text-2xl font-bold text-slate-900">La urgencia reduce la exclusión asociada a la escasez</h2>
         <p className="mt-3 max-w-4xl text-sm leading-relaxed text-slate-600">
-          En escasez, la apuesta libre sin costo expulsa a los que menos pueden: excluidos de nivel básico 52 %
-          (C) frente a 11 % (D) en escasez extrema, y 76,5 % frente a 16 % en escasez persistente. La presión indica
-          dónde falta oferta; la urgencia y el piso de dignidad capturan quién queda fuera. Ningún modo aumenta el
-          acceso a nivel básico con automatización creciente: el acceso estructural requiere más que oferta.
+          La apuesta libre sin costo expulsa en escasez a los que menos pueden: excluidos de nivel básico 52 %
+          (C) frente a 11 % (D) en escasez extrema, y 76,5 % frente a 16 % en escasez persistente. La presión
+          indica dónde falta oferta; la urgencia y el piso de dignidad capturan quién queda fuera. Pero D no
+          gana en todo: en escasez extrema la satisfacción es 86,2 % (D) vs 89,2 % (C) y en el sistema casi
+          vacío ambos modos empatan en exclusión. La urgencia redistribuye la escasez, no la crea ni la
+          elimina; automatización creciente tampoco aumenta el acceso a nivel básico. Ningún modo responde
+          aún la pregunta «¿de dónde aparece la capacidad que falta?».
         </p>
         <div className="mt-6 grid gap-3 md:grid-cols-2">
           {data.hallazgos.map((h, i) => (

@@ -90,6 +90,12 @@ export default function ManualPage() {
             económica real que todavía no está definida. Ver <L href="/principios">los principios</L> y la{' '}
             <L href="/">landing</L> para el contexto conceptual.
           </p>
+          <p className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            ¿Cómo se estresa esta versión (C) con urgencia (D)? Tenemos un{' '}
+            <L href="/ensayo-de-stress">ensayo de stress abierto</L> con 16 tensiones y su espejo legacy,
+            más un Monte Carlo de 200 corridas. Es lectura pública: no es un informe de rendimiento, es un
+            laboratorio.
+          </p>
         </Block>
 
         <Block id="api-publica" eyebrow="Para integraciones" title="API pública de PostSingular">
@@ -323,6 +329,10 @@ export default function ManualPage() {
             y cuánto le falta (headcount y brecha). El umbral del piso es una decisión de gobernanza; hoy se
             usa un umbral operativo provisional (participación verificada reciente) que los gremios pueden
             discutir y cambiar.
+          </p>
+          <p className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            Ver cómo se comporta la urgencia bajo estrés (escasez extrema, persistente, saturación y límites
+            de escala) en el <L href="/ensayo-de-stress">ensayo de stress abierto</L>.
           </p>
         </Block>
 

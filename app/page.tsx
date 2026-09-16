@@ -574,6 +574,14 @@ export default function LandingPage() {
             de esto es definitivo.
           </p>
 
+          <p className="text-center text-sm text-gray-500 max-w-3xl mx-auto mb-10">
+            Estresamos esta versión (Ronda C) con el presupuesto de urgencia (Ronda D) en un{' '}
+            <a href="/ensayo-de-stress" className="font-semibold text-blue-600 hover:underline">
+              ensayo de stress abierto
+            </a>{' '}
+            — 16 tensiones con su espejo legacy y 200 corridas de Monte Carlo. Es lectura pública.
+          </p>
+
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 mb-8">
             <Diagram
               steps={[
@@ -1115,6 +1123,13 @@ export default function LandingPage() {
                 <span className="font-semibold">sin utilizar el PID como controlador</span>. Los experimentos
                 anteriores con PID, canasta y SupplyPolicy se conservan como antecedentes y sirven para entender
                 por qué fueron descartados.
+              </p>
+              <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                Ver el{' '}
+                <a href="/ensayo-de-stress" className="font-semibold text-sky-700 hover:underline">
+                  ensayo de stress abierto de esta versión
+                </a>{' '}
+                (16 tensiones y su espejo legacy, Monte Carlo de 200 corridas).
               </p>
             </div>
             <div className="rounded-xl border border-teal-200 bg-teal-50 p-6">
