@@ -7,9 +7,9 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.8.0';
+export const MANUAL_VERSION = '1.9.0';
 
-export const MANUAL_UPDATED_AT = '2026-09-15';
+export const MANUAL_UPDATED_AT = '2026-09-16';
 
 export interface ManualChange {
   version: string;
@@ -19,6 +19,16 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.9.0',
+    date: '2026-09-16',
+    title: 'Moderación de encuestas y ocultamiento en cascada',
+    notes: [
+      'Las encuestas se pueden moderar desde el panel administrativo: ocultarlas o restaurarlas sin eliminarlas, igual que las publicaciones y comentarios.',
+      'Si una publicación vinculada a una encuesta se oculta, sus encuestas también se ocultan automáticamente (y al mostrarla de nuevo, reaparecen).',
+      'Una encuesta oculta deja de votarse y no se muestra en la cartelera, en la API pública ni en los canales RSS/Atom; el enlace a la publicación moderada no queda en el aire.',
+    ],
+  },
   {
     version: '1.8.0',
     date: '2026-09-15',

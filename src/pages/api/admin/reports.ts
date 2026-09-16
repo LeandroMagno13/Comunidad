@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest, isModerator } from '@/src/lib/auth';
+import { setPostStatus } from '@/src/lib/moderation';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
@@ -48,10 +49,7 @@ async function resolveReport(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (action === 'hidePost') {
-    await db.post.update({
-      where: { id: req.body.postId },
-      data: { status: 'hidden' },
-    });
+    await setPostStatus(req.body.postId, 'hidden');
   }
   if (action === 'hideComment') {
     await db.comment.update({

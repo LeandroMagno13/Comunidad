@@ -51,6 +51,17 @@ type ContentComment = {
   _count?: { reports?: number };
 };
 
+type ContentPoll = {
+  id: string;
+  title: string;
+  scope: string;
+  status: string;
+  createdAt: string;
+  createdBy?: { name: string } | null;
+  post?: { id: string; title?: string | null } | null;
+  _count?: { votes?: number };
+};
+
 const ROLE_LABEL: Record<string, string> = {
   SUPER_ADMIN: 'Super Admin',
   ADMIN: 'Admin',
@@ -127,6 +138,7 @@ export default function AdminPanel() {
   const [reportStatus, setReportStatus] = useState('');
   const [contentPosts, setContentPosts] = useState<ContentPost[]>([]);
   const [contentComments, setContentComments] = useState<ContentComment[]>([]);
+  const [contentPolls, setContentPolls] = useState<ContentPoll[]>([]);
   const [msg, setMsg] = useState('');
   const [okMsg, setOkMsg] = useState('');
   const [authed, setAuthed] = useState(false);
@@ -185,6 +197,7 @@ export default function AdminPanel() {
       const data = await res.json();
       setContentPosts(data.posts || []);
       setContentComments(data.comments || []);
+      setContentPolls(data.polls || []);
     }
   }
 
@@ -536,7 +549,7 @@ export default function AdminPanel() {
     }
   }
 
-  async function moderateContent(type: 'post' | 'comment', id: string, status: string) {
+  async function moderateContent(type: 'post' | 'comment' | 'poll', id: string, status: string) {
     if (status === 'hidden' && !window.confirm('¿Ocultar este contenido a la comunidad?')) return;
     const res = await fetch('/api/admin/content', {
       method: 'PATCH',
@@ -549,16 +562,9 @@ export default function AdminPanel() {
       return;
     }
     notify(status === 'hidden' ? 'Contenido oculto' : 'Contenido restaurado', true);
-    // refrescar ambos para que reportes de contenido oculto desaparezcan de la vista pública
-    if (type === 'post') {
-      setContentPosts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, status } : p)),
-      );
-    } else {
-      setContentComments((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, status } : c)),
-      );
-    }
+    // recargar desde el servidor: ocultar una publicación también oculta sus
+    // encuestas vinculadas (cascada), y la lista debe reflejarlo.
+    await loadContent();
   }
 
   if (!authed || !meRole) {
@@ -922,8 +928,9 @@ export default function AdminPanel() {
       {tab === 'content' && (
         <div className="mt-6">
           <p className="text-sm text-gray-600">
-            Moderación directa de publicaciones y comentarios. Ocultar retira el contenido de la
-            comunidad sin eliminarlo.
+            Moderación directa de publicaciones, comentarios y encuestas. Ocultar retira el
+            contenido de la comunidad sin eliminarlo. Al ocultar una publicación también se
+            ocultan sus encuestas vinculadas.
           </p>
 
           <h2 className="mt-6 text-lg font-bold text-gray-900">
@@ -1004,6 +1011,51 @@ export default function AdminPanel() {
                     ) : (
                       <button
                         onClick={() => moderateContent('comment', c.id, 'visible')}
+                        className="rounded-md bg-green-100 px-3 py-1 text-xs font-medium text-green-800 hover:bg-green-200"
+                      >
+                        Mostrar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <h2 className="mt-8 text-lg font-bold text-gray-900">
+            Encuestas ({contentPolls.length})
+          </h2>
+          <div className="mt-3 space-y-2">
+            {contentPolls.length === 0 ? (
+              <p className="text-sm text-gray-500">Sin encuestas.</p>
+            ) : (
+              contentPolls.map((p) => (
+                <div key={p.id} className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-gray-900">{p.title}</p>
+                    <p className="line-clamp-1 text-xs text-gray-500">
+                      {p.createdBy?.name || 'Autor desconocido'} · {p._count?.votes || 0} voto(s) ·{' '}
+                      {p.scope === 'guild' ? 'encuesta de gremio' : 'encuesta de comunidad'}
+                      {p.post?.title ? ` · vinculada a "${p.post.title}"` : ''} ·{' '}
+                      {new Date(p.createdAt).toLocaleString('es')}
+                    </p>
+                  </div>
+                  <div className="flex flex-shrink-0 items-center gap-2">
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                      p.status === 'visible' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    }`}>
+                      {STATUS_LABEL[p.status] || p.status}
+                    </span>
+                    {p.status === 'visible' ? (
+                      <button
+                        onClick={() => moderateContent('poll', p.id, 'hidden')}
+                        className="rounded-md bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800 hover:bg-amber-200"
+                      >
+                        Ocultar
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => moderateContent('poll', p.id, 'visible')}
                         className="rounded-md bg-green-100 px-3 py-1 text-xs font-medium text-green-800 hover:bg-green-200"
                       >
                         Mostrar

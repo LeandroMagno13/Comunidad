@@ -11,6 +11,7 @@ export type PollData = {
   guildId?: string | null;
   postId?: string | null;
   isClosed: boolean;
+  status?: string;
   closesAt?: string | null;
   createdAt: string;
   createdBy: { id: string; name: string };

@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest, isModerator } from '@/src/lib/auth';
+import { setPostStatus } from '@/src/lib/moderation';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
@@ -28,7 +29,7 @@ async function listContent(req: NextApiRequest, res: NextApiResponse) {
   const { type } = req.query;
   const onlyType = typeof type === 'string' ? type : undefined;
 
-  const [posts, comments] = await Promise.all([
+  const [posts, comments, polls] = await Promise.all([
     onlyType && onlyType !== 'posts'
       ? Promise.resolve([])
       : db.post.findMany({
@@ -50,9 +51,20 @@ async function listContent(req: NextApiRequest, res: NextApiResponse) {
           orderBy: { createdAt: 'desc' },
           take: 100,
         }),
+    onlyType && onlyType !== 'polls'
+      ? Promise.resolve([])
+      : db.poll.findMany({
+          include: {
+            createdBy: { select: { id: true, name: true } },
+            post: { select: { id: true, title: true } },
+            _count: { select: { votes: true } },
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 100,
+        }),
   ]);
 
-  return res.status(200).json({ posts, comments });
+  return res.status(200).json({ posts, comments, polls });
 }
 
 async function moderateContent(req: NextApiRequest, res: NextApiResponse) {
@@ -66,11 +78,18 @@ async function moderateContent(req: NextApiRequest, res: NextApiResponse) {
     if (!['visible', 'hidden', 'blocked'].includes(status)) {
       return res.status(400).json({ error: 'Estado inválido para publicación' });
     }
-    const post = await db.post.updateMany({
+    if (id == null) return res.status(400).json({ error: 'Falta la publicación' });
+    const updated = await setPostStatus(id as string, status);
+    if (!updated) return res.status(404).json({ error: 'Publicación no encontrada' });
+  } else if (type === 'poll') {
+    if (!['visible', 'hidden', 'blocked'].includes(status)) {
+      return res.status(400).json({ error: 'Estado inválido para encuesta' });
+    }
+    const poll = await db.poll.updateMany({
       where: { id: id as string },
       data: { status },
     });
-    if (post.count === 0) return res.status(404).json({ error: 'Publicación no encontrada' });
+    if (poll.count === 0) return res.status(404).json({ error: 'Encuesta no encontrada' });
   } else if (type === 'comment') {
     if (!['visible', 'hidden'].includes(status)) {
       return res.status(400).json({ error: 'Estado inválido para comentario' });

@@ -590,6 +590,71 @@ function runTestL() {
     'clic accede a toda la publicación', group);
 }
 
+function runTestM() {
+  const group = 'Test M — moderación de encuestas y ocultamiento en cascada';
+
+  const schema = src('prisma/schema.prisma');
+  const moderationSrc = src('src/lib/moderation.ts');
+  const postsIdSrc = src('src/pages/api/posts/[id].ts');
+  const adminContentSrc = src('src/pages/api/admin/content.ts');
+  const reportsSrc = src('src/pages/api/admin/reports.ts');
+  const pollsSrc = src('src/pages/api/polls.ts');
+  const publicSrc = src('src/pages/api/v1/public/[resource].ts');
+  const feedsSrc = src('src/lib/feeds.ts');
+  const adminPage = src('app/admin/page.tsx');
+  const manualSrc = src('src/lib/manual.ts');
+
+  check('Schema: Poll tiene estado de moderación (visible|hidden|blocked|deleted)',
+    /model Poll\s*\{/.test(schema) &&
+      /status\s+String\s+@default\("visible"\)\s*\/\/\s*visible \| hidden \| blocked \| deleted \(moderación\)/.test(schema),
+    'la encuesta se oculta/restaura como el resto del contenido', group);
+  check('Helper único de cascada post→encuestas (setPostStatus/pollStatusFromPost)',
+    moderationSrc.includes('setPostStatus') &&
+      moderationSrc.includes('pollStatusFromPost') &&
+      moderationSrc.includes('db.poll.updateMany') &&
+      moderationSrc.includes('postId'),
+    'una sola pieza sincroniza publicación y encuestas vinculadas', group);
+  check('Moderar publicación desde el panel usa la cascada (api/admin/content)',
+    adminContentSrc.includes("import { setPostStatus }") &&
+      adminContentSrc.includes("type === 'post'") &&
+      adminContentSrc.includes('setPostStatus(id'),
+    'ocultar publicación desde admin oculta también sus encuestas', group);
+  check('Admin puede moderar encuestas directamente (listar + PATCH)',
+    adminContentSrc.includes("type === 'poll'") &&
+      adminContentSrc.includes("Estado inválido para encuesta") &&
+      adminContentSrc.includes('db.poll.findMany'),
+    'moderación directa de encuestas sin tocar las publicaciones', group);
+  check('Reportes: ocultar publicación por reporte también aplica cascada',
+    reportsSrc.includes("import { setPostStatus }") &&
+      reportsSrc.includes("setPostStatus(req.body.postId"),
+    'el flujo de reportes no deja encuestas colgadas', group);
+  check('Moderar desde la publicación (autor/admin PATCH) también aplica cascada',
+    postsIdSrc.includes("import { setPostStatus }") && postsIdSrc.includes('setPostStatus(id'),
+    'ninguna puerta de moderación escapa a la cascada', group);
+  check('API polls: solo lista encuestas visibles',
+    pollsSrc.includes("status: 'visible'") && !pollsSrc.includes('where: { postId }'),
+    'las encuestas ocultas desaparecen de cartelera y detalle', group);
+  check('API polls: no se puede votar una encuesta oculta',
+    pollsSrc.includes('La encuesta no está disponible') && pollsSrc.includes('poll.status !=='),
+    'el voto queda bloqueado en contenido moderado', group);
+  check('API polls: no expone el enlace a una publicación no visible',
+    pollsSrc.includes('poll.post && poll.post.status ===') && pollsSrc.includes(": null"),
+    'la encuesta no mantiene vivo el acceso a la publicación moderada', group);
+  check('API pública y feeds: encuestas visibles nada más',
+    publicSrc.includes("where: { status: 'visible' }") &&
+      feedsSrc.includes("where: { status: 'visible' }"),
+    'el contrato público ve la misma realidad que la web', group);
+  check('Panel admin: sección de encuestas con ocultar/mostrar',
+    adminPage.includes('Encuestas (') &&
+      adminPage.includes("moderateContent('poll'") &&
+      adminPage.includes('contentPolls'),
+    'moderación completa de encuestas desde el admin', group);
+  check('Manual documenta la moderación de encuestas (changelog 1.9.0)',
+    manualSrc.includes("version: '1.9.0'") &&
+      manualSrc.includes('Moderación de encuestas y ocultamiento en cascada'),
+    'protocolo de manual cumplido', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -604,6 +669,7 @@ function main() {
   runTestJ();
   runTestK();
   runTestL();
+  runTestM();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -624,6 +690,7 @@ function main() {
       'Publicaciones con formato enriquecido (sanitizado)': !failures.join().includes('Test J'),
       'Framing: propiedad productiva participativa (no redistribución, no RBU)': !failures.join().includes('Test K'),
       'Cartelera reutilizable con botones, filtro y feed unificado': !failures.join().includes('Test L'),
+      'Moderación de encuestas y ocultamiento en cascada': !failures.join().includes('Test M'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

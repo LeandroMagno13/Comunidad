@@ -101,6 +101,7 @@ export async function getFeedEntries(limit: number): Promise<FeedEntry[]> {
       },
     }),
     db.poll.findMany({
+      where: { status: 'visible' },
       orderBy: { createdAt: 'desc' },
       take: half,
       select: {

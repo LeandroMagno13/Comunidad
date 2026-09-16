@@ -35,10 +35,13 @@ function serializePoll(poll: any, myUserId: string) {
     guildId: poll.guildId,
     postId: poll.postId,
     isClosed: closed,
+    status: poll.status,
     closesAt: poll.closesAt,
     createdAt: poll.createdAt,
     createdBy: { id: poll.createdBy.id, name: poll.createdBy.name },
-    post: poll.post ? { id: poll.post.id, title: poll.post.title, type: poll.post.type, status: poll.post.status } : null,
+    post: poll.post && poll.post.status === 'visible'
+      ? { id: poll.post.id, title: poll.post.title, type: poll.post.type, status: poll.post.status }
+      : null,
     options: (poll.options ?? []).map((o: any) => ({
       id: o.id,
       text: o.text,
@@ -95,7 +98,11 @@ async function listPolls(req: NextApiRequest, res: NextApiResponse, user: any) {
   if (postId) {
     // Encuestas ligadas a una publicación concreta (dentro de la publicación).
     await autoCloseExpired();
-    polls = await db.poll.findMany({ where: { postId }, include, orderBy: { createdAt: 'desc' } });
+    polls = await db.poll.findMany({
+      where: { postId, status: 'visible' },
+      include,
+      orderBy: { createdAt: 'desc' },
+    });
   } else if (scope === 'guild') {
     if (!guildId) return res.status(400).json({ error: 'Falta el gremio' });
     const membership = await db.guildMembership.findUnique({
@@ -106,19 +113,23 @@ async function listPolls(req: NextApiRequest, res: NextApiResponse, user: any) {
     }
     await autoCloseExpired();
     polls = await db.poll.findMany({
-      where: { scope: 'guild', guildId },
+      where: { scope: 'guild', guildId, status: 'visible' },
       include,
       orderBy: { createdAt: 'desc' },
     });
   } else if (scope === 'community') {
     await autoCloseExpired();
-    polls = await db.poll.findMany({ where: { scope: 'community' }, include, orderBy: { createdAt: 'desc' } });
+    polls = await db.poll.findMany({
+      where: { scope: 'community', status: 'visible' },
+      include,
+      orderBy: { createdAt: 'desc' },
+    });
   } else {
     await autoCloseExpired();
     const mine = await db.guildMembership.findMany({ where: { userId: user.id, status: 'active' }, select: { guildId: true } });
     const guildIds = mine.map((m) => m.guildId);
     polls = await db.poll.findMany({
-      where: { OR: [{ scope: 'community' }, { scope: 'guild', guildId: { in: guildIds } }] },
+      where: { OR: [{ scope: 'community' }, { scope: 'guild', guildId: { in: guildIds } }], status: 'visible' },
       include,
       orderBy: { createdAt: 'desc' },
     });
@@ -211,6 +222,7 @@ async function pollAction(req: NextApiRequest, res: NextApiResponse, user: any) 
       include: { options: { select: { id: true } } },
     });
     if (!poll) return res.status(404).json({ error: 'Encuesta inexistente' });
+    if (poll.status !== 'visible') return res.status(403).json({ error: 'La encuesta no está disponible' });
     if (effectiveClosed(poll)) return res.status(400).json({ error: 'La encuesta está cerrada' });
     if (!poll.options.some((o: any) => o.id === String(optionId))) {
       return res.status(400).json({ error: 'La opción no pertenece a esta encuesta' });

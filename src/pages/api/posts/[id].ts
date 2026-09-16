@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest, isAdmin, isModerator } from '@/src/lib/auth';
+import { setPostStatus } from '@/src/lib/moderation';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
@@ -118,7 +119,7 @@ async function moderatePost(req: NextApiRequest, res: NextApiResponse, id: strin
     return res.status(400).json({ error: 'Estado inválido' });
   }
 
-  const updated = await db.post.update({ where: { id }, data: { status } });
+  const updated = await setPostStatus(id, status);
   return res.status(200).json(updated);
 }
 
