@@ -116,6 +116,7 @@ export default function Navbar() {
         { href: '/guilds', label: 'Gremios' },
         { href: '/principios', label: 'Principios' },
         { href: '/manual', label: 'Manual' },
+        { href: '/bot', label: 'Bot' },
         { href: '/messages', label: 'Mensajes' },
         { href: '/profile', label: 'Perfil' },
       ]
@@ -123,6 +124,7 @@ export default function Navbar() {
         { href: '/', label: 'Inicio' },
         { href: '/guilds', label: 'Gremios' },
         { href: '/principios', label: 'Principios' },
+        { href: '/bot', label: 'Bot' },
       ];
 
   return (

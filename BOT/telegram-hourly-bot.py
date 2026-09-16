@@ -101,7 +101,7 @@ def ingest_updates(token, accept_commands=False):
         chat = message.get("chat") or {}
         if chat.get("id") is not None: state["chat_id"] = chat["id"]
         command = str(message.get("text", "")).strip().lower().split("@")[0]
-        if accept_commands and command in ("/informe", "/reporte"): requested = True
+        if accept_commands and command in ("/start", "/informe", "/reporte"): requested = True
     save_state()
     return requested
 

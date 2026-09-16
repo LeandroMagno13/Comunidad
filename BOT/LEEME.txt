@@ -3,13 +3,15 @@ BOT POSTSINGULAR - INSTALACION PORTABLE
 Archivos necesarios en C:\Comunidad\BOT:
 - telegram-hourly-bot.py
 - Arrancar.bat
+- Instalar.bat
 - .env (local, con TELEGRAM_BOT_TOKEN; no copiar ni publicar el token)
 
 En la otra PC:
 1. Copiar la carpeta BOT a C:\Comunidad\BOT.
 2. Copiar .env.example como .env y completar TELEGRAM_BOT_TOKEN.
-3. Copiar Arrancar.bat a shell:startup (Inicio de Windows).
-4. En Telegram, enviar /start al bot una vez para registrar el chat.
+3. Ejecutar Instalar.bat una vez: verifica o instala Python y prepara .env.
+4. Copiar Arrancar.bat a shell:startup (Inicio de Windows).
+5. En Telegram, enviar /start al bot una vez para registrar el chat y recibir el primer informe.
 
 El bot se inicia de inmediato y luego consulta cada hora. Informa cuando hay
 cambios, siempre a las 20:00 hora Argentina (UTC-3), y responde a /informe o
