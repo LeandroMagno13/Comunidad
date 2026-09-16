@@ -4,8 +4,12 @@ import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.postsingular.org'),
-  alternates: {
+alternates: {
     canonical: '/',
+    types: {
+      'application/atom+xml': '/feed.atom',
+      'application/rss+xml': '/feed.xml',
+    },
   },
   title:
     'Comunidad Post Singularidad | Propiedad productiva participativa frente a la IA',

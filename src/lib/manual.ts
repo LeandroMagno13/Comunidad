@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.7.0';
+export const MANUAL_VERSION = '1.8.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-15';
 
@@ -19,6 +19,17 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.8.0',
+    date: '2026-09-15',
+    title: 'Canales RSS 2.0 y Atom 1.0 de actividad reciente',
+    notes: [
+      'La comunidad publica su actividad reciente (publicaciones + encuestas visibles) como canales estándar: /feed.xml (RSS 2.0) y /feed.atom (Atom 1.0).',
+      'Los canales son de solo lectura y usan la misma consulta que la API pública y la web: ven exactamente la realidad pública, ni más.',
+      'Cada publicación enlaza a su contenido completo; las encuestas muestran opciones y totales de votos, sin votos personales ni datos privados.',
+      'Se acepta ?limit= para controlar cuántas entradas devolver (default 20, máximo 200), y los navegadores/lectores detectan los canales automáticamente (autodescubrimiento).',
+    ],
+  },
   {
     version: '1.7.0',
     date: '2026-09-15',

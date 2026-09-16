@@ -111,7 +111,8 @@ export default function ManualPage() {
           <p>La API no requiere autenticación para estos recursos públicos. Los parámetros que intenten solicitar datos privados se ignoran, y no existe una ruta pública para bandejas internas o mensajes privados.</p>
           <p>
             Un ejemplo concreto de integración es el <L href="#bot">bot de avisos por Telegram</L>, que usa
-            esta API para avisar a quien participa cuando hay novedades.
+            esta API para avisar a quien participa cuando hay novedades. Si preferís un lector de noticias,
+            también podés seguir la actividad con los canales <L href="#canales">RSS y Atom</L>.
           </p>
         </Block>
 
@@ -148,6 +149,28 @@ export default function ManualPage() {
             </li>
             <li>También podés pedir el informe cuando quieras con <code>/informe</code> o <code>/reporte</code>.</li>
           </ul>
+        </Block>
+
+        <Block id="canales" eyebrow="Seguir la comunidad sin registrarse" title="Canales RSS y Atom">
+          <p>
+            Toda la actividad pública reciente (publicaciones y encuestas visibles) también está disponible
+            como canales estándar de sindicación, sin registrarse ni usar la API:
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong>Atom 1.0</strong>: <a href="https://postsingular.org/feed.atom" className="font-medium text-sky-700 underline underline-offset-2 hover:text-sky-900">https://postsingular.org/feed.atom</a>
+            </li>
+            <li>
+              <strong>RSS 2.0</strong>: <a href="https://postsingular.org/feed.xml" className="font-medium text-sky-700 underline underline-offset-2 hover:text-sky-900">https://postsingular.org/feed.xml</a>
+            </li>
+          </ul>
+          <p>
+            Son de <strong>solo lectura</strong> y reflejan la misma realidad que la página y la{' '}
+            <L href="#api-publica">API pública</L>: cada publicación enlaza a su contenido completo y
+            cada encuesta muestra sus opciones con los totales de votos, sin votos personales ni datos
+            privados. Aceptan <code>?limit=</code> para controlar cuántas entradas traen (default 20,
+            máximo 200), y la mayoría de los navegadores y lectores los detectan automáticamente.
+          </p>
         </Block>
 
         <Block id="cuenta" eyebrow="Tu cuenta" title="Tu cuenta y tu perfil">
