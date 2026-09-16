@@ -68,9 +68,32 @@ async function listContent(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function moderateContent(req: NextApiRequest, res: NextApiResponse) {
-  const { type, id, status } = req.body;
+  const { type, id, status, excludeFromFeed } = req.body;
 
-  if (!type || !id || !status) {
+  if (!type || !id) {
+    return res.status(400).json({ error: 'Faltan datos' });
+  }
+
+  if (typeof excludeFromFeed === 'boolean') {
+    if (type === 'post') {
+      const r = await db.post.updateMany({
+        where: { id: String(id) },
+        data: { excludeFromFeed },
+      });
+      if (r.count === 0) return res.status(404).json({ error: 'Publicación no encontrada' });
+    } else if (type === 'poll') {
+      const r = await db.poll.updateMany({
+        where: { id: String(id) },
+        data: { excludeFromFeed },
+      });
+      if (r.count === 0) return res.status(404).json({ error: 'Encuesta no encontrada' });
+    } else {
+      return res.status(400).json({ error: 'Tipo inválido' });
+    }
+    return res.status(200).json({ success: true });
+  }
+
+  if (!status) {
     return res.status(400).json({ error: 'Faltan datos' });
   }
 

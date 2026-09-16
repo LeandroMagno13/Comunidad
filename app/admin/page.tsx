@@ -36,6 +36,7 @@ type ContentPost = {
   title?: string | null;
   content: string;
   status: string;
+  excludeFromFeed?: boolean;
   createdAt: string;
   author?: { name: string } | null;
   _count?: { comments?: number; reports?: number };
@@ -44,9 +45,9 @@ type ContentPost = {
 type ContentComment = {
   id: string;
   content: string;
-  status: string;
+status: string;
   createdAt: string;
-  author?: { name: string } | null;
+  author?: { name?: string } | null;
   post?: { id: string; title?: string | null } | null;
   _count?: { reports?: number };
 };
@@ -56,6 +57,7 @@ type ContentPoll = {
   title: string;
   scope: string;
   status: string;
+  excludeFromFeed?: boolean;
   createdAt: string;
   createdBy?: { name: string } | null;
   post?: { id: string; title?: string | null } | null;
@@ -549,6 +551,21 @@ export default function AdminPanel() {
     }
   }
 
+  async function setFeedExclusion(type: 'post' | 'poll', id: string, excludeFromFeed: boolean) {
+    const res = await fetch('/api/admin/content', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, id, excludeFromFeed }),
+    });
+    if (!res.ok) {
+      const r = await res.json();
+      notify(r.error || 'Error al actualizar');
+      return;
+    }
+    notify(excludeFromFeed ? 'Contenido fuera de la corriente pública (RSS/Atom)' : 'Contenido difundible de nuevo', true);
+    await loadContent();
+  }
+
   async function moderateContent(type: 'post' | 'comment' | 'poll', id: string, status: string) {
     if (status === 'hidden' && !window.confirm('¿Ocultar este contenido a la comunidad?')) return;
     const res = await fetch('/api/admin/content', {
@@ -930,7 +947,8 @@ export default function AdminPanel() {
           <p className="text-sm text-gray-600">
             Moderación directa de publicaciones, comentarios y encuestas. Ocultar retira el
             contenido de la comunidad sin eliminarlo. Al ocultar una publicación también se
-            ocultan sus encuestas vinculadas.
+            ocultan sus encuestas vinculadas. "No difundir" lo deja visible en la web pero fuera
+            de la corriente pública (RSS/Atom): contenido de prueba no forma parte de la historia.
           </p>
 
           <h2 className="mt-6 text-lg font-bold text-gray-900">
@@ -972,6 +990,17 @@ export default function AdminPanel() {
                         Mostrar
                       </button>
                     )}
+                    <button
+                      onClick={() => setFeedExclusion('post', p.id, !p.excludeFromFeed)}
+                      className={`rounded-md px-3 py-1 text-xs font-medium ${
+                        p.excludeFromFeed
+                          ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                          : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'
+                      }`}
+                      title="Visible en la web, fuera de la corriente pública (RSS/Atom)"
+                    >
+                      {p.excludeFromFeed ? 'No difundir (prueba)' : 'No difundir'}
+                    </button>
                   </div>
                 </div>
               ))
@@ -1061,6 +1090,17 @@ export default function AdminPanel() {
                         Mostrar
                       </button>
                     )}
+                    <button
+                      onClick={() => setFeedExclusion('poll', p.id, !p.excludeFromFeed)}
+                      className={`rounded-md px-3 py-1 text-xs font-medium ${
+                        p.excludeFromFeed
+                          ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                          : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'
+                      }`}
+                      title="Visible en la web, fuera de la corriente pública (RSS/Atom)"
+                    >
+                      {p.excludeFromFeed ? 'No difundir (prueba)' : 'No difundir'}
+                    </button>
                   </div>
                 </div>
               ))

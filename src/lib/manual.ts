@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.9.0';
+export const MANUAL_VERSION = '1.10.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-16';
 
@@ -19,6 +19,15 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.10.0',
+    date: '2026-09-16',
+    title: 'Canales públicos: títulos reales y separación del contenido de prueba',
+    notes: [
+      'El título de cada publicación en el feed RSS/Atom es ahora el título real que se ve en la web (extraído de la propia publicación), en lugar de la etiqueta genérica «Publicación».',
+      'El contenido de prueba queda separado de la historia pública: «No difundir» (panel admin) deja una publicación o encuesta visible en la web pero fuera de los canales RSS/Atom, sin borrar ni ocultar los datos.',
+    ],
+  },
   {
     version: '1.9.0',
     date: '2026-09-16',

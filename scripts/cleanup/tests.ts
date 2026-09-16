@@ -665,7 +665,7 @@ function runTestM() {
     'la encuesta no mantiene vivo el acceso a la publicación moderada', group);
   check('API pública y feeds: encuestas visibles nada más',
     publicSrc.includes("where: { status: 'visible' }") &&
-      feedsSrc.includes("where: { status: 'visible' }"),
+      feedsSrc.includes("status: 'visible'"),
     'el contrato público ve la misma realidad que la web', group);
   check('Panel admin: sección de encuestas con ocultar/mostrar',
     adminPage.includes('Encuestas (') &&
@@ -675,6 +675,49 @@ function runTestM() {
   check('Manual documenta la moderación de encuestas (changelog 1.9.0)',
     manualSrc.includes("version: '1.9.0'") &&
       manualSrc.includes('Moderación de encuestas y ocultamiento en cascada'),
+    'protocolo de manual cumplido', group);
+}
+
+function runTestN() {
+  const group = 'Test N — canales públicos: títulos reales y separación del contenido de prueba';
+  const feedsSrc = src('src/lib/feeds.ts');
+  const schemaSrc = src('prisma/schema.prisma');
+  const contentApiSrc = src('src/pages/api/admin/content.ts');
+  const adminSrc = src('app/admin/page.tsx');
+  const packageJson = src('package.json');
+  const sealSrc = src('scripts/sync-feed-exclusions.js');
+  const manualSrc = src('src/lib/manual.ts');
+
+  check('Feed: título real extraído del contenido cuando no hay título propio',
+    feedsSrc.includes('headingTitle(p.content)') && /<h\(\[1-4\]\)\s*\\b/.test(feedsSrc),
+    'el primer encabezado (p. ej. <h1>Quién está detrás…) nutre el <title> en lugar de «Publicación»', group);
+
+  check('Feed: contenido de prueba excluido de la corriente pública (posts y encuestas)',
+    (feedsSrc.match(/excludeFromFeed: false/g) || []).length >= 2,
+    'ambas consultas (post y poll) filtran excludeFromFeed:false', group);
+
+  check('Schema: Post y Poll tienen el flag excludeFromFeed (pruebas quedan fuera de feeds)',
+    (schemaSrc.match(/excludeFromFeed Boolean\s+@default\(false\)/g) || []).length === 2,
+    'un campo por modelo, aditivo, sin tocar la visibilidad ni la moderación', group);
+
+  check('Admin content API: PATCH soporta etiquetar contenido como no difundible',
+    contentApiSrc.includes("typeof excludeFromFeed === 'boolean'") &&
+      contentApiSrc.includes('data: { excludeFromFeed }'),
+    'publicaciones y encuestas se pueden marcar sin ocultar', group);
+
+  check('Panel admin: toggle «No difundir» en publicaciones y encuestas',
+    adminSrc.includes('setFeedExclusion') && adminSrc.includes('No difundir (prueba)'),
+    'control visible para separar pruebas de la historia pública', group);
+
+  check('Build: marcado idempotente de contenido de prueba (sync-feed-exclusions)',
+    packageJson.includes('sync-feed-exclusions.js') &&
+      sealSrc.includes('TEST_POST_TITLES') &&
+      sealSrc.includes('excludeFromFeed: true'),
+    'los ítems de prueba conocidos se alinean en cada despliegue', group);
+
+  check('Manual: canales con títulos reales y separación de pruebas (changelog 1.10.0)',
+    manualSrc.includes("version: '1.10.0'") &&
+      manualSrc.includes('Canales públicos: títulos reales y separación del contenido de prueba'),
     'protocolo de manual cumplido', group);
 }
 
@@ -693,6 +736,7 @@ function main() {
   runTestK();
   runTestL();
   runTestM();
+  runTestN();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -714,6 +758,7 @@ function main() {
       'Framing: propiedad productiva participativa (no redistribución, no RBU)': !failures.join().includes('Test K'),
       'Cartelera reutilizable con botones, filtro y feed unificado': !failures.join().includes('Test L'),
       'Moderación de encuestas y ocultamiento en cascada': !failures.join().includes('Test M'),
+      'Canales: títulos reales y separación del contenido de prueba': !failures.join().includes('Test N'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

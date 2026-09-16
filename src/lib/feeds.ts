@@ -2,8 +2,9 @@
 // CANALES RSS 2.0 Y ATOM 1.0 DE POSTSINGULAR (solo lectura, ZERO-LEAK).
 //
 // Genera los feeds de actividad reciente (publicaciones + encuestas visibles)
-// usando la MISMA consulta que la API publica y la web: el feed ve la misma
-// realidad que un visitante, ni mas. Nunca expone email, password, hash,
+// usando la MISMA consulta que la API publica y la web, EXCEPTO que el contenido
+// etiquetado como prueba (excludeFromFeed) queda en la web pero fuera de esta
+// corriente publica (historia difundible). Nunca expone email, password, hash,
 // token, avatar ni datos privados.
 //
 // Alimenta /feed.xml (RSS 2.0) y /feed.atom (Atom 1.0).
@@ -61,6 +62,17 @@ function summaryOf(html: string): string {
   return excerpt(htmlToText(html || ''));
 }
 
+// Título desde el contenido: si una publicación no tiene título propio (campo
+// vacío), el que se ve en la web vive en el primer encabezado del texto
+// enriquecido (p. ej. <h1>Quién está detrás de Comunidad Post Singularidad</h1>).
+// Un lector RSS/Atom o un agente recibe así el título real, no "Publicación".
+function headingTitle(content: string): string | null {
+  const m = /<h([1-4])\b[^>]*>([\s\S]*?)<\/h\1>/i.exec(content || '');
+  if (!m) return null;
+  const text = (m[2] || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  return text || null;
+}
+
 // -----------------------------------------------------------------------------
 // Consulta: actividad publica reciente (posts visibles + encuestas, mezcladas
 // por fecha). Misma realidad que /api/v1/public/activity y la cartelera.
@@ -86,7 +98,7 @@ export async function getFeedEntries(limit: number): Promise<FeedEntry[]> {
   const half = Math.max(1, Math.ceil(limit / 2));
   const [posts, polls] = await Promise.all([
     db.post.findMany({
-      where: { status: 'visible' },
+      where: { status: 'visible', excludeFromFeed: false },
       orderBy: { createdAt: 'desc' },
       take: half,
       select: {
@@ -103,6 +115,7 @@ export async function getFeedEntries(limit: number): Promise<FeedEntry[]> {
     db.poll.findMany({
       where: {
         status: 'visible',
+        excludeFromFeed: false,
         OR: [{ postId: null }, { post: { is: { status: 'visible' } } }],
       },
       orderBy: { createdAt: 'desc' },
@@ -131,7 +144,7 @@ export async function getFeedEntries(limit: number): Promise<FeedEntry[]> {
     return {
       id: `${FEED_BASE_URL}/community/${p.id}`,
       kind: 'post',
-      title: (p.title && p.title.trim()) || 'Publicación',
+      title: (p.title && p.title.trim()) || headingTitle(p.content) || 'Publicación',
       link: `${FEED_BASE_URL}/community/${p.id}`,
       author: p.author.name,
       published: p.createdAt.toISOString(),

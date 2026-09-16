@@ -248,6 +248,7 @@ model Post {
   requestStatus  String?
   fulfillUserId  String?
   status         String    @default("visible")
+  excludeFromFeed Boolean   @default(false) // contenido de prueba: queda en la web pero fuera de la corriente pública (feeds RSS/Atom)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   author         User     @relation(fields: [authorId], references: [id])
@@ -490,6 +491,7 @@ model Poll {
   createdById String
   isClosed    Boolean     @default(false)
   status      String      @default("visible") // visible | hidden | blocked | deleted (moderación)
+  excludeFromFeed Boolean @default(false) // contenido de prueba: queda en la web pero fuera de la corriente pública (feeds RSS/Atom)
   closesAt    DateTime? // cierre temporal (modo temporal): se cierra sola al vencer el tiempo
   createdAt   DateTime    @default(now())
 
