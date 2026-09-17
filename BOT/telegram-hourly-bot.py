@@ -10,6 +10,9 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 BASE = "https://postsingular.org/api/v1/public/"
 BOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -60,11 +63,17 @@ def get_token():
         if token: return token
     return ""
 
-def http_get(url, timeout=25):
+def http_get(url, timeout=25, redirects=5):
     request = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response: return response.status, response.read()
-    except urllib.error.HTTPError as error: return error.code, error.read()
+    except urllib.error.HTTPError as error:
+        if error.code in (301, 302, 303, 307, 308) and redirects > 0:
+            location = error.headers.get("Location")
+            if location:
+                new_url = urllib.parse.urljoin(url, location)
+                return http_get(new_url, timeout, redirects - 1)
+        return error.code, error.read()
     except OSError as error:
         log(f"http_error {error!r}")
         return None, b""
@@ -102,7 +111,9 @@ def ingest_updates(token, accept_commands=False):
         chat = message.get("chat") or {}
         if chat.get("id") is not None: state["chat_id"] = chat["id"]
         command = str(message.get("text", "")).strip().lower().split("@")[0]
-        if accept_commands and command in ("/start", "/informe", "/reporte"): requested = True
+        if accept_commands and command in ("/start", "/informe", "/reporte"):
+            requested = True
+            state["report_requested"] = True
         if accept_commands and command == "/prevision": state["prevision_requested"] = True
     save_state()
     return requested
