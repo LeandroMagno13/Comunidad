@@ -904,6 +904,44 @@ function runTestQ() {
     'el usuario sabe exactamente dónde mirar', group);
 }
 
+function runTestR() {
+  const group = 'Test R — CTA de registro condicional a sesión y wording «Quiero Participar»';
+  const pageSrc = src('app/page.tsx');
+  const ctaSrc = src('src/components/GuestRegisterButton.tsx');
+
+  check('Landing: no queda el CTA «Quiero Contribuir» (ni en mayúsculas)',
+    !pageSrc.includes('Quiero Contribuir') && !pageSrc.includes('QUIERO CONTRIBUIR'),
+    'la palabra contribuir se retira de los botones de registro', group);
+
+  check('Landing: el CTA ahora dice «Quiero Participar»',
+    pageSrc.includes('Quiero Participar') && pageSrc.includes('QUIERO PARTICIPAR'),
+    'el botón habla de participar, no de aportar por defecto', group);
+
+  check('CTA es client component que consulta /api/auth/me',
+    ctaSrc.includes("'use client'") &&
+      ctaSrc.includes('/api/auth/me') &&
+      ctaSrc.includes('authed'),
+    'el botón depende de la sesión real del visitante', group);
+
+  check('CTA devuelve null si el visitante ya tiene sesión',
+    ctaSrc.includes('if (authed) return null'),
+    'un usuario logueado nunca vuelve a ver el botón de registro', group);
+
+  check('CTA apunta a /register y recibe la etiqueta por prop',
+    ctaSrc.includes('href="/register"') && ctaSrc.includes('label'),
+    'solo los invitados van a la pantalla de registro', group);
+
+  check('Login clásico para quien ya es parte se mantiene',
+    src('src/components/AuthStatus.tsx').includes('Iniciar sesión'),
+    'el acceso de miembros queda visible', group);
+
+  const manualSrc = src('src/lib/manual.ts');
+  check('Manual: changelog 1.15.0 con CTA de registro solo para invitados',
+    manualSrc.includes("version: '1.15.0'") &&
+      manualSrc.includes('Quiero Participar'),
+    'protocolo de manual cumplido', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -923,6 +961,7 @@ function main() {
   runTestO();
   runTestP();
   runTestQ();
+  runTestR();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -948,6 +987,7 @@ function main() {
       'Participación con recompensa: CU por contribución verificada y progreso visible': !failures.join().includes('Test O'),
       'Manual del panel: cada indicador y control de Economía CU explicado': !failures.join().includes('Test P'),
       'Presupuesto de urgencia visible para el usuario en perfil': !failures.join().includes('Test Q'),
+      'CTA de registro condicional a sesión y wording «Quiero Participar»': !failures.join().includes('Test R'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

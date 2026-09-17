@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.14.0';
+export const MANUAL_VERSION = '1.15.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-17';
 
@@ -19,6 +19,16 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.15.0',
+    date: '2026-09-17',
+    title: 'Landing: el botón de registro es solo para quien no inició sesión y ahora dice «Quiero Participar»',
+    notes: [
+      'En la landing, los botones que llevan al registro («Quiero Participar», «Sumarme al laboratorio») solo aparecen si no iniciaste sesión.',
+      'Si ya sos parte, el header te muestra tu nombre y el acceso a tu perfil; nunca te vuelve a mandar a registrarte.',
+      'El clásico «Iniciar sesión» para quien ya es parte se mantiene visible.',
+    ],
+  },
   {
     version: '1.14.0',
     date: '2026-09-17',

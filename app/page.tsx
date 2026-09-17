@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AuthStatus from '../src/components/AuthStatus';
+import GuestRegisterButton from '../src/components/GuestRegisterButton';
 import Section from '../src/components/ui/Section';
 import Diagram from '../src/components/ui/Diagram';
 import ProfessionalCard from '../src/components/ui/ProfessionalCard';
@@ -191,12 +192,10 @@ export default function LandingPage() {
             </Link>
             <nav className="flex items-center space-x-4">
               <AuthStatus />
-              <Link
-                href="/register"
+              <GuestRegisterButton
+                label="Quiero Participar"
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-              >
-                Quiero Contribuir
-              </Link>
+              />
             </nav>
           </div>
         </div>
@@ -1536,12 +1535,10 @@ export default function LandingPage() {
               etapa no se reciben fondos: primero definimos, junto al Gremio de Derecho, la
               estructura jurídica y los marcos aplicables.
             </p>
-            <Link
-              href="/register"
+            <GuestRegisterButton
+              label="SUMARME AL LABORATORIO"
               className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              SUMARME AL LABORATORIO
-            </Link>
+            />
           </div>
         </div>
       </Section>
@@ -1558,12 +1555,10 @@ export default function LandingPage() {
             Empezamos con lo que ya existe, hoy.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/register"
+            <GuestRegisterButton
+              label="QUIERO PARTICIPAR"
               className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors text-center"
-            >
-              QUIERO CONTRIBUIR
-            </Link>
+            />
             <Link
               href="#construir"
               className="bg-gray-900 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-800 transition-colors text-center"
