@@ -942,6 +942,38 @@ function runTestR() {
     'protocolo de manual cumplido', group);
 }
 
+function runTestS() {
+  const group = 'Test S — registrar una cuenta ya no pide código de administrador';
+  const pageSrc = src('app/register/page.tsx');
+
+  check('Registro: no existe el input adminCode en el formulario',
+    !pageSrc.includes('adminCode') && !pageSrc.includes('Código de administrador'),
+    'cualquier persona crea cuenta sin campo dedicado', group);
+
+  check('Registro: el formulario quedó con los campos normales',
+    pageSrc.includes('name="email"') &&
+      pageSrc.includes('name="password"') &&
+      pageSrc.includes('name="name"') &&
+      pageSrc.includes('name="profession"') &&
+      pageSrc.includes('name="country"'),
+    'nombre, email, contraseña, profesión y país son los únicos campos', group);
+
+  check('Registro: el último campo cierra el borde inferior del form',
+    pageSrc.includes('rounded-b-md'),
+    'estética del formulario intacta', group);
+
+  const apiSrc = src('src/pages/api/auth/register.ts');
+  check('API: el bootstrap de primer admin queda solo como mecanismo interno',
+    apiSrc.includes('SUPER_ADMIN') && apiSrc.includes('adminCount === 0'),
+    'defensivo y sin exponer nada al usuario al registrarse', group);
+
+  const manualSrc = src('src/lib/manual.ts');
+  check('Manual: changelog 1.16.0 explica que crear cuenta ya no pide código',
+    manualSrc.includes("version: '1.16.0'") &&
+      manualSrc.includes('no pide código de administrador'),
+    'protocolo de manual cumplido', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -962,6 +994,7 @@ function main() {
   runTestP();
   runTestQ();
   runTestR();
+  runTestS();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -988,6 +1021,7 @@ function main() {
       'Manual del panel: cada indicador y control de Economía CU explicado': !failures.join().includes('Test P'),
       'Presupuesto de urgencia visible para el usuario en perfil': !failures.join().includes('Test Q'),
       'CTA de registro condicional a sesión y wording «Quiero Participar»': !failures.join().includes('Test R'),
+      'Registrar una cuenta ya no pide código de administrador': !failures.join().includes('Test S'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

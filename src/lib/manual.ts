@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.15.0';
+export const MANUAL_VERSION = '1.16.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-17';
 
@@ -19,6 +19,16 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.16.0',
+    date: '2026-09-17',
+    title: 'Crear cuenta ya no pide código de administrador',
+    notes: [
+      'El campo «Código de administrador» desapareció del formulario de registro.',
+      'Ese código era un bootstrap de un solo uso para crear el PRIMER super admin (email exacto + código + que no exista ningún super admin). Ya cumplió: hoy nombrar moderadores o admins se hace desde el panel de administración, en la sección Usuarios.',
+      'Para cualquiera que crea una cuenta, el campo no tenía ningún efecto: sigue sin tenerlo, solo que ya no se muestra.',
+    ],
+  },
   {
     version: '1.15.0',
     date: '2026-09-17',
