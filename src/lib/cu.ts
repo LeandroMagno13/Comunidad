@@ -369,6 +369,37 @@ export async function issueCu(toUserId: string, amount: number, description: str
   return updated;
 }
 
+// ---------------------------------------------------------------------------
+// RECOMPENSA POR CONTRIBUCIÓN VERIFICADA
+//
+// Emisión EXPLÍCITA y acotada (config.participationRewardCu) por participar y
+// que OTRA persona lo confirme: tarea comunitaria confirmada por su autor o
+// solicitud de capacidad satisfecha por el proveedor. NO es un pago ni una
+// transferencia (la CU no compra nada): es el MISMO mecanismo auditable que el
+// grant de bienvenida (CuTransaction type='issued' + refType/refId), con
+// notificación de logro para que se perciba. Amount <= 0 desactiva el premio.
+// ---------------------------------------------------------------------------
+export async function rewardParticipation(
+  toUserId: string,
+  amount: number,
+  description: string,
+  ref: { refType?: string; refId?: string },
+  notification: { title: string; content: string; link: string },
+) {
+  if (!Number.isInteger(amount) || amount <= 0) return null;
+  const updated = await issueCu(toUserId, amount, description, ref);
+  await db.notification.create({
+    data: {
+      userId: toUserId,
+      type: 'cu',
+      title: notification.title,
+      content: notification.content,
+      link: notification.link,
+    },
+  });
+  return updated;
+}
+
 export async function transferCu(fromUserId: string, toUserId: string, amount: number, description: string, ref?: { refType?: string; refId?: string }) {
   if (!Number.isInteger(amount) || amount <= 0) {
     throw new Error('La cantidad de CU debe ser un entero positivo');

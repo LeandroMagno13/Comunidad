@@ -1358,6 +1358,23 @@ export default function AdminPanel() {
                       />
                     </label>
                   </div>
+                  <div className="mt-2 grid grid-cols-2 gap-3">
+                    <label className="block text-xs font-medium text-gray-700" title="CU por contribución verificada: se emiten al confirmar una tarea comunitaria o al satisfacer una solicitud de capacidad (el que participó y el autor lo confirma). 0 = desactivado. Es emisión de logro, no un pago ni una transferencia.">
+                      CU por contribución verificada
+                      <input
+                        type="number"
+                        min={0}
+                        className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+                        value={ecoConfig.participationRewardCu}
+                        onChange={(e) => setEcoConfig({ ...ecoConfig, participationRewardCu: e.target.value })}
+                      />
+                    </label>
+                  </div>
+                  <p className="mt-2 text-[11px] text-gray-500">
+                    Al confirmar una tarea o satisfacer una solicitud, el sistema emite esta cantidad de CU
+                    a quien participó (con notificación de logro y movimiento auditable por refType/refId).
+                    Es una recompensa de registro, no un pago: la CU no compra ni transfiere nada.
+                  </p>
                   <p className="mt-2 text-[11px] text-gray-400">
                     La asignación a nuevos usuarios es DINÁMICA: depende del estado del sistema + señal
                     del PID. En equilibrio = cantidad base; ante escasez relativa se reduce (puede

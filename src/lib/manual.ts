@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.10.0';
+export const MANUAL_VERSION = '1.11.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-16';
 
@@ -19,6 +19,16 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.11.0',
+    date: '2026-09-16',
+    title: 'La participación se percibe: CU por contribución verificada y perfil con «Mis contribuciones»',
+    notes: [
+      'Al confirmar una tarea comunitaria o satisfacer una solicitud de capacidad, quien participó recibe CU de logro (configurable en Economía CU, 0 = desactivado) con notificación del saldo nuevo.',
+      'Es una emisión explícita y auditable (el mismo mecanismo que las CU de bienvenida), no un pago ni una transferencia: la CU sigue sin comprar ni transferir nada.',
+      'El perfil ahora muestra «Mis contribuciones»: tareas confirmadas y capacidades satisfechas, para que el aporte de cada persona quede visible como logro.',
+    ],
+  },
   {
     version: '1.10.0',
     date: '2026-09-16',

@@ -208,9 +208,14 @@ export default function ManualPage() {
             <span className="font-semibold">contribución verificada</span>, no por CU cobradas.
           </p>
           <p>
-            En las solicitudes comunitarias (<L href="/community">Comunidad</L>) no se mueven CU: solo se
-            registra la participación. No existe emisión automática por controlador, ni minado, ni compra de
-            CU. Una solicitud de capacidad que expira sin resolverse (30 días) se descarta sin ningún cargo.
+            En las solicitudes comunitarias (<L href="/community">Comunidad</L>) y de capacidad no se
+            transfieren CU de nadie, pero <strong>sí se emiten CU de logro por contribución verificada</strong>:
+            al confirmar una tarea o satisfacer una solicitud, quien participó recibe una cantidad acotada y
+            configurable (visible en «Economía CU» del panel admin, 0 = desactivado). Es una emisión
+            explícita y auditable —el mismo mecanismo que la bienvenida—, no un pago ni una transferencia,
+            y llega con una notificación para que ese aporte se perciba y motive a seguir participando.
+            No existe emisión automática por controlador, ni minado, ni compra de CU. Una solicitud de
+            capacidad que expira sin resolverse (30 días) se descarta sin ningún cargo.
           </p>
         </Block>
 
@@ -340,9 +345,14 @@ export default function ManualPage() {
         <Block id="cuestas-cu" eyebrow="Tu registro de CU" title="Ver tus CU en Perfil">
           <p>
             En tu perfil, la sección «Mis CU · registro experimental» muestra tu saldo y el historial de
-            transacciones (emisiones de bienvenida y consumos). Desde la Ronda D las CU ya no se transfieren
-            por solicitudes de capacidad, así que el registro se mantiene como señal de participación, no
-            como un monedero.
+            transacciones (emisiones de bienvenida, CU de logro por contribución y consumos). Desde la
+            Ronda D las CU ya no se transfieren por solicitudes de capacidad, así que el registro se mantiene
+            como señal de participación, no como un monedero.
+          </p>
+          <p>
+            Tu perfil también muestra <strong>«Mis contribuciones»</strong>: las tareas comunitarias que
+            confirmaste y las solicitudes de capacidad que satisfaciste, para que cada aporte quede visible
+            y se perciba el progreso.
           </p>
         </Block>
 

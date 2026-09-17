@@ -111,7 +111,7 @@ function runTestA() {
   // pero NUNCA funciones de control. Verificamos los símbolos importados.
   const cuImport = capacitySrc.match(/import\s*\{([^}]*)\}\s*from\s*['"]@?\/?\w*\/?src\/lib\/cu['"]/);
   const imported = (cuImport?.[1] ?? '').split(',').map(s => s.trim()).filter(Boolean);
-  const allowed = ['ensureCuConfig', 'transferCu'];
+  const allowed = ['ensureCuConfig', 'transferCu', 'rewardParticipation'];
   check('capacity.ts importa solo PERMITIDO de cu.ts',
     imported.length > 0 && imported.every(n => allowed.includes(n)),
     `importado: ${imported.join(', ') || 'ninguno'}`, group);
@@ -721,6 +721,63 @@ function runTestN() {
     'protocolo de manual cumplido', group);
 }
 
+function runTestO() {
+  const group = 'Test O — participación con recompensa: CU por contribución verificada y progreso visible';
+  const schemaSrc = src('prisma/schema.prisma');
+  const offerSrc = src('src/pages/api/posts/[id]/offer.ts');
+  const capacitySrc = src('src/lib/capacity.ts');
+  const configSrc = src('src/pages/api/cu/config.ts');
+  const adminSrc = src('app/admin/page.tsx');
+  const profileSrc = src('app/profile/page.tsx');
+  const manualSrc = src('src/lib/manual.ts');
+  const contribFile = path.join(process.cwd(), 'src/pages/api/profile/contributions.ts');
+  const contribSrc = fs.existsSync(contribFile) ? fs.readFileSync(contribFile, 'utf8') : '';
+
+  check('Schema: CuConfig.participationRewardCu, 0 desactiva',
+    /participationRewardCu\s+Int\s+@default\(10\)/.test(schemaSrc),
+    'recompensa configurable por contribución verificada', group);
+
+  check('offer.ts acredita CU de logro SIN transferir (recompensa, no pago)',
+    offerSrc.includes('rewardParticipation') &&
+      offerSrc.includes('participationRewardCu') &&
+      !offerSrc.includes('transferCu') &&
+      !offerSrc.includes('ensureCuAccount'),
+    'emisión explícita type=issued, nunca transferencia', group);
+
+  check('offer.ts guarda refType/refId auditable por solicitud',
+    offerSrc.includes("refType: 'request'") && offerSrc.includes('refId: post.id'),
+    'la emisión queda trazable a la tarea que la originó', group);
+
+  check('capacity.ts acredita CU de logro al proveedor satisfecho',
+    capacitySrc.includes('rewardParticipation') && capacitySrc.includes("refType: 'capacity'"),
+    'proveedor recibe emisión explícita + notificación', group);
+
+  check('API configura el monto de la recompensa',
+    configSrc.includes("['participationRewardCu', 0, 1000000000]"),
+    'whitelist admin de la política de participación', group);
+
+  check('Panel admin: campo «CU por contribución verificada»',
+    adminSrc.includes('CU por contribución verificada'),
+    'control de monto visible en Economía CU', group);
+
+  check('Endpoint /api/profile/contributions lee tareas y capacidades del propio usuario',
+    contribSrc.includes("kind: 'fulfillment'") &&
+      contribSrc.includes("status: 'satisfied'") &&
+      contribSrc.includes('participantId: user.id') &&
+      contribSrc.includes('providerId: user.id'),
+    'solo datos propios, público interno de logro', group);
+
+  check('Perfil: sección «Mis contribuciones» visible',
+    profileSrc.includes('Mis contribuciones') &&
+      profileSrc.includes('/api/profile/contributions'),
+    'el aporte de cada persona queda como logro visible', group);
+
+  check('Manual: changelog 1.11.0 con CU por contribución verificada',
+    manualSrc.includes("version: '1.11.0'") &&
+      manualSrc.includes('La participación se percibe: CU por contribución verificada'),
+    'protocolo de manual cumplido', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -737,6 +794,7 @@ function main() {
   runTestL();
   runTestM();
   runTestN();
+  runTestO();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -759,6 +817,7 @@ function main() {
       'Cartelera reutilizable con botones, filtro y feed unificado': !failures.join().includes('Test L'),
       'Moderación de encuestas y ocultamiento en cascada': !failures.join().includes('Test M'),
       'Canales: títulos reales y separación del contenido de prueba': !failures.join().includes('Test N'),
+      'Participación con recompensa: CU por contribución verificada y progreso visible': !failures.join().includes('Test O'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

@@ -88,6 +88,7 @@ async function updateConfig(req: NextApiRequest, res: NextApiResponse) {
     ['periodDays', 1, 3650],
     ['milestoneCu', 1, 1000000000],
     ['newUserGrantCu', 0, 1000000000],
+    ['participationRewardCu', 0, 1000000000],
     ['maxEmissionPerCycle', 0, 1000000000],
     ['maxBurnPerCycle', 0, 1000000000],
     ['adjustmentCap', 0, 1000000000],

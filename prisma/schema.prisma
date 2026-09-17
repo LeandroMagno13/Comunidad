@@ -394,6 +394,7 @@ model CuConfig {
   urgencyBudgetBase    Int     @default(3) // RONDA D: puntos de urgencia por período (semanal), fijos y no acumulables
   urgencyBudgetMaxLevel Int    @default(3) // RONDA D: intensidad de urgencia máxima marcable (costo cuadrático)
   urgencyBudgetPeriodDays Int  @default(7) // RONDA D: días de cada período de presupuesto de urgencia
+  participationRewardCu Int   @default(10) // CU emitidas por contribución verificada (tarea confirmada / capacidad satisfecha); 0 = desactivado
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 }

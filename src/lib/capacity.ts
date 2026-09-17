@@ -1,5 +1,5 @@
 import { db } from '@/src/lib/db';
-import { ensureCuConfig } from '@/src/lib/cu';
+import { ensureCuConfig, rewardParticipation } from '@/src/lib/cu';
 import {
   levelWeight,
   presionFrom,
@@ -232,15 +232,39 @@ export async function satisfyCapacityRequest(requestId: string, providerId: stri
   if (request.askerId === providerId) throw new Error('No podés auto-satisfacer tu solicitud');
 
   // RONDA D: SIN "cobro" de CU al satisfacer. La urgencia ya fue consumida por
-  // el solicitante (no acumulable, no transferible) y el proveedor sube a
-  // avanzado por contribución verificada. No hay premio monetario ni de
-  // urgencia: la señal de urgencia no se puede acumular ni comerciar.
+  // el solicitante (no acumulable, no transferible). En su lugar, el proveedor
+  // sube a avanzado por contribución verificada y recibe una EMISIÓN EXPLÍCITA
+  // de logro (config.participationRewardCu, CuTransaction type='issued'), el
+  // MISMO mecanismo auditable que el grant de bienvenida: no es un pago ni una
+  // transferencia, solo el registro del agradecimiento a escala definida. Si
+  // participationRewardCu=0, solo sube el nivel de acceso.
   await db.capacityRequest.update({ where: { id: requestId }, data: { providerId, status: 'satisfied', satisfiedAt: new Date() } });
   await refreshAccessLevel(request.askerId);
   await refreshAccessLevel(providerId);
   await db.notification.create({
     data: { userId: request.askerId, type: 'cu', title: 'Solicitud satisfecha', content: `Tu solicitud de ${request.capacity.name} fue satisfecha.` },
   });
+
+  const config = await ensureCuConfig();
+  const reward = config.participationRewardCu;
+  if (Number.isInteger(reward) && reward > 0) {
+    await rewardParticipation(
+      providerId,
+      reward,
+      `CU por contribución verificada: satisfaciste "${request.capacity.name}"`,
+      { refType: 'capacity', refId: request.id },
+      {
+        title: `Contribución verificada · recibiste ${reward} CU`,
+        content: `Satisfaciste la solicitud de ${request.capacity.name} y recibiste ${reward} CU por contribución verificada. Gracias por aportar a la comunidad.`,
+        link: '/community',
+      },
+    );
+  } else {
+    await db.notification.create({
+      data: { userId: providerId, type: 'cu', title: 'Contribución verificada', content: `Satisfaciste la solicitud de ${request.capacity.name}. Subiste de nivel de acceso y tu aporte quedó registrado.` },
+    });
+  }
+
   return db.capacityRequest.findUnique({ where: { id: requestId } });
 }
 

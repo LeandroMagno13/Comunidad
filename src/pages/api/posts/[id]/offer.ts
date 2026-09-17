@@ -5,14 +5,18 @@
 // con CU") SOLO como registro de PARTICIPACIÓN. Por Lee.txt (limpieza RONDA C):
 // la CU NO paga, cobra, vende ni transfiere como precio de servicio; tampoco
 // usa cuOffer como monto monetario. El campo cuOffer del post se ignora.
-// Si en el futuro se quiere registrar contribuciones: ParticipationEvent.
+// La contribución se registra en ParticipationEvent y, al confirmar la tarea,
+// el autor acredita al cumplidor una emisión EXPLÍCITA y configurable
+// (config.participationRewardCu, CuTransaction type='issued'); es recompensa de
+// logro verificada, no un pago transferido.
 //
 // Acciones disponibles: accept (asumir tarea) / complete (confirmar participación)
-// / cancel (liberar o cancelar). NINGUNA transfiere CU.
+// / cancel (liberar o cancelar). NINGUNA transfiere CU entre cuentas.
 // ============================================================================
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest } from '@/src/lib/auth';
+import { ensureCuConfig, rewardParticipation } from '@/src/lib/cu';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -105,15 +109,35 @@ async function complete(res: NextApiResponse, user: any, post: any) {
     data: { requestStatus: 'completed' },
   });
 
-  await db.notification.create({
-    data: {
-      userId: post.fulfillUserId,
-      type: 'request',
-      title: 'Participación confirmada',
-      content: 'El autor confirmó tu participación en su solicitud comunitaria. Gracias por contribuir.',
-      link: `/community/${post.id}`,
-    },
-  });
+  // Recompensa por contribución verificada: emisión EXPLÍCITA (no es pago ni
+  // transferencia), igual que el grant de bienvenida, con refType/refId para
+  // auditar de qué solicitud salió. Si participationRewardCu=0, solo la
+  // notificación de participación.
+  const config = await ensureCuConfig();
+  const reward = config.participationRewardCu;
+  if (Number.isInteger(reward) && reward > 0) {
+    await rewardParticipation(
+      post.fulfillUserId,
+      reward,
+      `CU por contribución verificada: "${post.title || post.content.slice(0, 60)}"`,
+      { refType: 'request', refId: post.id },
+      {
+        title: `Participación confirmada · recibiste ${reward} CU`,
+        content: `El autor confirmó tu participación en su solicitud comunitaria y recibiste ${reward} CU por contribución verificada. Gracias por contribuir.`,
+        link: `/community/${post.id}`,
+      },
+    );
+  } else {
+    await db.notification.create({
+      data: {
+        userId: post.fulfillUserId,
+        type: 'request',
+        title: 'Participación confirmada',
+        content: 'El autor confirmó tu participación en su solicitud comunitaria. Gracias por contribuir.',
+        link: `/community/${post.id}`,
+      },
+    });
+  }
 
   return res.status(200).json({ success: true, requestStatus: 'completed' });
 }

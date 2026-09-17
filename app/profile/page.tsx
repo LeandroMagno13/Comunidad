@@ -58,6 +58,12 @@ export default function ProfilePage() {
 
   const [cu, setCu] = useState<{ account: any; transactions: CuTransactionItem[] } | null>(null);
 
+  const [contribs, setContribs] = useState<{
+    tasks: { id: string; detail?: string | null; postId: string | null; createdAt: string }[];
+    capacities: { id: string; capacity: { name: string }; asker: { name: string } | null; satisfiedAt: string | null; urgencyLevel?: number }[];
+    totals: { tasks: number; capacities: number };
+  } | null>(null);
+
   useEffect(() => {
     fetch('/api/auth/me')
       .then((r) => (r.ok ? r.json() : null))
@@ -87,6 +93,8 @@ export default function ProfilePage() {
     if (!res.ok) return;
     const data = await res.json();
     setCu(data);
+    const cres = await fetch('/api/profile/contributions');
+    if (cres.ok) setContribs(await cres.json());
   }
 
   async function saveProfile(e: React.FormEvent) {
@@ -305,6 +313,73 @@ export default function ProfilePage() {
           </div>
         ) : (
           <p className="mt-4 text-sm text-gray-500">Cargando tu cuenta de CU…</p>
+        )}
+      </div>
+
+      <div className="mt-10 border-t border-gray-200 pt-6">
+        <h2 className="text-lg font-semibold text-gray-900">Mis contribuciones</h2>
+        <p className="mt-1 text-xs text-gray-500">
+          Tareas comunitarias que confirmaste y solicitudes de capacidad que satisfaciste.
+          Cada aporte verificado queda registrado aquí y puede acreditar CU de logro.
+        </p>
+
+        {contribs ? (
+          <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+            <div className="flex flex-wrap items-end gap-6">
+              <div>
+                <p className="text-xs font-medium text-emerald-700">Tareas comunitarias</p>
+                <p className="text-2xl font-bold text-emerald-900">{contribs.totals.tasks}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-emerald-700">Capacidad satisfecha</p>
+                <p className="text-2xl font-bold text-emerald-900">{contribs.totals.capacities}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-emerald-700">Aportes verificados</p>
+                <p className="text-2xl font-bold text-emerald-900">{contribs.totals.tasks + contribs.totals.capacities}</p>
+              </div>
+            </div>
+
+            <div className="mt-5">
+              <h3 className="text-sm font-semibold text-emerald-900">Últimos aportes</h3>
+              {contribs.tasks.length === 0 && contribs.capacities.length === 0 ? (
+                <p className="mt-2 text-xs text-emerald-700">
+                  Todavía no tenés aportes verificados. Sumate a una solicitud comunitaria o aceptá
+                  una tarea para que tu aporte quede registrado.
+                </p>
+              ) : (
+                <ul className="mt-2 divide-y divide-emerald-100">
+                  {contribs.tasks.map((t) => (
+                    <li key={`task-${t.id}`} className="flex items-center justify-between py-2 text-sm">
+                      <div>
+                        <p className="font-medium text-emerald-900">Tarea comunitaria · {t.detail || 'Solicitud'}</p>
+                        <p className="text-[11px] text-emerald-600">
+                          {new Date(t.createdAt).toLocaleString('es', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[11px] font-medium text-white">Confirmada</span>
+                    </li>
+                  ))}
+                  {contribs.capacities.map((c) => (
+                    <li key={`cap-${c.id}`} className="flex items-center justify-between py-2 text-sm">
+                      <div>
+                        <p className="font-medium text-emerald-900">Capacidad · {c.capacity.name}</p>
+                        <p className="text-[11px] text-emerald-600">
+                          {c.asker ? `para ${c.asker.name} · ` : ''}
+                          {c.satisfiedAt
+                            ? new Date(c.satisfiedAt).toLocaleString('es', { day: '2-digit', month: 'short', year: 'numeric' })
+                            : ''}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[11px] font-medium text-white">Satisfecha</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-gray-500">Cargando tus contribuciones…</p>
         )}
       </div>
 
