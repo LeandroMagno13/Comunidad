@@ -56,7 +56,17 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState('');
   const [passMsg, setPassMsg] = useState('');
 
-  const [cu, setCu] = useState<{ account: any; transactions: CuTransactionItem[] } | null>(null);
+  const [cu, setCu] = useState<{
+    account: any;
+    transactions: CuTransactionItem[];
+    urgency?: {
+      base: number;
+      remaining: number;
+      maxLevel: number;
+      periodDays: number;
+      renewsAt: string;
+    } | null;
+  } | null>(null);
 
   const [contribs, setContribs] = useState<{
     tasks: { id: string; detail?: string | null; postId: string | null; createdAt: string }[];
@@ -259,6 +269,35 @@ export default function ProfilePage() {
                 <p>Total consumidas: {cu.account.totalConsumed}</p>
               </div>
             </div>
+
+            {cu.urgency ? (
+              <div className="mt-3 rounded-md border border-indigo-200 bg-white/60 p-3 text-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
+                  Presupuesto de urgencia (RONDA D)
+                </p>
+                {cu.urgency.base > 0 ? (
+                  <>
+                    <p className="mt-1 text-indigo-900">
+                      Te quedan <strong>{cu.urgency.remaining} de {cu.urgency.base}</strong> puntos este
+                      período{cu.urgency.maxLevel > 0 ? ` · nivel máx. ${cu.urgency.maxLevel} (1→1, 2→4, 3→9)` : ''}.
+                    </p>
+                    <p className="text-xs text-indigo-600">
+                      Se renueva el{' '}
+                      {new Date(cu.urgency.renewsAt).toLocaleDateString('es', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric',
+                      })}{' '}
+                      · la urgencia no se acumula entre períodos.
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-1 text-indigo-900">
+                    La urgencia presupuestada está desactivada (0 puntos): hoy no hay costo por marcar urgencia.
+                  </p>
+                )}
+              </div>
+            ) : null}
 
             <div className="mt-5">
               <h3 className="text-sm font-semibold text-indigo-900">Movimientos recientes</h3>

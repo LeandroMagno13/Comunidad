@@ -115,6 +115,14 @@ export function urgencyPeriodKey(now: Date, periodDays: number): string {
   return `p${days}`;
 }
 
+// Instante exacto de la proxima renovacion del presupuesto (igual para todos,
+// no depende de cada usuario). Sirve para mostrar "cuando se renueva".
+export function urgencyNextRenewalAt(now: Date, periodDays: number): Date {
+  const ms = periodDays * 24 * 60 * 60 * 1000;
+  const bucket = Math.floor(now.getTime() / ms);
+  return new Date((bucket + 1) * ms);
+}
+
 // Presupuesto vigente de un usuario: si el periodo cambio, se resetea al tope.
 // El parametro `base` es la asignacion fija por periodo (configurable).
 export function urgencyBudgetFor(

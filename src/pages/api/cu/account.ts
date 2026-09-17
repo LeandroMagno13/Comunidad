@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest } from '@/src/lib/auth';
-import { ensureCuAccount } from '@/src/lib/cu';
+import { ensureCuAccount, ensureCuConfig } from '@/src/lib/cu';
+import { urgencyBudgetFor, urgencyNextRenewalAt } from '@/src/lib/cap-formulas';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
@@ -33,7 +34,24 @@ async function getAccount(res: NextApiResponse, user: any) {
     orderBy: { createdAt: 'desc' },
     take: 50,
   });
-  return res.status(200).json({ account, transactions });
+  const config = await ensureCuConfig();
+  const periodDays = config.urgencyBudgetPeriodDays ?? 7;
+  const base = config.urgencyBudgetBase ?? 3;
+  const now = new Date();
+  const remaining = urgencyBudgetFor(
+    base,
+    { period: user.urgencyBudgetPeriod, remaining: user.urgencyBudgetRemaining },
+    now,
+    periodDays
+  );
+  const urgency = {
+    base,
+    remaining,
+    maxLevel: config.urgencyBudgetMaxLevel ?? 3,
+    periodDays,
+    renewsAt: urgencyNextRenewalAt(now, periodDays).toISOString(),
+  };
+  return res.status(200).json({ account, transactions, urgency });
 }
 
 async function updateEstimate(req: NextApiRequest, res: NextApiResponse, user: any) {

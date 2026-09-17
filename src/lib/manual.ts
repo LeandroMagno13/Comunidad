@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.13.0';
+export const MANUAL_VERSION = '1.14.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-17';
 
@@ -19,6 +19,15 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.14.0',
+    date: '2026-09-17',
+    title: 'Presupuesto de urgencia visible para cada persona en su perfil',
+    notes: [
+      'Ahora cualquier persona puede ver su presupuesto de urgencia (RONDA D) en su perfil, dentro de la tarjeta «Mis CU»: cuántos puntos le quedan de este período y cuándo se renueva.',
+      'La tarjeta muestra además el nivel máximo configurado y aclara que la urgencia no se acumula entre períodos.',
+    ],
+  },
   {
     version: '1.13.0',
     date: '2026-09-17',

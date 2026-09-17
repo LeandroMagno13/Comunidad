@@ -337,6 +337,12 @@ export default function ManualPage() {
             discutir y cambiar.
           </p>
           <p className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            <strong>Dónde lo ves (RONDA D):</strong> en tu perfil, dentro de la tarjeta «Mis CU», aparece tu
+            presupuesto de urgencia con todo lo que necesitás saber: cuántos puntos te quedan de este período,
+            cuántos eran el tope, el nivel máximo configurado y la próxima fecha de renovación. No tenés que
+            buscarlo ni adivinarlo: la tarjeta lo muestra apenas entrás a tu perfil.
+          </p>
+          <p className="mt-3 text-sm text-slate-600">
             Ver cómo se comporta la urgencia bajo estrés (escasez extrema, persistente, saturación y límites
             de escala) en el <L href="/ensayo-de-stress">ensayo de stress abierto</L>.
           </p>

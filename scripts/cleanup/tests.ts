@@ -46,6 +46,7 @@ import {
   urgencyCost,
   urgencyPeriodKey,
   urgencyBudgetFor,
+  urgencyNextRenewalAt,
 } from '@/src/lib/cap-formulas';
 import { runCapacitySim, CapacitySimConfig } from '../capacity/engine';
 import { sanitizeHtml, htmlToText } from '@/src/lib/sanitize';
@@ -855,6 +856,54 @@ function runTestP() {
     'ajuste manual con registro en CuTransaction', group);
 }
 
+function runTestQ() {
+  const group = 'Test Q — presupuesto de urgencia visible para el usuario (perfil + API)';
+
+  // --- Helper puro: instante de renovación exacto ---
+  const d0 = new Date('2026-09-12T00:00:00Z');
+  const next = urgencyNextRenewalAt(d0, 7);
+  check('renovación: cae en la frontera de período (anclada a epoch, igual para todos)',
+    next.toISOString() === '2026-09-17T00:00:00.000Z',
+    `próxima renovación (base 12/09): ${next.toISOString()}`, group);
+  check('renovación: misma fecha en todo el período; al cruzar la frontera avanza 7 días',
+    urgencyNextRenewalAt(new Date('2026-09-16T23:59:00Z'), 7).getTime() === next.getTime() &&
+      urgencyNextRenewalAt(new Date('2026-09-17T00:00:00Z'), 7).getTime() ===
+        new Date('2026-09-24T00:00:00.000Z').getTime(),
+    'todos dentro del mismo período ven la misma fecha; después avanza una semana', group);
+
+  // --- API /api/cu/account expone el presupuesto con renovación y remanente ---
+  const accountSrc = src('src/pages/api/cu/account.ts');
+  check('API cuenta: expone bloque urgency (base, remaining, maxLevel, renewsAt)',
+    accountSrc.includes('urgencyBudgetFor') &&
+      accountSrc.includes('urgencyNextRenewalAt') &&
+      accountSrc.includes('renewsAt') &&
+      accountSrc.includes('maxLevel'),
+    'un simple usuario puede preguntar su remanente y cuándo se renueva', group);
+
+  // --- Perfil: tarjeta «Mis CU» muestra el presupuesto de urgencia ---
+  const profileSrc = src('app/profile/page.tsx');
+  check('Perfil: tarjeta «Mis CU» muestra «Presupuesto de urgencia (RONDA D)»',
+    profileSrc.includes('Presupuesto de urgencia (RONDA D)') &&
+      profileSrc.includes('Te quedan') &&
+      profileSrc.includes('Se renueva el'),
+    'el usuario ve de un vistazo cuántos le quedan y cuándo se renueva', group);
+  check('Perfil: aclara que la urgencia no se acumula ni se hereda',
+    profileSrc.includes('la urgencia no se acumula entre períodos'),
+    'evita malentendidos de «ahorrar urgencia»', group);
+
+  // --- Manual documenta dónde verlo ---
+  const manualSrc = src('src/lib/manual.ts');
+  const manualPage = src('app/manual/page.tsx');
+  check('Manual: changelog 1.14.0 con urgencia visible en perfil',
+    manualSrc.includes("version: '1.14.0'") &&
+      manualSrc.includes('Presupuesto de urgencia visible para cada persona en su perfil'),
+    'protocolo de manual cumplido', group);
+  check('Manual: sección RONDA D explica dónde ver el presupuesto como usuario',
+    manualPage.includes('Dónde lo ves') &&
+      manualPage.includes('con todo lo que necesitás saber'),
+    'el usuario sabe exactamente dónde mirar', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -873,6 +922,7 @@ function main() {
   runTestN();
   runTestO();
   runTestP();
+  runTestQ();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -897,6 +947,7 @@ function main() {
       'Canales: títulos reales y separación del contenido de prueba': !failures.join().includes('Test N'),
       'Participación con recompensa: CU por contribución verificada y progreso visible': !failures.join().includes('Test O'),
       'Manual del panel: cada indicador y control de Economía CU explicado': !failures.join().includes('Test P'),
+      'Presupuesto de urgencia visible para el usuario en perfil': !failures.join().includes('Test Q'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');
