@@ -16,13 +16,14 @@ if not exist "%BOT_DIR%\telegram-hourly-bot.py" (
 cd /d "%BOT_DIR%"
 where py >nul 2>nul
 if %errorlevel%==0 (
-  start "POSTSINGULAR-INFORME-HORARIO" /min py -3 "%BOT_DIR%\telegram-hourly-bot.py"
+  start "POSTSINGULAR-INFORME-HORARIO" py -3 "%BOT_DIR%\telegram-hourly-bot.py"
   exit /b 0
 )
 where python >nul 2>nul
 if %errorlevel%==0 (
-  start "POSTSINGULAR-INFORME-HORARIO" /min python "%BOT_DIR%\telegram-hourly-bot.py"
+  start "POSTSINGULAR-INFORME-HORARIO" python "%BOT_DIR%\telegram-hourly-bot.py"
   exit /b 0
 )
 echo NO_ENCONTRADO_PYTHON_INSTALA_PYTHON 1>&2
 exit /b 1
+
