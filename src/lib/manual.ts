@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.11.0';
+export const MANUAL_VERSION = '1.12.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-16';
 
@@ -19,6 +19,16 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.12.0',
+    date: '2026-09-16',
+    title: 'Panel de administración: controles de Ronda C y D a la vista, sin entrar al histórico',
+    notes: [
+      'En «Economía CU» los controles que modifican el modelo vigente están ahora en la sección «Controles activos — Ronda C y D», visible apenas se entra, sin necesidad de abrir el bloque histórico.',
+      'La urgencia presupuestada (RONDA D) es configurable desde el panel: puntos por período, nivel máximo y días del período.',
+      'El bloque «HISTÓRICO / LEGACY — RONDA A» queda solo para el experimento histórico (PID, canasta, SupplyPolicy y simulador).',
+    ],
+  },
   {
     version: '1.11.0',
     date: '2026-09-16',

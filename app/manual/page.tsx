@@ -378,6 +378,19 @@ export default function ManualPage() {
               nada del sistema.
             </li>
             <li>
+              <strong>«Controles activos — Ronda C y D»</strong>: lo único que configura el modelo vigente,
+              a la vista apenas entrás:
+              <ul className="list-disc space-y-1 pl-5 pt-1">
+                <li><strong>Urgencia presupuestada (RONDA D)</strong>: puntos por período, nivel máximo y días del período. Define cómo se marca la prioridad (no acumulable, costo cuadrático).</li>
+                <li><strong>Emisión de participación (RONDA C)</strong>: CU de bienvenida (base, sensibilidad y activación dinámica), CU por contribución verificada y meta de saldo (aviso).</li>
+                <li><strong>Ajuste auditable manual</strong>: habilitar ajustes, método y tope. Deshabilitado por defecto.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>«Ajuste histórico (manual, auditado)»</strong>: dar o quitar CU a un usuario puntual
+              (queda registrado con actor y motivo).
+            </li>
+            <li>
               <strong>«Señalización y asignación de capacidad (RONDA C)»</strong>: lectura de la demanda,
               presión, carga, urgencia presupuestada y niveles de acceso por capacidad. Incluye el bloque{' '}
               <strong>«Piso de dignidad (RONDA D)»</strong> (headcount y brecha). No es configurable desde acá.
@@ -387,11 +400,9 @@ export default function ManualPage() {
               representan activos reales.
             </li>
             <li>
-              <strong>«HISTÓRICO / LEGACY — RONDA A»</strong> (plegado): PID, canasta, SupplyPolicy, ajustes y
-              simulador. Son del experimento histórico y se conservan solo por reproducibilidad. Cambiar esos
-              parámetros <strong>no</strong> gobierna el modelo actual: se usan únicamente como diagnóstico.
-              La excepción son los campos «CU de bienvenida» y «Dar CU de bienvenida», que sí controlan cuánto
-              recibe una persona nueva al registrarse.
+              <strong>«HISTÓRICO / LEGACY — RONDA A»</strong> (plegado): PID, canasta, SupplyPolicy y simulador.
+              Son del experimento histórico y se conservan solo por reproducibilidad. Cambiar esos parámetros{' '}
+              <strong>no</strong> gobierna el modelo actual: se usan únicamente como diagnóstico.
             </li>
             <li>
               <strong>«Avisar sobre nueva versión del manual»</strong>: envía una notificación a todos los

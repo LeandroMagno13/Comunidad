@@ -314,6 +314,10 @@ export default function AdminPanel() {
       newUserGrantEnabled: data.config?.newUserGrantEnabled,
       newUserGrantCu: data.config?.newUserGrantCu,
       newUserSensitivity: data.config?.newUserSensitivity,
+      participationRewardCu: data.config?.participationRewardCu,
+      urgencyBudgetBase: data.config?.urgencyBudgetBase,
+      urgencyBudgetMaxLevel: data.config?.urgencyBudgetMaxLevel,
+      urgencyBudgetPeriodDays: data.config?.urgencyBudgetPeriodDays,
       expansionGain: data.config?.expansionGain,
       contractionGain: data.config?.contractionGain,
       reserveShare: data.config?.reserveShare,
@@ -357,6 +361,10 @@ export default function AdminPanel() {
         newUserGrantEnabled: Boolean(ecoConfig.newUserGrantEnabled),
         newUserGrantCu: Number(ecoConfig.newUserGrantCu),
         newUserSensitivity: Number(ecoConfig.newUserSensitivity),
+        participationRewardCu: Number(ecoConfig.participationRewardCu),
+        urgencyBudgetBase: Number(ecoConfig.urgencyBudgetBase),
+        urgencyBudgetMaxLevel: Number(ecoConfig.urgencyBudgetMaxLevel),
+        urgencyBudgetPeriodDays: Number(ecoConfig.urgencyBudgetPeriodDays),
         expansionGain: Number(ecoConfig.expansionGain),
         contractionGain: Number(ecoConfig.contractionGain),
         reserveShare: Number(ecoConfig.reserveShare),
@@ -1189,6 +1197,124 @@ export default function AdminPanel() {
             </div>
           </div>
 
+          <div className="mt-4 rounded-lg border-2 border-teal-300 bg-white p-5">
+            <h3 className="text-sm font-bold text-teal-900">
+              Controles activos — Ronda C y D (señalización y asignación de capacidad)
+            </h3>
+            <p className="mt-1 text-xs text-gray-500">
+              Solo lo que modifica el modelo vigente. No hace falta abrir el histórico.
+            </p>
+            <form onSubmit={saveEcoConfig} className="mt-3 space-y-4">
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+                <p className="text-xs font-semibold text-amber-900">Urgencia presupuestada (RONDA D)</p>
+                <p className="mt-0.5 text-[11px] text-amber-700">
+                  La prioridad se marca con puntos de urgencia: periódicos, NO acumulables y con costo
+                  cuadrático (marcar nivel 3 cuesta 3² = 9). No se compran con CU.
+                </p>
+                <div className="mt-2 grid grid-cols-3 gap-3">
+                  <Field label="Puntos por período" value={ecoConfig.urgencyBudgetBase} onChange={(v) => setEcoConfig({ ...ecoConfig, urgencyBudgetBase: v })} tip="Puntos que cada persona puede gastar por período al marcar urgencia. 0 = no hay urgencia presupuestada." />
+                  <Field label="Nivel máximo" value={ecoConfig.urgencyBudgetMaxLevel} onChange={(v) => setEcoConfig({ ...ecoConfig, urgencyBudgetMaxLevel: v })} tip="Intensidad máxima marcable. El costo crece al cuadrado (1→1, 2→4, 3→9)." />
+                  <Field label="Días del período" value={ecoConfig.urgencyBudgetPeriodDays} onChange={(v) => setEcoConfig({ ...ecoConfig, urgencyBudgetPeriodDays: v })} tip="Cada cuántos días se renueva el presupuesto. No acumula de un período al siguiente." />
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-teal-200 bg-teal-50/60 p-3">
+                <p className="text-xs font-semibold text-teal-900">Emisión de participación (RONDA C)</p>
+                <div className="mt-2 grid grid-cols-2 gap-3">
+                  <label className="block text-xs font-medium text-teal-900">
+                    CU de bienvenida (base en equilibrio)
+                    <input
+                      type="number"
+                      min={0}
+                      className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+                      value={ecoConfig.newUserGrantCu}
+                      onChange={(e) => setEcoConfig({ ...ecoConfig, newUserGrantCu: e.target.value })}
+                    />
+                  </label>
+                  <label className="block text-xs font-medium text-teal-900" title="Cómo responde la asignación a nuevos usuarios ante escasez/abundancia relativa (0 = constante, 1 = proporcional al error).">
+                    Sensibilidad nuevos usuarios
+                    <input
+                      type="number"
+                      min={0}
+                      step="0.1"
+                      className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+                      value={ecoConfig.newUserSensitivity}
+                      onChange={(e) => setEcoConfig({ ...ecoConfig, newUserSensitivity: e.target.value })}
+                    />
+                  </label>
+                  <label className="block text-xs font-medium text-teal-900" title="CU que se emiten al confirmar una tarea comunitaria o al satisfacer una solicitud de capacidad (es emisión de logro verificada, no un pago ni una transferencia). 0 = desactivado.">
+                    CU por contribución verificada
+                    <input
+                      type="number"
+                      min={0}
+                      className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+                      value={ecoConfig.participationRewardCu}
+                      onChange={(e) => setEcoConfig({ ...ecoConfig, participationRewardCu: e.target.value })}
+                    />
+                  </label>
+                  <label className="block text-xs font-medium text-teal-900">
+                    Meta de saldo (aviso)
+                    <input
+                      type="number"
+                      min={1}
+                      className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+                      value={ecoConfig.milestoneCu}
+                      onChange={(e) => setEcoConfig({ ...ecoConfig, milestoneCu: e.target.value })}
+                    />
+                  </label>
+                </div>
+                <label className="mt-2 flex items-center gap-1.5 text-xs text-teal-800">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(ecoConfig.newUserGrantEnabled)}
+                    onChange={(e) => setEcoConfig({ ...ecoConfig, newUserGrantEnabled: e.target.checked })}
+                  />
+                  Dar CU de bienvenida (dinámica)
+                </label>
+                <p className="mt-1 text-[11px] text-teal-700">
+                  La bienvenida es dinámica: depende del estado del sistema + señal. En equilibrio = base;
+                  ante escasez relativa se reduce (puede llegar a 0); ante abundancia puede aumentar.
+                  «Contribución verificada» emite CU de logro al confirmar una tarea o satisfacer una
+                  solicitud (0 = desactivado): no es un pago.
+                </p>
+              </div>
+
+              <div className="rounded-lg border border-purple-100 bg-purple-50 p-3">
+                <p className="text-xs font-semibold text-purple-900">Ajuste auditable manual</p>
+                <div className="mt-2 grid grid-cols-3 gap-3">
+                  <label className="flex items-center gap-1.5 text-xs text-purple-800">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(ecoConfig.adjustmentEnabled)}
+                      onChange={(e) => setEcoConfig({ ...ecoConfig, adjustmentEnabled: e.target.checked })}
+                    />
+                    Habilitar ajustes
+                  </label>
+                  <select
+                    className="rounded-md border border-gray-300 px-2 py-1.5 text-xs"
+                    value={ecoConfig.adjustmentMode || 'none'}
+                    onChange={(e) => setEcoConfig({ ...ecoConfig, adjustmentMode: e.target.value })}
+                  >
+                    <option value="none">none</option>
+                    <option value="flat">flat (fijo)</option>
+                    <option value="proportional">proportional</option>
+                    <option value="manual">manual</option>
+                  </select>
+                  <Field label="Tope por ajuste (0 = sin tope)" value={ecoConfig.adjustmentCap} onChange={(v) => setEcoConfig({ ...ecoConfig, adjustmentCap: v })} />
+                </div>
+                <p className="mt-1 text-[11px] text-purple-700">
+                  Deshabilitado por defecto: no hay reglas de confiscación automática. Cada ajuste desde el
+                  formulario «Ajuste histórico (manual, auditado)» queda registrado en CuTransaction con
+                  actor y motivo.
+                </p>
+              </div>
+
+              <button className="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800">
+                Guardar configuración activa
+              </button>
+            </form>
+          </div>
+
           {!eco ? (
             <p className="mt-6 text-sm text-gray-500">Medí el estado de la economía de CU para ver las métricas.</p>
           ) : (
@@ -1333,53 +1459,7 @@ export default function AdminPanel() {
                     <Field label="Salida mín." value={ecoConfig.outputMin} onChange={(v) => setEcoConfig({ ...ecoConfig, outputMin: v })} />
                     <Field label="Salida máx." value={ecoConfig.outputMax} onChange={(v) => setEcoConfig({ ...ecoConfig, outputMax: v })} />
                     <Field label="Periodo (días)" value={ecoConfig.periodDays} onChange={(v) => setEcoConfig({ ...ecoConfig, periodDays: v })} />
-                    <Field label="Meta de saldo (aviso)" value={ecoConfig.milestoneCu} onChange={(v) => setEcoConfig({ ...ecoConfig, milestoneCu: v })} tip="Solo genera una notificación al alcanzar el saldo. No es un objetivo económico obligatorio." />
                   </div>
-                  <div className="mt-3 grid grid-cols-2 gap-3">
-                    <label className="block text-xs font-medium text-gray-700">
-                      CU de bienvenida (base en equilibrio)
-                      <input
-                        type="number"
-                        min={0}
-                        className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-                        value={ecoConfig.newUserGrantCu}
-                        onChange={(e) => setEcoConfig({ ...ecoConfig, newUserGrantCu: e.target.value })}
-                      />
-                    </label>
-                    <label className="block text-xs font-medium text-gray-700" title="Cómo responde la asignación a nuevos usuarios ante escasez/abundancia relativa (0 = constante, 1 = proporcional al error).">
-                      Sensibilidad nuevos usuarios
-                      <input
-                        type="number"
-                        min={0}
-                        step="0.1"
-                        className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-                        value={ecoConfig.newUserSensitivity}
-                        onChange={(e) => setEcoConfig({ ...ecoConfig, newUserSensitivity: e.target.value })}
-                      />
-                    </label>
-                  </div>
-                  <div className="mt-2 grid grid-cols-2 gap-3">
-                    <label className="block text-xs font-medium text-gray-700" title="CU por contribución verificada: se emiten al confirmar una tarea comunitaria o al satisfacer una solicitud de capacidad (el que participó y el autor lo confirma). 0 = desactivado. Es emisión de logro, no un pago ni una transferencia.">
-                      CU por contribución verificada
-                      <input
-                        type="number"
-                        min={0}
-                        className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-                        value={ecoConfig.participationRewardCu}
-                        onChange={(e) => setEcoConfig({ ...ecoConfig, participationRewardCu: e.target.value })}
-                      />
-                    </label>
-                  </div>
-                  <p className="mt-2 text-[11px] text-gray-500">
-                    Al confirmar una tarea o satisfacer una solicitud, el sistema emite esta cantidad de CU
-                    a quien participó (con notificación de logro y movimiento auditable por refType/refId).
-                    Es una recompensa de registro, no un pago: la CU no compra ni transfiere nada.
-                  </p>
-                  <p className="mt-2 text-[11px] text-gray-400">
-                    La asignación a nuevos usuarios es DINÁMICA: depende del estado del sistema + señal
-                    del PID. En equilibrio = cantidad base; ante escasez relativa se reduce (puede
-                    llegar a 0); ante abundancia puede aumentar. No es una emisión fija.
-                  </p>
                   <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 p-3">
                     <p className="text-xs font-semibold text-indigo-900">Política de oferta (SupplyPolicy)</p>
                     <div className="mt-2 grid grid-cols-3 gap-3">
@@ -1418,35 +1498,6 @@ export default function AdminPanel() {
                       Set point efectivo alcanzable (ancla a la distribución)
                     </label>
                   </div>
-                  <div className="mt-3 rounded-lg border border-purple-100 bg-purple-50 p-3">
-                    <p className="text-xs font-semibold text-purple-900">Ajustes históricos (separados del PID, auditablemente)</p>
-                    <div className="mt-2 grid grid-cols-3 gap-3">
-                      <label className="flex items-center gap-1.5 text-xs text-purple-800">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(ecoConfig.adjustmentEnabled)}
-                          onChange={(e) => setEcoConfig({ ...ecoConfig, adjustmentEnabled: e.target.checked })}
-                        />
-                        Habilitar ajustes
-                      </label>
-                      <select
-                        className="rounded-md border border-gray-300 px-2 py-1.5 text-xs"
-                        value={ecoConfig.adjustmentMode || 'none'}
-                        onChange={(e) => setEcoConfig({ ...ecoConfig, adjustmentMode: e.target.value })}
-                      >
-                        <option value="none">none</option>
-                        <option value="flat">flat (fijo)</option>
-                        <option value="proportional">proportional</option>
-                        <option value="manual">manual</option>
-                      </select>
-                      <Field label="Tope por ajuste (0 = sin tope)" value={ecoConfig.adjustmentCap} onChange={(v) => setEcoConfig({ ...ecoConfig, adjustmentCap: v })} />
-                    </div>
-                    <p className="mt-1 text-[11px] text-purple-700">
-                      Deshabilitado por defecto: no hay reglas de confiscación automática. Cuando se
-                      use, cada ajuste queda registrado en CuTransaction y debe responder a una política
-                      acordada, nunca a un capricho del controlador.
-                    </p>
-                  </div>
                   <div className="mt-3 flex flex-wrap gap-4 text-sm">
                     <label className="flex items-center gap-1.5 text-gray-700">
                       <input
@@ -1455,14 +1506,6 @@ export default function AdminPanel() {
                         onChange={(e) => setEcoConfig({ ...ecoConfig, enabled: e.target.checked })}
                       />
                       Control de oferta activo
-                    </label>
-                    <label className="flex items-center gap-1.5 text-gray-700">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(ecoConfig.newUserGrantEnabled)}
-                        onChange={(e) => setEcoConfig({ ...ecoConfig, newUserGrantEnabled: e.target.checked })}
-                      />
-                      Dar CU de bienvenida (dinámica)
                     </label>
                   </div>
                   <button className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">

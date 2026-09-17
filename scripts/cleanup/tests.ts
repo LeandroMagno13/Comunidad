@@ -776,6 +776,29 @@ function runTestO() {
     manualSrc.includes("version: '1.11.0'") &&
       manualSrc.includes('La participación se percibe: CU por contribución verificada'),
     'protocolo de manual cumplido', group);
+
+  check('Panel admin: controles activos separados del bloque histórico',
+    adminSrc.includes('Controles activos — Ronda C y D') &&
+      adminSrc.includes('HISTÓRICO / LEGACY — RONDA A'),
+    'lo que modifica el modelo está a la vista, lo legacy queda plegado', group);
+
+  check('API configura la urgencia presupuestada (RONDA D)',
+    configSrc.includes("['urgencyBudgetBase', 0, 1000]") &&
+      configSrc.includes("['urgencyBudgetMaxLevel', 1, 10]") &&
+      configSrc.includes("['urgencyBudgetPeriodDays', 1, 365]"),
+    'la prioridad presupuestada se puede ajustar sin tocar el histórico', group);
+
+  check('Panel admin: urgencia editable en la sección activa',
+    adminSrc.includes('Urgencia presupuestada (RONDA D)') &&
+      adminSrc.includes('Puntos por período') &&
+      adminSrc.includes('Nivel máximo') &&
+      adminSrc.includes('Días del período'),
+    'parámetros de Ronda D accesibles apenas entra', group);
+
+  check('Manual: changelog 1.12.0 con controles activos a la vista',
+    manualSrc.includes("version: '1.12.0'") &&
+      manualSrc.includes('controles de Ronda C y D a la vista'),
+    'protocolo de manual cumplido', group);
 }
 
 function main() {

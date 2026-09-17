@@ -92,6 +92,9 @@ async function updateConfig(req: NextApiRequest, res: NextApiResponse) {
     ['maxEmissionPerCycle', 0, 1000000000],
     ['maxBurnPerCycle', 0, 1000000000],
     ['adjustmentCap', 0, 1000000000],
+    ['urgencyBudgetBase', 0, 1000],
+    ['urgencyBudgetMaxLevel', 1, 10],
+    ['urgencyBudgetPeriodDays', 1, 365],
   ];
   for (const [key, min, max] of ints) {
     if (body[key] !== undefined) {
