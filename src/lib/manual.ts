@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.16.0';
+export const MANUAL_VERSION = '1.17.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-17';
 
@@ -19,6 +19,16 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.17.0',
+    date: '2026-09-17',
+    title: 'El Manual ahora también figura en la navegación para quien no inició sesión',
+    notes: [
+      'Antes, la barra de navegación mostraba el enlace al Manual solo después de iniciar sesión; los visitantes veían Bot pero no Manual.',
+      'El Manual es una guía pública: explica participación, CU, gremios, señales y controles, sin datos sensibles. No había motivo para esconderlo.',
+      'Ahora ambos enlaces (Manual y Bot) están visibles para todo el mundo.',
+    ],
+  },
   {
     version: '1.16.0',
     date: '2026-09-17',

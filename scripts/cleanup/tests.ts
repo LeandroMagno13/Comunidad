@@ -974,6 +974,27 @@ function runTestS() {
     'protocolo de manual cumplido', group);
 }
 
+function runTestT() {
+  const group = 'Test T — Manual visible en la navegación también para quien no inició sesión';
+  const navSrc = src('src/components/Navbar.tsx');
+
+  check('Navbar: el invitado ve el enlace Manual',
+    navSrc.includes("{ href: '/manual', label: 'Manual' }") &&
+      navSrc.includes("label: 'Manual' }") &&
+      navSrc.indexOf('label: \'Manual\'') > navSrc.indexOf('user\n      ?'),
+    'Manual queda en la rama de visitantes de la navegación', group);
+
+  check('Navbar: el invitado sigue viendo Bot (simetría Manual = Bot)',
+    navSrc.includes("{ href: '/bot', label: 'Bot' }"),
+    'no se oculta nada: ambas secciones son públicas', group);
+
+  const manualSrc = src('src/lib/manual.ts');
+  check('Manual: changelog 1.17.0 documenta Manual visible sin sesión',
+    manualSrc.includes("version: '1.17.0'") &&
+      manualSrc.includes('para quien no inició sesión'),
+    'protocolo de manual cumplido', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -995,6 +1016,7 @@ function main() {
   runTestQ();
   runTestR();
   runTestS();
+  runTestT();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -1022,6 +1044,7 @@ function main() {
       'Presupuesto de urgencia visible para el usuario en perfil': !failures.join().includes('Test Q'),
       'CTA de registro condicional a sesión y wording «Quiero Participar»': !failures.join().includes('Test R'),
       'Registrar una cuenta ya no pide código de administrador': !failures.join().includes('Test S'),
+      'Manual visible en la navegación también para quien no inició sesión': !failures.join().includes('Test T'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');
