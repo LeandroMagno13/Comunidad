@@ -7,9 +7,9 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.12.0';
+export const MANUAL_VERSION = '1.13.0';
 
-export const MANUAL_UPDATED_AT = '2026-09-16';
+export const MANUAL_UPDATED_AT = '2026-09-17';
 
 export interface ManualChange {
   version: string;
@@ -19,6 +19,17 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.13.0',
+    date: '2026-09-17',
+    title: 'Manual del panel: cada indicador y control de «Economía CU» explicado uno por uno',
+    notes: [
+      'La sección del manual sobre el panel de administración ahora explica, en claro y uno por uno, todos los elementos de «Economía CU»: indicadores (solo lectura) y modificadores (controles).',
+      'Cada control distingue qué hace y qué NO hace, para que el personal no toque lo que no entiende.',
+      'Los controles activos de Ronda C y D (urgencia presupuestada, emisión de participación y ajuste manual) quedan explicados campo por campo, con sus valores por defecto.',
+      'El bloque HISTÓRICO / LEGACY aclara qué indicadores son diagnóstico y por qué sus modificadores no gobiernan el modelo vigente.',
+    ],
+  },
   {
     version: '1.12.0',
     date: '2026-09-16',

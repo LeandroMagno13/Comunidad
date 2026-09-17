@@ -369,47 +369,92 @@ export default function ManualPage() {
 
         <Block id="panel-admin" eyebrow="Solo personal del sistema" title="Panel de administración («Economía CU»)">
           <p>
-            El panel <L href="/admin">Admin</L>, pestaña «Economía CU», tiene varios controles. Acá está qué
-            hace cada uno:
+            La pestaña «Economía CU» del panel <L href="/admin">Admin</L> tiene dos tipos de elementos:{' '}
+            <strong>indicadores</strong> (solo lectura, describen el estado) y <strong>modificadores</strong>{' '}
+            (controles que cambian el comportamiento del sistema). Ninguno toca dinero real ni patrimonio:
+            todo lo que se configura aquí opera sobre el registro experimental de CU.
           </p>
-          <ul className="list-disc space-y-2 pl-5">
-            <li>
-              <strong>«Medir ahora»</strong>: recalcula las métricas y señales. Es de solo lectura; no cambia
-              nada del sistema.
-            </li>
-            <li>
-              <strong>«Controles activos — Ronda C y D»</strong>: lo único que configura el modelo vigente,
-              a la vista apenas entrás:
-              <ul className="list-disc space-y-1 pl-5 pt-1">
-                <li><strong>Urgencia presupuestada (RONDA D)</strong>: puntos por período, nivel máximo y días del período. Define cómo se marca la prioridad (no acumulable, costo cuadrático).</li>
-                <li><strong>Emisión de participación (RONDA C)</strong>: CU de bienvenida (base, sensibilidad y activación dinámica), CU por contribución verificada y meta de saldo (aviso).</li>
-                <li><strong>Ajuste auditable manual</strong>: habilitar ajustes, método y tope. Deshabilitado por defecto.</li>
-              </ul>
-            </li>
-            <li>
-              <strong>«Ajuste histórico (manual, auditado)»</strong>: dar o quitar CU a un usuario puntual
-              (queda registrado con actor y motivo).
-            </li>
-            <li>
-              <strong>«Señalización y asignación de capacidad (RONDA C)»</strong>: lectura de la demanda,
-              presión, carga, urgencia presupuestada y niveles de acceso por capacidad. Incluye el bloque{' '}
-              <strong>«Piso de dignidad (RONDA D)»</strong> (headcount y brecha). No es configurable desde acá.
-            </li>
-            <li>
-              <strong>«Patrimonio real + economías personales»</strong>: información, no controles. Las CU no
-              representan activos reales.
-            </li>
-            <li>
-              <strong>«HISTÓRICO / LEGACY — RONDA A»</strong> (plegado): PID, canasta, SupplyPolicy y simulador.
-              Son del experimento histórico y se conservan solo por reproducibilidad. Cambiar esos parámetros{' '}
-              <strong>no</strong> gobierna el modelo actual: se usan únicamente como diagnóstico.
-            </li>
-            <li>
-              <strong>«Avisar sobre nueva versión del manual»</strong>: envía una notificación a todos los
-              usuarios avisando de la versión actual del manual. Se usa cuando cambia el manual.
-            </li>
-          </ul>
-          <p>
+
+          <p className="mt-4 text-sm font-bold text-slate-900">1) Controles activos — lo que sí gobierna el modelo (Ronda C y D)</p>
+          <p className="text-xs text-slate-500">
+            Es el primer bloque de la pantalla. Los cambios se guardan con el botón «Guardar configuración
+            activa». No es necesario abrir el histórico.
+          </p>
+
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-sky-800">Urgencia presupuestada (RONDA D) — define cómo se marca la prioridad</p>
+          <div className="mt-1 space-y-1 text-sm">
+            <p><span className="font-semibold">Puntos por período</span> <span className="text-slate-400">(3)</span> — <span className="text-slate-600">puntos de urgencia que cada persona puede gastar en un período para marcar que una solicitud le urge.</span> No acumula entre períodos, no se transfiere y no se compra con CU.</p>
+            <p><span className="font-semibold">Nivel máximo</span> <span className="text-slate-400">(3)</span> — <span className="text-slate-600">la urgencia se marca por niveles y el costo crece al cuadrado: 1→1, 2→4, 3→9. Este control pone el techo.</span> Subirlo hace más costoso «gritar» más fuerte.</p>
+            <p><span className="font-semibold">Días del período</span> <span className="text-slate-400">(7)</span> — <span className="text-slate-600">cada cuántos días se renueva el presupuesto. Al renovarse, todos vuelven al tope: no se hereda nada.</span></p>
+          </div>
+
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-sky-800">Emisión de participación (RONDA C) — de dónde salen las CU</p>
+          <div className="mt-1 space-y-1 text-sm">
+            <p><span className="font-semibold">CU de bienvenida (base en equilibrio)</span> <span className="text-slate-400">(20)</span> — <span className="text-slate-600">cuántas CU recibe una cuenta nueva en equilibrio.</span> Puede ser 0 (sin bienvenida).</p>
+            <p><span className="font-semibold">Sensibilidad nuevos usuarios</span> <span className="text-slate-400">(1)</span> — <span className="text-slate-600">cuán fuerte responde la asignación de bienvenida a la escasez/abundancia relativa: 0 = constante; cuanto más alto, más se reduce ante escasez (puede llegar a 0) y más sube ante abundancia.</span></p>
+            <p><span className="font-semibold">CU por contribución verificada</span> <span className="text-slate-400">(10 · 0 = desactivado)</span> — <span className="text-slate-600">CU que se emiten a quien participa cuando OTRA persona lo confirma: tarea comunitaria confirmada por su autor o solicitud de capacidad satisfecha.</span> Es emisión de logro (con su movimiento auditable por refType/refId y notificación), no un pago ni una transferencia.</p>
+            <p><span className="font-semibold">Meta de saldo (aviso)</span> <span className="text-slate-400">(100)</span> — <span className="text-slate-600">solo genera una notificación cuando una persona alcanza ese saldo.</span> No es un tope ni un objetivo económico obligatorio.</p>
+            <p><span className="font-semibold">Dar CU de bienvenida (dinámica)</span> <span className="text-slate-400">(activado)</span> — <span className="text-slate-600">interruptor que enciende o apaga la emisión de bienvenida.</span> No es un monto ni una emisión fija.</p>
+          </div>
+
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-sky-800">Ajuste auditable manual — cuándo se puede dar/quitar CU a mano</p>
+          <div className="mt-1 space-y-1 text-sm">
+            <p><span className="font-semibold">Habilitar ajustes</span> <span className="text-slate-400">(desactivado)</span> — <span className="text-slate-600">enciende la posibilidad de dar o quitar CU manualmente. Desactivado por defecto: nunca hay confiscación automática.</span></p>
+            <p><span className="font-semibold">Método</span> <span className="text-slate-400">(none)</span> — <span className="text-slate-600">cómo se aplican los ajustes legados de saldos: none / flat (fijo) / proportional / manual.</span></p>
+            <p><span className="font-semibold">Tope por ajuste</span> <span className="text-slate-400">(0 = sin tope)</span> — <span className="text-slate-600">límite de CU (±) por ajuste, por usuario y por evento.</span></p>
+            <p className="text-xs text-slate-500">Regla de uso: primero «Guardar configuración activa», y recién después usar el bloque «Ajuste histórico (manual, auditado)» de abajo.</p>
+          </div>
+          <p className="mt-2 text-xs text-slate-500">
+            Qué NO hacen estos controles: no modifican patrimonio, no convierten CU en dinero, no compran
+            prioridad ni urgencia, y no suben el nivel de acceso por sí mismos (el nivel sube solo con
+            contribución verificada).
+          </p>
+
+          <p className="mt-4 text-sm font-bold text-slate-900">2) Ajuste histórico (manual, auditado) — acción puntual sobre un saldo</p>
+          <div className="mt-1 space-y-1 text-sm">
+            <p><span className="font-semibold">Usuario</span> — <span className="text-slate-600">a quién se le va a dar o quitar CU.</span></p>
+            <p><span className="font-semibold">CU (±, entero)</span> — <span className="text-slate-600">cuántas: positivo suma, negativo resta.</span></p>
+            <p><span className="font-semibold">Motivo (obligatorio)</span> — <span className="text-slate-600">por qué; sin motivo no se puede aplicar.</span></p>
+            <p><span className="font-semibold">Botón de aplicar</span> — <span className="text-slate-600">efecto inmediato en el saldo, y queda registrado en CuTransaction (type adjustment) con actor y motivo.</span> Requiere «Habilitar ajustes» activado.</p>
+          </div>
+
+          <p className="mt-4 text-sm font-bold text-slate-900">3) Indicadores de señal (solo lectura)</p>
+          <p className="text-xs text-slate-500">Aparecen después de pulsar «Medir ahora». Describen el estado; no cambian nada.</p>
+          <div className="mt-1 space-y-1 text-sm">
+            <p><span className="font-semibold">Medir ahora</span> — <span className="text-slate-600">recalcula métricas y señales.</span> Solo lectura.</p>
+            <p><span className="font-semibold">Patrimonio real (simulado)</span> — <span className="text-slate-600">activos reales simulados de referencia. No todo es distribuible y está separado por completo de las CU.</span></p>
+            <p><span className="font-semibold">Capacidad distribuible (tasa)</span> — <span className="text-slate-600">qué fracción del patrimonio permiten las reglas distribuir efectivamente por período.</span></p>
+            <p><span className="font-semibold">Demanda insatisfecha (30d)</span> — <span className="text-slate-600">solicitudes registradas menos satisfechas en la ventana. Es la señal central del modelo.</span></p>
+            <p><span className="font-semibold">Demanda satisfecha</span> — <span className="text-slate-600">cuántas se resolvieron, con su porcentaje.</span></p>
+            <p><span className="font-semibold">Usuarios básico / medio / avanzado</span> — <span className="text-slate-600">cuántas personas hay en cada nivel de acceso. Avanzado sube con contribución verificada.</span></p>
+            <p><span className="font-semibold">Tabla por capacidad</span> — <span className="text-slate-600">por capacidad humana: demanda total / satisfecha / insatisfecha, presión (insatisfecha sobre oferta efectiva), oferta declarada y efectiva, y automatización.</span> La presión detecta cuellos de botella; no es un precio.</p>
+            <p><span className="font-semibold">Piso de dignidad (RONDA D)</span> — <span className="text-slate-600">indicador principal: cuántas personas quedan debajo del piso de acceso (debajo del piso, headcount e incidencia, brecha o distancia al piso) y la concentración como contexto secundario.</span></p>
+            <p><span className="font-semibold">Patrimonio real + economías personales</span> — <span className="text-slate-600">información. Las CU no representan pesos, activos, acciones ni promesas de pago.</span></p>
+          </div>
+
+          <p className="mt-4 text-sm font-bold text-slate-900">4) HISTÓRICO / LEGACY — Ronda A (diagnóstico; cambiar esto NO gobierna el modelo)</p>
+          <p className="text-xs text-slate-500">
+            Plegado por defecto. Se conserva solo por reproducibilidad del experimento histórico. Los
+            indicadores sirven de diagnóstico y los modificadores NO actúan sobre el modelo vigente.
+          </p>
+          <div className="mt-1 space-y-1 text-sm">
+            <p><span className="font-semibold">Indicadores históricos</span> — <span className="text-slate-600">Set point (CU objetivo de la canasta), canasta observada, sensor v2 (integrado), acceso real, error de control, señal del PID, fase de la política de oferta, emisión/quema decidida por esa política, velocidad (actividad, no un precio), transferidas y consumidas del período, cuentas, usuarios activos, saldos promedio y mediano, concentración (10% mayor), emisión y consumo acumulados y el estado del controlador.</span></p>
+            <p><span className="font-semibold">Controlador PID</span> — <span className="font-semibold text-slate-700">Kp, Ki, Kd</span> <span className="text-slate-400">(0.5 / 0.1 / 0.05)</span> — <span className="text-slate-600">ganancias proporcional / integral / derivada de la señal histórica.</span></p>
+            <p><span className="font-semibold">Salida mín. / máx.</span> <span className="text-slate-400">(−100 / 100)</span> — <span className="text-slate-600">acotan la señal de corrección del PID.</span></p>
+            <p><span className="font-semibold">Periodo (días)</span> <span className="text-slate-400">(30)</span> — <span className="text-slate-600">ventana de cálculo del controlador histórico.</span></p>
+            <p><span className="font-semibold">Política de oferta (SupplyPolicy)</span> — <span className="text-slate-600">Gan. expansión/contracción (apertura de las válvulas; 0 = la política no emite/quema automáticamente), Máx emisión/quema por ciclo (límites anti-shock), y las proporciones Reserva / Nuevos / Históricos del reparto de esa emisión.</span></p>
+            <p><span className="font-semibold">Sensor v2</span> — <span className="text-slate-600">Acceso objetivo (fracción de cuentas que deberían acceder a la canasta), Sens. flujo (sensibilidad al flujo neto), Sens. acceso (sensibilidad a la brecha de acceso) y «Set point alcanzable» (ancla la meta a la distribución).</span></p>
+            <p><span className="font-semibold">Control de oferta activo</span> <span className="text-slate-400">(activado)</span> — <span className="text-slate-600">interruptor de la política de oferta legada.</span> Su cambio no afecta las emisiones por grants ni la urgencia.</p>
+            <p><span className="font-semibold">Canasta representativa</span> — <span className="text-slate-600">nombre, descripción, set point, valor observado, metodología (manual o auto) y los ítems con su peso. Es la hipótesis de medición del sensor histórico.</span></p>
+          </div>
+
+          <p className="mt-4 text-sm font-bold text-slate-900">5) General</p>
+          <div className="mt-1 space-y-1 text-sm">
+            <p><span className="font-semibold">Avisar sobre nueva versión del manual</span> — <span className="text-slate-600">envía una notificación a todos los usuarios avisando de la versión vigente.</span> Se usa cuando cambia el manual.</p>
+            <p><span className="font-semibold">Estimación de «liberación»</span> — <span className="text-slate-600">percepción colectiva reportada por usuarios (promedio, mediana, ponderada). NO alimenta al PID: no modifica emisiones ni saldos.</span></p>
+          </div>
+
+          <p className="mt-4 text-sm">
             Regla general para el personal: si no sabés qué hace un control, no lo toques. La configuración
             económica es experimental: primero se observa, se mide y se discute en los gremios.
           </p>

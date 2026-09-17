@@ -801,6 +801,60 @@ function runTestO() {
     'protocolo de manual cumplido', group);
 }
 
+function runTestP() {
+  const group = 'Test P — manual del panel: cada indicador y control de «Economía CU» explicado';
+
+  const manualPage = src('app/manual/page.tsx');
+  const flat = manualPage.replace(/\s+/g, ' ');
+
+  const requeridos = [
+    'Puntos por período',
+    'Nivel máximo',
+    'Días del período',
+    'CU de bienvenida',
+    'Sensibilidad nuevos usuarios',
+    'CU por contribución verificada',
+    'Meta de saldo (aviso)',
+    'Dar CU de bienvenida',
+    'Habilitar ajustes',
+    'Tope por ajuste',
+    'Motivo (obligatorio)',
+    'Demanda insatisfecha',
+    'Piso de dignidad',
+    'Tabla por capacidad',
+    'Set point',
+    'Sensor v2',
+    'SupplyPolicy',
+    'Canasta representativa',
+    'Control de oferta activo',
+  ];
+
+  for (const label of requeridos) {
+    check(`Manual explica el control/indicador «${label}»`,
+      flat.includes(label),
+      'cada control del panel tiene su explicación', group);
+  }
+
+  check('Manual: bloques indicador y modificador diferenciados en «Economía CU»',
+    flat.includes('(solo lectura, describen el estado)') &&
+      flat.includes('<strong>modificadores</strong>'),
+    'qué es lectura y qué es control queda explícito', group);
+
+  check('Manual: distinción «qué NO hace» como regla por control',
+    flat.includes('Qué NO hacen estos controles: no modifican patrimonio') &&
+      flat.includes('no compran prioridad ni urgencia'),
+    'cada elemento es claro qué hace y qué no', group);
+
+  check('Manual: HISTÓRICO / LEGACY marcado como diagnóstico, no como gobierno',
+    flat.includes('cambiar esto NO gobierna el modelo') &&
+      flat.includes('Se conserva solo por reproducibilidad del experimento histórico'),
+    'legacy no controla el modelo vigente', group);
+
+  check('Manual explica el detalle del ajuste manual auditable',
+    flat.includes('efecto inmediato en el saldo'),
+    'ajuste manual con registro en CuTransaction', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -818,6 +872,7 @@ function main() {
   runTestM();
   runTestN();
   runTestO();
+  runTestP();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -841,6 +896,7 @@ function main() {
       'Moderación de encuestas y ocultamiento en cascada': !failures.join().includes('Test M'),
       'Canales: títulos reales y separación del contenido de prueba': !failures.join().includes('Test N'),
       'Participación con recompensa: CU por contribución verificada y progreso visible': !failures.join().includes('Test O'),
+      'Manual del panel: cada indicador y control de Economía CU explicado': !failures.join().includes('Test P'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');
