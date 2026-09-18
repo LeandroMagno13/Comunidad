@@ -995,6 +995,47 @@ function runTestT() {
     'protocolo de manual cumplido', group);
 }
 
+function runTestU() {
+  const group = 'Test U — invitados no ven Gremios ni Comunidad (destinos con sesión)';
+  const navSrc = src('src/components/Navbar.tsx');
+
+  const guestStart = navSrc.indexOf(': [');
+  const guestEnd = navSrc.indexOf('];', guestStart);
+  const guestNav = guestStart >= 0 && guestEnd > guestStart ? navSrc.slice(guestStart, guestEnd) : '';
+
+  check('Navbar: la rama de invitados no incluye Gremios',
+    guestNav.length > 0 && !guestNav.includes("'/guilds'") && !guestNav.includes('Gremios'),
+    'no se ofrece un enlace que rebota a /login', group);
+
+  check('Navbar: la rama de invitados tampoco incluye Comunidad',
+    guestNav.length > 0 && !guestNav.includes("'/community'"),
+    'ni Gremios ni Comunidad: ninguno de los dos para invitados', group);
+
+  check('Navbar: con sesión siguen estando Comunidad y Gremios',
+    navSrc.includes("{ href: '/community', label: 'Comunidad' }") &&
+      navSrc.includes("{ href: '/guilds', label: 'Gremios' }"),
+    'el miembro no pierde accesos', group);
+
+  const memberSrc = src('src/components/MemberOnlyLink.tsx');
+  check('MemberOnlyLink: client que consulta la sesión y no renderiza sin usuario',
+    memberSrc.includes("'use client'") &&
+      memberSrc.includes('/api/auth/me') &&
+      memberSrc.includes('if (!authed) return null'),
+    'un destino con sesión no se muestra a un visitante', group);
+
+  const pageSrc = src('app/page.tsx');
+  check('Footer: el enlace a Gremios es solo para miembros',
+    pageSrc.includes('<MemberOnlyLink href="/guilds"') &&
+      !pageSrc.includes('<Link href="/guilds"'),
+    'el pie no manda a un invitado a iniciar sesión', group);
+
+  const manualSrc = src('src/lib/manual.ts');
+  check('Manual: changelog 1.18.0 documenta que los invitados no ven Gremios',
+    manualSrc.includes("version: '1.18.0'") &&
+      manualSrc.includes('ya no muestra «Gremios»'),
+    'protocolo de manual cumplido', group);
+}
+
 function main() {
   ensureDir(OUT_DIR);
   runTestA();
@@ -1017,6 +1058,7 @@ function main() {
   runTestR();
   runTestS();
   runTestT();
+  runTestU();
 
   const summary = {
     fecha: new Date().toISOString(),
@@ -1045,6 +1087,7 @@ function main() {
       'CTA de registro condicional a sesión y wording «Quiero Participar»': !failures.join().includes('Test R'),
       'Registrar una cuenta ya no pide código de administrador': !failures.join().includes('Test S'),
       'Manual visible en la navegación también para quien no inició sesión': !failures.join().includes('Test T'),
+      'Invitados no ven Gremios ni Comunidad (destinos con sesión)': !failures.join().includes('Test U'),
     },
   };
   fs.writeFileSync(path.join(OUT_DIR, 'cleanup-tests.json'), JSON.stringify(summary, null, 2), 'utf8');

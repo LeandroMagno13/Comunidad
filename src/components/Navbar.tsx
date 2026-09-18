@@ -122,7 +122,6 @@ export default function Navbar() {
       ]
     : [
         { href: '/', label: 'Inicio' },
-        { href: '/guilds', label: 'Gremios' },
         { href: '/principios', label: 'Principios' },
         { href: '/manual', label: 'Manual' },
         { href: '/bot', label: 'Bot' },

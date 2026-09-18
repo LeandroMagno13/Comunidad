@@ -7,7 +7,7 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.17.0';
+export const MANUAL_VERSION = '1.18.0';
 
 export const MANUAL_UPDATED_AT = '2026-09-17';
 
@@ -19,6 +19,17 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.18.0',
+    date: '2026-09-17',
+    title: 'Sin sesión, la navegación ya no muestra «Gremios» (ni «Comunidad»)',
+    notes: [
+      'Gremios exige cuenta: la página /guilds redirige a iniciar sesión si no hay sesión. Para un visitante, el enlace era un rebote.',
+      'Ahora, sin sesión, la barra muestra: Inicio, Principios, Manual y Bot.',
+      'Con sesión se suman Comunidad, Gremios, Mensajes y Perfil.',
+      'El enlace a Gremios del pie de página también aparece solo con sesión.',
+    ],
+  },
   {
     version: '1.17.0',
     date: '2026-09-17',

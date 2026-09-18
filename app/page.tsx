@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import AuthStatus from '../src/components/AuthStatus';
 import GuestRegisterButton from '../src/components/GuestRegisterButton';
+import MemberOnlyLink from '../src/components/MemberOnlyLink';
 import Section from '../src/components/ui/Section';
 import Diagram from '../src/components/ui/Diagram';
 import ProfessionalCard from '../src/components/ui/ProfessionalCard';
@@ -1588,7 +1589,7 @@ export default function LandingPage() {
           <div className="mt-4 flex justify-center gap-6 text-sm">
             <Link href="/login" className="hover:text-gray-200 transition-colors">Iniciar sesión</Link>
             <Link href="/register" className="hover:text-gray-200 transition-colors">Registrarse</Link>
-            <Link href="/guilds" className="hover:text-gray-200 transition-colors">Gremios</Link>
+            <MemberOnlyLink href="/guilds" label="Gremios" className="hover:text-gray-200 transition-colors" />
             <Link href="/principios" className="hover:text-gray-200 transition-colors">Principios</Link>
             <Link href="/projects" className="hover:text-gray-200 transition-colors">Proyectos</Link>
           </div>
