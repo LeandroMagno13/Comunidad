@@ -206,7 +206,7 @@ export default function LandingPage() {
       <section className="bg-gray-900 text-white py-20 sm:py-28">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-8 leading-tight">
-            Construir capital antes de necesitarlo.
+            ¿Qué vamos a hacer cuando las máquinas hagan todo?
           </h1>
           <p className="text-xl text-gray-300 mb-6 max-w-3xl mx-auto leading-relaxed">
             La inteligencia artificial puede producir cada vez más riqueza. La pregunta no es
