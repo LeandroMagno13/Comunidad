@@ -7,9 +7,9 @@
 // panel admin leen estas constantes; nunca duplicar la versión en el texto.
 // ============================================================================
 
-export const MANUAL_VERSION = '1.18.0';
+export const MANUAL_VERSION = '1.19.0';
 
-export const MANUAL_UPDATED_AT = '2026-09-17';
+export const MANUAL_UPDATED_AT = '2026-09-27';
 
 export interface ManualChange {
   version: string;
@@ -19,6 +19,18 @@ export interface ManualChange {
 }
 
 export const MANUAL_CHANGELOG: ManualChange[] = [
+  {
+    version: '1.19.0',
+    date: '2026-09-27',
+    title: 'Manual reescrito: de lo básico a lo complejo, con tono amigable',
+    notes: [
+      'El manual se reorganiza de lo más simple a lo más complejo: qué es, cómo participar, CU, niveles, gremios, señales, urgencia, panel admin, API y bot.',
+      'Se agrega tabla de contenidos con enlaces directos a cada sección.',
+      'Tono más amistoso y menos técnico: se explica para personas que no conocen el sistema.',
+      'Se simplifican las explicaciones de señales, urgencia y panel de administración.',
+      'Se mantienen todos los detalles técnicos pero ordenados progresivamente.',
+    ],
+  },
   {
     version: '1.18.0',
     date: '2026-09-17',
