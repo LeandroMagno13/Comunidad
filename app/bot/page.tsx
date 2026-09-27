@@ -4,106 +4,209 @@ const github = 'https://github.com/LeandroMagno13/Comunidad';
 const raw = 'https://raw.githubusercontent.com/LeandroMagno13/Comunidad/main/BOT';
 
 export const metadata: Metadata = {
-  title: 'Bot de avisos y skill de previsión | Comunidad Post Singularidad',
-  description: 'Bot de Telegram de PostSingular para avisos cuando cambia la comunidad, y skill experimental que proyecta sus series públicas con TimesFM como base de estudio para datos futuros.',
+  title: 'Bot de avisos | Comunidad Post Singularidad',
+  description:
+    'Bot de Telegram para recibir avisos cuando cambia la comunidad. Instalación simple en Windows, sin librerías externas. También incluye una skill experimental de previsión de datos.',
 };
 
 export default function BotPage() {
   return (
     <main className="min-h-screen bg-slate-50 py-12">
       <div className="mx-auto max-w-3xl space-y-6 px-4">
+        {/* Header */}
         <header className="rounded-2xl bg-slate-900 p-8 text-white">
           <p className="text-xs font-bold uppercase tracking-widest text-sky-300">Herramienta opcional</p>
           <h1 className="mt-2 text-3xl font-bold">Bot de avisos por Telegram</h1>
           <p className="mt-4 text-slate-300">
-            Si te interesa participar, el bot te evita revisar la página todo el tiempo. Te avisa cuando detecta cambios públicos y también envía una confirmación diaria a las 20:00, hora Argentina.
+            ¿No querés estar revisando la página todo el tiempo? Este bot te avisa cuando hay novedades
+            en la community. Es opcional: podés participar sin él.
           </p>
         </header>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-slate-900">Qué recibe el bot</h2>
-          <p className="mt-3 text-slate-700">
-            Un informe simple con miembros, publicaciones, gremios, solicitudes, encuestas y actividad reciente. Si llega una notificación, hubo un cambio público o corresponde al informe periódico. También podés pedirlo cuando quieras con <code>/informe</code> o <code>/reporte</code>.
-          </p>
-          <p className="mt-3 text-sm text-slate-600">
-            El bot solo consulta la API pública de PostSingular. No inicia sesión en la web, no lee mensajes privados y no puede publicar ni modificar contenido.
-          </p>
-        </section>
-
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-slate-900">
-            Skill de previsión: una base para estudiar datos futuros
-          </h2>
-          <p className="mt-3 text-slate-700">
-            Además del bot de avisos, proponemos una skill experimental (<code>informe_forecast.py</code>, en{' '}
-            <code>BOT/prevision/</code>) que no informa los números del momento sino que intenta
-            estudiarlos: descarga las series públicas de la comunidad, las proyecta con un modelo de
-            pronóstico y publica el resultado como una publicación informativa más en el muro. La
-            ofrecemos como <strong>base metodológica</strong> para estudiar los datos que la comunidad
-            genere en el futuro. Hoy usa únicamente los datos que ya tenemos disponibles, que son pocos,
-            así que corre <strong>a modo demo</strong>: su valor no está en el pronóstico de corto plazo,
-            sino en mostrar el método completo y dejar la infraestructura lista para cuando existan más
-            datos.
-          </p>
-          <p className="mt-3 text-sm text-slate-600">
-            Técnicamente funciona en cuatro pasos.{' '}
-            <span className="font-semibold text-slate-700">1) Descarga</span>: solo lectura sobre la API
-            pública incremental (<code>?since</code> + <code>?limit=200</code>), trayendo publicaciones,
-            usuarios y gremios con su fecha de creación.{' '}
-            <span className="font-semibold text-slate-700">2) Agregación</span>: convierte esos eventos en
-            series diarias usables —nuevos posts, nuevos miembros y nuevos gremios por día—, que es lo
-            único sobre lo que un modelo de series temporales puede operar.{' '}
-            <span className="font-semibold text-slate-700">3) Pronóstico</span>: proyecta los próximos N
-            días con <strong>TimesFM de Google</strong>, un modelo fundacional de series temporales
-            entrenado para extrapolar sin reentrenar (zero-shot), y reporta un{' '}
-            <strong>rango probabilístico</strong> (bajo–alto), no un número puntual.{' '}
-            <span className="font-semibold text-slate-700">4) Redacción y publicación</span>: el informe
-            se escribe con un modelo de lenguaje local (Ollama) o compatible con OpenAI y se publica a
-            pedido como «Información». Si TimesFM o un LLM no están instalados, el script degrada con
-            elegancia: proyección por promedio móvil y plantilla de texto, para que siempre pueda correr.
-          </p>
-          <p className="mt-3 rounded-lg bg-slate-100 p-3 text-sm text-slate-600">
-            Aclaración importante: el pronóstico es <strong>observacional y probabilístico, no causal</strong>,
-            y no decide nada dentro de la comunidad —solo produce un informe de lectura. Ignora
-            características cualitativas (el contenido de los posts, las decisiones humanas) que en una
-            comunidad chica pesan más que cualquier promedio estadístico. Por eso lo presentamos como
-            demostración y base de estudio, no como predicción de lo que va a pasar.
-          </p>
-        </section>
-
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-slate-900">Descarga</h2>
-          <p className="mt-3 text-slate-700">Descargá estos archivos y guardalos juntos en <code>C:\Comunidad\BOT</code>.</p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <a className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" href={`${raw}/Instalar.bat`}>Descargar instalador</a>
-            <a className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href={`${github}/tree/main/BOT`}>Ver carpeta completa en GitHub</a>
-            <a className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href={`${raw}/telegram-hourly-bot.py`}>Descargar bot Python</a>
+        {/* Tabla de contenidos */}
+        <div className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">¿Qué querés hacer?</h2>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <a href="#que-hace" className="text-sky-700 hover:text-sky-900 underline underline-offset-2">¿Qué hace el bot?</a>
+            <a href="#instalar" className="text-sky-700 hover:text-sky-900 underline underline-offset-2">Instalar en Windows</a>
+            <a href="#token" className="text-sky-700 hover:text-sky-900 underline underline-offset-2">Crear el token</a>
+            <a href="#prevision" className="text-sky-700 hover:text-sky-900 underline underline-offset-2">Skill de previsión (avanzado)</a>
           </div>
-          <p className="mt-3 text-xs text-slate-500">No descargues ni compartas archivos .env, estados o registros de otra instalación.</p>
+        </div>
+
+        {/* QUÉ HACE */}
+        <section id="que-hace" className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">¿Qué hace el bot?</h2>
+          <p className="text-gray-700 mb-4">
+            El bot es un <strong>avisador automático</strong>. Funciona así:
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">1</div>
+              <div>
+                <p className="font-bold text-gray-900">Revisa la comunidad</p>
+                <p className="text-gray-600">Cada tanto, consulta la API pública de PostSingular para ver si hay novedades.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">2</div>
+              <div>
+                <p className="font-bold text-gray-900">Te avisa por Telegram</p>
+                <p className="text-gray-600">Si detecta cambios (nuevos posts, gremios, encuestas, etc.), te manda un mensaje.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">3</div>
+              <div>
+                <p className="font-bold text-gray-900">También podés pedirle el informe</p>
+                <p className="text-gray-600">Cuando quieras, enviale <code className="bg-gray-100 px-1 rounded">/informe</code> o <code className="bg-gray-100 px-1 rounded">/reporte</code> y te responde con el estado actual.</p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-4">
+            <p className="text-green-800">
+              <strong>¿Es seguro?</strong> El bot solo lee información pública. No inicia sesión en la web,
+              no lee mensajes privados y no puede publicar ni modificar contenido.
+            </p>
+          </div>
         </section>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-slate-900">Instalación en Windows</h2>
-          <ol className="mt-4 list-decimal space-y-3 pl-5 text-slate-700">
-            <li>Guardá la carpeta descargada en <code>C:\Comunidad\BOT</code>.</li>
-            <li>Ejecutá <code>Instalar.bat</code>. Si Python no está instalado, intenta instalarlo con Windows Package Manager; si no está disponible, abre la descarga oficial.</li>
-            <li>El instalador crea <code>.env</code> y abre el Bloc de notas para cargar el token de Telegram.</li>
-            <li>Para que arranque con Windows, copiá <code>Arrancar.bat</code> a <code>shell:startup</code>.</li>
-            <li>En Telegram enviá <code>/start</code> a tu bot. Recibirás el primer informe y luego los avisos.</li>
-          </ol>
-          <p className="mt-4 rounded-lg bg-slate-100 p-3 text-sm text-slate-600">No requiere instalar librerías de Python ni clonar repositorios: usa solo la biblioteca estándar de Python.</p>
+        {/* INSTALAR */}
+        <section id="instalar" className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Instalar en Windows</h2>
+          <p className="text-gray-700 mb-4">
+            No necesitás saber programar ni instalar librerías. Seguí estos pasos:
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">1</div>
+              <div>
+                <p className="font-bold text-gray-900">Descargá los archivos</p>
+                <p className="text-gray-600">Guardalos en <code className="bg-gray-100 px-1 rounded">C:\Comunidad\BOT</code></p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">2</div>
+              <div>
+                <p className="font-bold text-gray-900">Ejecutá el instalador</p>
+                <p className="text-gray-600">Doble clic en <code className="bg-gray-100 px-1 rounded">Instalar.bat</code>. Si no tenés Python, el instalador te ayuda a descargarlo.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">3</div>
+              <div>
+                <p className="font-bold text-gray-900">Pegá tu token</p>
+                <p className="text-gray-600">El instalador abre el Bloc de notas con un archivo <code className="bg-gray-100 px-1 rounded">.env</code>. Pegá tu token de Telegram (lo creás en el siguiente paso).</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">4</div>
+              <div>
+                <p className="font-bold text-gray-900">Arrancá el bot</p>
+                <p className="text-gray-600">Ejecutá <code className="bg-gray-100 px-1 rounded">Arrancar.bat</code>. Para que arranque solo con Windows, copialo a <code className="bg-gray-100 px-1 rounded">shell:startup</code>.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">5</div>
+              <div>
+                <p className="font-bold text-gray-900">Probá en Telegram</p>
+                <p className="text-gray-600">Enviá <code className="bg-gray-100 px-1 rounded">/start</code> a tu bot. Recibirás el primer informe.</p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700" href={`${raw}/Instalar.bat`}>
+              Descargar instalador
+            </a>
+            <a className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href={`${github}/tree/main/BOT`}>
+              Ver carpeta en GitHub
+            </a>
+            <a className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50" href={`${raw}/telegram-hourly-bot.py`}>
+              Descargar bot Python
+            </a>
+          </div>
         </section>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-slate-900">Crear el token con BotFather</h2>
-          <ol className="mt-4 list-decimal space-y-3 pl-5 text-slate-700">
-            <li>En Telegram abrí <strong>@BotFather</strong> y enviá <code>/newbot</code>.</li>
-            <li>Elegí el nombre visible y un usuario único terminado en <code>bot</code>.</li>
-            <li>BotFather mostrará un token. Copialo una sola vez.</li>
-            <li>En <code>C:\Comunidad\BOT\.env</code>, completá <code>TELEGRAM_BOT_TOKEN=tu_token</code>.</li>
-            <li>Guardá el archivo. No lo publiques, no lo subas a GitHub y no lo envíes por chat.</li>
-          </ol>
+        {/* TOKEN */}
+        <section id="token" className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Crear el token de Telegram</h2>
+          <p className="text-gray-700 mb-4">
+            El token es la clave que conecta tu bot con Telegram. Se crea una sola vez:
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">1</div>
+              <div>
+                <p className="font-bold text-gray-900">Abrí @BotFather</p>
+                <p className="text-gray-600">En Telegram, buscá <strong>@BotFather</strong> (el bot oficial de Telegram para crear bots).</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">2</div>
+              <div>
+                <p className="font-bold text-gray-900">Creá el bot</p>
+                <p className="text-gray-600">Enviá <code className="bg-gray-100 px-1 rounded">/newbot</code> y seguí las instrucciones: elegí un nombre y un usuario que termine en <code className="bg-gray-100 px-1 rounded">bot</code>.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">3</div>
+              <div>
+                <p className="font-bold text-gray-900">Copiá el token</p>
+                <p className="text-gray-600">BotFather te va a mostrar un token (una cadena larga). Copialo.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">4</div>
+              <div>
+                <p className="font-bold text-gray-900">Pegalo en el archivo</p>
+                <p className="text-gray-600">En <code className="bg-gray-100 px-1 rounded">C:\Comunidad\BOT\.env</code>, completá: <code className="bg-gray-100 px-1 rounded">TELEGRAM_BOT_TOKEN=tu_token</code></p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 bg-red-50 border border-red-200 rounded-xl p-4">
+            <p className="text-red-800">
+              <strong>Importante:</strong> el token es secreto. No lo compartas, no lo subas a GitHub
+              y no lo envíes por chat. Cualquiera con tu token puede controlar tu bot.
+            </p>
+          </div>
         </section>
+
+        {/* PREVISIÓN (avanzado) */}
+        <section id="prevision" className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Skill de previsión (avanzado)</h2>
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+            <p className="text-amber-900">
+              <strong>Esta sección es para usuarios técnicos.</strong> Si solo querés los avisos,
+              podés saltarte esto.
+            </p>
+          </div>
+          <p className="text-gray-700 mb-4">
+            Además del bot de avisos, incluimos una <strong>skill experimental</strong> que intenta
+            proyectar los datos de la comunidad. No es un predictor mágico: es una
+            <strong> base metodológica</strong> para estudiar los datos que la comunidad genere en el futuro.
+          </p>
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4">
+            <p className="font-bold text-gray-900 mb-2">¿Qué hace en resumen?</p>
+            <ul className="space-y-1 text-sm text-gray-600">
+              <li>• <strong>Descarga</strong> los datos públicos de la comunidad (posts, usuarios, gremios)</li>
+              <li>• <strong>Agrupa</strong> todo en series diarias (cuántos posts nuevos por día, etc.)</li>
+              <li>• <strong>Proyecta</strong> los próximos días con un modelo de series temporales (TimesFM de Google)</li>
+              <li>• <strong>Publica</strong> el resultado como una publicación informativa más</li>
+            </ul>
+          </div>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+            <p className="text-red-800">
+              <strong>Aclaración importante:</strong> el pronóstico es observacional y probabilístico,
+              no causal. No decide nada dentro de la comunidad. Hoy corre a modo demo porque hay pocos
+              datos. Su valor está en mostrar el método, no en predecir el futuro.
+            </p>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <p className="pb-8 text-center text-xs text-slate-400">
+          Comunidad Post Singularidad · Bot de avisos · Herramienta opcional
+        </p>
       </div>
     </main>
   );
