@@ -72,7 +72,7 @@ def get_token():
         if token: return token
     return ""
 
-def http_get(url, timeout=25, redirects=5):
+def http_get(url, timeout=60, redirects=5):
     request = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response: return response.status, response.read()
@@ -102,7 +102,7 @@ def public_get(resource, since=""):
     if since: query["since"] = since
     return get_json(BASE + resource + "?" + urllib.parse.urlencode(query))
 
-def http_get_auth(url, agent_token, timeout=25):
+def http_get_auth(url, agent_token, timeout=60):
     """GET autenticado con token de agente (Bearer). El token nunca se loguea."""
     request = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json", "Authorization": "Bearer " + agent_token})
     try:
