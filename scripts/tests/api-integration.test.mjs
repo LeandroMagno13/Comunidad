@@ -200,6 +200,13 @@ test('Agents usa apiFetch en sus 2 mutaciones', () => {
   assertNoDirectMutations(c, 'agents');
 });
 
+test('Agents permite elegir permisos (incluye los personales del bot)', () => {
+  const c = read('app/agents/page.tsx');
+  assert.ok(c.includes('permissions: perms') || c.includes('permissions'), 'debe enviar permissions al crear');
+  assert.ok(c.includes('READ_NOTIFICATIONS'), 'debe ofrecer READ_NOTIFICATIONS');
+  assert.ok(c.includes('READ_MESSAGES'), 'debe ofrecer READ_MESSAGES');
+});
+
 function assertNoDirectMutations(content, label) {
   const lines = content.split('\n');
   const bad = lines.filter((line, i) => {

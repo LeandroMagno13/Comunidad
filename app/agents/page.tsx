@@ -26,12 +26,37 @@ const STATUS_LABEL: Record<string, string> = {
   revoked: 'Revocado',
 };
 
+// Permisos concedibles a un agente EXTERNAL (membrana RONDA F).
+// Para el bot de Telegram se necesitan READ_NOTIFICATIONS y READ_MESSAGES.
+const PERMISSION_INFO: { value: string; label: string }[] = [
+  { value: 'READ_PUBLIC', label: 'Leer contenido público' },
+  { value: 'READ_COMMUNITY', label: 'Leer métricas de la comunidad' },
+  { value: 'READ_GUILDS', label: 'Leer gremios' },
+  { value: 'READ_REQUESTS', label: 'Leer solicitudes' },
+  { value: 'READ_POLLS', label: 'Leer encuestas' },
+  { value: 'READ_NOTIFICATIONS', label: 'Leer MIS notificaciones (bot personal)' },
+  { value: 'READ_MESSAGES', label: 'Leer MIS mensajes (bot personal)' },
+  { value: 'WRITE_POSTS', label: 'Publicar como yo (cuidado)' },
+  { value: 'WRITE_COMMENTS', label: 'Comentar como yo (cuidado)' },
+  { value: 'WRITE_REQUESTS', label: 'Crear solicitudes como yo (cuidado)' },
+  { value: 'PARTICIPATE_POLLS', label: 'Votar en encuestas como yo (cuidado)' },
+];
+
+const DEFAULT_BOT_PERMS = [
+  'READ_PUBLIC',
+  'READ_COMMUNITY',
+  'READ_POLLS',
+  'READ_NOTIFICATIONS',
+  'READ_MESSAGES',
+];
+
 export default function AgentsAdminPage() {
   const [agents, setAgents] = useState<AgentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [perms, setPerms] = useState<string[]>(DEFAULT_BOT_PERMS);
   const [busy, setBusy] = useState(false);
   const [created, setCreated] = useState<{
     id: string;
@@ -70,7 +95,7 @@ export default function AgentsAdminPage() {
       const res = await apiFetch('/api/v1/external/agents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description }),
+        body: JSON.stringify({ name, description, permissions: perms }),
       });
       const body = await res.json();
       if (!res.ok || body?.allowed !== true) {
@@ -142,6 +167,23 @@ export default function AgentsAdminPage() {
             minLength={3}
             required
           />
+          <fieldset>
+            <legend>Permisos (solo los que necesita)</legend>
+            {PERMISSION_INFO.map((p) => (
+              <label key={p.value} style={{ display: 'block' }}>
+                <input
+                  type="checkbox"
+                  checked={perms.includes(p.value)}
+                  onChange={(e) =>
+                    setPerms((list) =>
+                      e.target.checked ? [...list, p.value] : list.filter((x) => x !== p.value)
+                    )
+                  }
+                />{' '}
+                {p.label} <code>{p.value}</code>
+              </label>
+            ))}
+          </fieldset>
           <button type="submit" disabled={busy || name.trim().length < 3}>
             Crear
           </button>
