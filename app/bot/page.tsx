@@ -28,6 +28,7 @@ export default function BotPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">¿Qué querés hacer?</h2>
           <div className="grid gap-2 sm:grid-cols-2">
             <a href="#que-hace" className="text-sky-700 hover:text-sky-900 underline underline-offset-2">¿Qué hace el bot?</a>
+            <a href="#vincular" className="text-sky-700 hover:text-sky-900 underline underline-offset-2">Vincular con tu usuario</a>
             <a href="#instalar" className="text-sky-700 hover:text-sky-900 underline underline-offset-2">Instalar en Windows</a>
             <a href="#token" className="text-sky-700 hover:text-sky-900 underline underline-offset-2">Crear el token</a>
             <a href="#prevision" className="text-sky-700 hover:text-sky-900 underline underline-offset-2">Skill de previsión (avanzado)</a>
@@ -65,8 +66,49 @@ export default function BotPage() {
           </div>
           <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-4">
             <p className="text-green-800">
-              <strong>¿Es seguro?</strong> El bot solo lee información pública. No inicia sesión en la web,
-              no lee mensajes privados y no puede publicar ni modificar contenido.
+              <strong>¿Es seguro?</strong> Sin vincular, el bot solo lee información pública. No inicia sesión en la web,
+              no lee mensajes privados y no puede publicar ni modificar contenido. Si lo vinculás con tu
+              usuario (abajo), además te avisa tus notificaciones y mensajes personales usando un token
+              que solo vos le das y que podés revocar cuando quieras.
+            </p>
+          </div>
+        </section>
+
+        {/* VINCULAR */}
+        <section id="vincular" className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Vincular el bot con tu usuario</h2>
+          <p className="text-gray-700 mb-4">
+            Cada instalación del bot es personal: además del informe general, puede avisarte tus
+            notificaciones sin leer y tus mensajes sin leer. Para eso necesita tu permiso explícito:
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">1</div>
+              <div>
+                <p className="font-bold text-gray-900">Creá un agente en la web</p>
+                <p className="text-gray-600">Entrá a <code className="bg-gray-100 px-1 rounded">Mis agentes</code> y creá uno (por ejemplo, &quot;Telegram&quot;) con permisos <code className="bg-gray-100 px-1 rounded">READ_NOTIFICATIONS</code> y <code className="bg-gray-100 px-1 rounded">READ_MESSAGES</code>. Copiá el token: se muestra una sola vez.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">2</div>
+              <div>
+                <p className="font-bold text-gray-900">Vinculalo en Telegram</p>
+                <p className="text-gray-600">Mandale a tu bot: <code className="bg-gray-100 px-1 rounded">/vincular TU_TOKEN</code>. Después borrá ese mensaje por privacidad.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center text-xl font-bold text-sky-700">3</div>
+              <div>
+                <p className="font-bold text-gray-900">Recibí tus personales</p>
+                <p className="text-gray-600">Cada hora te avisa si tenés notificaciones o mensajes sin leer. Pedilos cuando quieras con <code className="bg-gray-100 px-1 rounded">/personales</code>, mirá el estado con <code className="bg-gray-100 px-1 rounded">/mibot</code> y cortá el vínculo con <code className="bg-gray-100 px-1 rounded">/desvincular</code>.</p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <p className="text-amber-800 text-sm">
+              <strong>Privacidad:</strong> el token queda guardado solo en tu PC (nunca se sube a GitHub).
+              El bot es de solo lectura: no puede publicar, votar ni modificar nada. Si revocás el agente
+              en la web, el vínculo deja de funcionar al instante.
             </p>
           </div>
         </section>

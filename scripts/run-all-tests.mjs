@@ -20,6 +20,8 @@ const tests = [
   { name: 'Tests de infraestructura', file: 'scripts/tests/infra.test.mjs' },
   { name: 'Tests de integración', file: 'scripts/tests/api-integration.test.mjs' },
   { name: 'Tests conductuales CSRF Edge', file: 'scripts/tests/csrf-edge.test.mjs' },
+  { name: 'Tests de vinculación bot↔usuario', file: 'scripts/tests/bot-link.test.mjs' },
+  { name: 'Self-test del bot (Python)', cmd: 'python scripts/tests/bot-selftest.py' },
 ];
 
 console.log('\n╔════════════════════════════════════════════════════════════╗');
@@ -34,8 +36,9 @@ for (const test of tests) {
   console.log(`\n▶️  Ejecutando: ${test.name}`);
   console.log('─'.repeat(60));
   
+  const command = test.cmd ?? `node ${test.file}`;
   try {
-    const output = execSync(`node ${test.file}`, {
+    const output = execSync(command, {
       cwd: rootDir,
       encoding: 'utf-8',
       stdio: 'pipe',

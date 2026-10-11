@@ -1,18 +1,31 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest } from '@/src/lib/auth';
+import { getReaderUserId } from '@/src/lib/agent-auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { method } = req;
+
+  // Solo el GET admite token de agente (READ_MESSAGES). POST sigue exigiendo
+  // sesión: el bot personal es de solo lectura.
+  if (method === 'GET') {
+    const reader = await getReaderUserId(req, {
+      permission: 'READ_MESSAGES',
+      action: 'agent.conversations.read',
+      endpoint: '/api/conversations',
+    });
+    if (!reader) {
+      return res.status(401).json({ error: 'No autenticado' });
+    }
+    return listConversations(req, res, reader.userId);
+  }
+
   const user = await getUserFromRequest(req);
   if (!user) {
     return res.status(401).json({ error: 'No autenticado' });
   }
 
-  const { method } = req;
-
   switch (method) {
-    case 'GET':
-      return listConversations(req, res, user.id);
     case 'POST':
       return startConversation(req, res, user.id);
     default:
@@ -38,16 +51,23 @@ async function listConversations(_req: NextApiRequest, res: NextApiResponse, use
     orderBy: { updatedAt: 'desc' },
   });
 
-  const result = conversations.map((c: any) => {
-    const other = c.participants.find((p: any) => p.userId !== userId)?.user;
-    const lastMessage = c.messages[0];
-    return {
-      id: c.id,
-      otherUser: other ? { id: other.id, name: other.name, avatarUrl: other.avatarUrl } : null,
-      lastMessage: lastMessage ? { content: lastMessage.content, createdAt: lastMessage.createdAt, senderId: lastMessage.senderId } : null,
-      updatedAt: c.updatedAt,
-    };
-  });
+  const result = await Promise.all(
+    conversations.map(async (c: any) => {
+      const other = c.participants.find((p: any) => p.userId !== userId)?.user;
+      const lastMessage = c.messages[0];
+      // No leídos del otro participante (aditivo: no cambia la forma existente).
+      const unread = await db.message.count({
+        where: { conversationId: c.id, readAt: null, NOT: { senderId: userId } },
+      });
+      return {
+        id: c.id,
+        otherUser: other ? { id: other.id, name: other.name, avatarUrl: other.avatarUrl } : null,
+        lastMessage: lastMessage ? { content: lastMessage.content, createdAt: lastMessage.createdAt, senderId: lastMessage.senderId } : null,
+        unread,
+        updatedAt: c.updatedAt,
+      };
+    })
+  );
 
   return res.status(200).json(result);
 }

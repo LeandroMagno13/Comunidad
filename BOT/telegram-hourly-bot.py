@@ -15,14 +15,23 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 BASE = "https://postsingular.org/api/v1/public/"
+API = "https://postsingular.org/api/"
 BOT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATE_FILE = os.path.join(BOT_DIR, ".telegram-hourly-bot-state.json")
 LOG_FILE = os.path.join(BOT_DIR, ".telegram-hourly-bot.log")
 UA = "postsingular-hourly-bot/2.0 (public read-only)"
 ARGENTINA = timezone(timedelta(hours=-3))
 HORA_CIERRE = 20
-DEFAULT_STATE = {"chat_id": None, "update_id": 0, "last_fingerprint": "", "since_posts": "", "since_guilds": "", "since_users": "", "known_request_ids": [], "known_poll_ids": [], "snapshot": {}, "initialized": False, "report_requested": False, "prevision_requested": False}
+DEFAULT_STATE = {"chat_id": None, "update_id": 0, "last_fingerprint": "", "since_posts": "", "since_guilds": "", "since_users": "", "known_request_ids": [], "known_poll_ids": [], "snapshot": {}, "initialized": False, "report_requested": False, "prevision_requested": False, "links": {}, "personal_requested": {}}
 state = dict(DEFAULT_STATE)
+
+def redact_token(text):
+    """Para logs: nunca registrar tokens (ni de agente ni de Telegram)."""
+    if not isinstance(text, str) or not text:
+        return ""
+    if len(text) > 16:
+        return text[:4] + "…" + text[-4:] + f" (len={len(text)})"
+    return "(secreto)"
 
 def log(message):
     try:
@@ -93,10 +102,141 @@ def public_get(resource, since=""):
     if since: query["since"] = since
     return get_json(BASE + resource + "?" + urllib.parse.urlencode(query))
 
+def http_get_auth(url, agent_token, timeout=25):
+    """GET autenticado con token de agente (Bearer). El token nunca se loguea."""
+    request = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json", "Authorization": "Bearer " + agent_token})
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response: return response.status, response.read()
+    except urllib.error.HTTPError as error:
+        return error.code, error.read()
+    except OSError as error:
+        log(f"http_auth_error {error!r}")
+        return None, b""
+
+def api_get_private(path, agent_token):
+    status, body = http_get_auth(API + path, agent_token)
+    if status != 200:
+        return status, None
+    try: return status, json.loads(body.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError) as error:
+        log(f"json_auth_error {error!r}")
+        return status, None
+
+def link_prefix(agent_token):
+    try: return hashlib.sha256(agent_token.encode("utf-8")).hexdigest()[:8]
+    except (AttributeError, ValueError): return "????"
+
+def get_links():
+    links = state.get("links")
+    if not isinstance(links, dict):
+        links = {}
+        state["links"] = links
+    return links
+
+def validate_link(agent_token):
+    """Valida el token contra /api/notifications. 200=ok, 401=token malo, 403=sin permiso."""
+    status, data = api_get_private("notifications", agent_token)
+    if status == 200 and isinstance(data, dict) and "unread" in data:
+        return True, ""
+    if status == 401:
+        return False, "Token inválido o revocado. Generá uno nuevo en la web (/agents) y probá de nuevo."
+    if status == 403:
+        return False, "Al agente le faltan permisos. Al crearlo en /agents, marcá READ_NOTIFICATIONS y READ_MESSAGES."
+    return False, "No se pudo validar (la web no respondió). Probá en unos minutos."
+
+def personal_digest(agent_token):
+    """Digest personal: notificaciones sin leer + mensajes sin leer. Solo lectura."""
+    lines = []
+    status_n, notifs = api_get_private("notifications", agent_token)
+    if status_n != 200 or not isinstance(notifs, dict):
+        return None
+    unread = [n for n in (notifs.get("notifications") or []) if isinstance(n, dict) and not n.get("readAt")]
+    lines.append(f"Personales sin leer: {len(unread)}")
+    for n in unread[:5]:
+        title = str(n.get("title") or "Aviso")[:80]
+        lines.append(f"- {title}")
+    if len(unread) > 5:
+        lines.append(f"(+{len(unread) - 5} más en /notifications)")
+    status_c, convs = api_get_private("conversations", agent_token)
+    if status_c == 200 and isinstance(convs, list):
+        with_unread = [((c.get("otherUser") or {}).get("name", "?"), c.get("unread", 0)) for c in convs if isinstance(c, dict) and int(c.get("unread", 0) or 0) > 0]
+        total_msg = sum(u for _, u in with_unread)
+        if total_msg > 0:
+            lines.append(f"Mensajes sin leer: {total_msg}")
+            for name, u in with_unread[:5]:
+                lines.append(f"- {name}: {u}")
+    return {"unread_count": len(unread), "text": "TUS PERSONALES\n" + "\n".join(lines)}
+
 def telegram_json(token, method, params=None):
     url = f"https://api.telegram.org/bot{token}/{method}"
     if params: url += "?" + urllib.parse.urlencode(params)
     return get_json(url)
+
+HELP_TEXT = (
+    "Hola. Soy el avisador de PostSingular.\n"
+    "Sin vincular: te mando el informe general de la comunidad (/informe).\n"
+    "Vinculado: además te aviso tus notificaciones y mensajes personales.\n"
+    "Para vincularme:\n"
+    "1) Entrá a la web → Mis agentes → crear agente (nombre, p. ej. 'Telegram')\n"
+    "   con permisos READ_NOTIFICATIONS y READ_MESSAGES. Copiá el token (se muestra una sola vez).\n"
+    "2) Acá mandame: /vincular TU_TOKEN\n"
+    "3) Borrá tu mensaje con el token (privacidad).\n"
+    "Comandos: /mibot (estado), /personales (ver ahora), /desvincular (olvidarme)."
+)
+
+def handle_link_command(bot_token, chat_id, raw_text, command):
+    """Vinculación bot ↔ usuario. El token de agente NUNCA se loguea."""
+    key = str(chat_id)
+    parts = raw_text.split()
+    if command == "/vincular":
+        if len(parts) < 2 or not parts[1].strip():
+            send_report(bot_token, chat_id, "Uso: /vincular TU_TOKEN (el token de tu agente, que se muestra una sola vez en la web).")
+            return
+        agent_token = parts[1].strip()
+        ok, why = validate_link(agent_token)
+        if not ok:
+            log(f"link_failed chat={chat_id} reason={why[:60]}")
+            send_report(bot_token, chat_id, "No pude vincular: " + why)
+            return
+        links = get_links()
+        links[key] = {"token": agent_token, "prefix": link_prefix(agent_token), "linked_at": datetime.now(timezone.utc).isoformat(), "last_unread": 0}
+        save_state()
+        log(f"linked chat={chat_id} prefix={links[key]['prefix']}")
+        send_report(bot_token, chat_id, "Vinculado. Desde ahora te aviso tus personales además del informe general. Por privacidad, borrá tu mensaje con el token.")
+        return
+    if command == "/desvincular":
+        links = get_links()
+        if key in links:
+            links[key]["token"] = ""
+            del links[key]
+            save_state()
+            log(f"unlinked chat={chat_id}")
+            send_report(bot_token, chat_id, "Desvinculado: olvidé tu token y ya no te mando personales.")
+        else:
+            send_report(bot_token, chat_id, "No estabas vinculado.")
+        return
+    if command == "/mibot":
+        links = get_links()
+        link = links.get(key)
+        if not link:
+            send_report(bot_token, chat_id, "No vinculado. Usá /vincular TU_TOKEN para recibir tus personales.")
+        else:
+            send_report(bot_token, chat_id, f"Vinculado (token …{link.get('prefix', '????')}, desde {str(link.get('linked_at', '?'))[:10]}). /personales para ver ahora, /desvincular para salir.")
+        return
+    if command == "/personales":
+        links = get_links()
+        link = links.get(key)
+        if not link or not link.get("token"):
+            send_report(bot_token, chat_id, "No vinculado. Usá /vincular TU_TOKEN primero.")
+            return
+        digest = personal_digest(link["token"])
+        if digest is None:
+            send_report(bot_token, chat_id, "No pude consultar tus personales (¿token revocado? probá /vincular de nuevo).")
+            return
+        link["last_unread"] = digest["unread_count"]
+        save_state()
+        send_report(bot_token, chat_id, digest["text"])
+        return
 
 def ingest_updates(token, accept_commands=False):
     params = {"timeout": 2}
@@ -110,11 +250,16 @@ def ingest_updates(token, accept_commands=False):
         message = update.get("message") or update.get("edited_message") or {}
         chat = message.get("chat") or {}
         if chat.get("id") is not None: state["chat_id"] = chat["id"]
-        command = str(message.get("text", "")).strip().lower().split("@")[0]
+        raw_text = str(message.get("text", "")).strip()
+        command = raw_text.lower().split("@")[0].split()[0] if raw_text else ""
         if accept_commands and command in ("/start", "/informe", "/reporte"):
             requested = True
             state["report_requested"] = True
+        if accept_commands and command == "/start" and chat.get("id") is not None:
+            send_report(token, chat["id"], HELP_TEXT)
         if accept_commands and command == "/prevision": state["prevision_requested"] = True
+        if accept_commands and chat.get("id") is not None:
+            handle_link_command(token, chat["id"], raw_text, command)
     save_state()
     return requested
 
@@ -219,6 +364,7 @@ def main():
         return 1
     load_state()
     ingest_updates(token)
+    push_personal_digests(token)
     data, report = collect_report_data(), None
     report = make_report(data)
     fingerprint = hashlib.sha256(json.dumps(data, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
@@ -233,6 +379,29 @@ def main():
         state["last_fingerprint"], state["snapshot"], state["report_requested"] = fingerprint, data, False
         save_state(); print("SEND_RESULT=enviado"); return 0
     save_state(); print("SEND_RESULT=fallo"); return 1
+
+def push_personal_digests(bot_token):
+    """A cada chat vinculado: personales si hay sin leer nuevos (o a las 20:00)."""
+    now = datetime.now(ARGENTINA)
+    for key, link in list(get_links().items()):
+        agent_token = (link or {}).get("token", "")
+        if not agent_token:
+            continue
+        try:
+            chat_id = int(key)
+        except (TypeError, ValueError):
+            continue
+        digest = personal_digest(agent_token)
+        if digest is None:
+            log(f"personal_failed chat={chat_id}")
+            continue
+        prev = int(link.get("last_unread", 0) or 0)
+        if digest["unread_count"] != prev:
+            link["last_unread"] = digest["unread_count"]
+        if digest["unread_count"] > 0 and (digest["unread_count"] != prev or now.hour == HORA_CIERRE):
+            if send_report(bot_token, chat_id, digest["text"]):
+                log(f"personal_sent chat={chat_id} unread={digest['unread_count']}")
+    save_state()
 
 if __name__ == "__main__":
     if "--once" in sys.argv: sys.exit(main())

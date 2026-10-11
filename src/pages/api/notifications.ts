@@ -1,18 +1,31 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest } from '@/src/lib/auth';
+import { getReaderUserId } from '@/src/lib/agent-auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { method } = req;
+
+  // Solo el GET admite token de agente (READ_NOTIFICATIONS). PATCH sigue
+  // exigiendo sesión: el bot personal es de solo lectura.
+  if (method === 'GET') {
+    const reader = await getReaderUserId(req, {
+      permission: 'READ_NOTIFICATIONS',
+      action: 'agent.notifications.read',
+      endpoint: '/api/notifications',
+    });
+    if (!reader) {
+      return res.status(401).json({ error: 'No autenticado' });
+    }
+    return listNotifications(req, res, reader.userId);
+  }
+
   const user = await getUserFromRequest(req);
   if (!user) {
     return res.status(401).json({ error: 'No autenticado' });
   }
 
-  const { method } = req;
-
   switch (method) {
-    case 'GET':
-      return listNotifications(req, res, user.id);
     case 'PATCH':
       return markRead(req, res, user.id);
     default:

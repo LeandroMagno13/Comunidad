@@ -217,9 +217,14 @@ Este documento resume todas las mejoras de seguridad, calidad y arquitectura imp
 | `src/lib/csrf-edge.ts` | Check CSRF compatible con Edge (sin `node:crypto`), exime `Bearer` |
 | `src/lib/audit.ts` | Auditoría con saneamiento de secretos |
 | `src/lib/api-client.ts` | Wrapper `apiFetch`: adjunta `x-csrf-token` en mutaciones, no rompible sin token |
+| `src/lib/agent-auth.ts` | Auth de agentes en lectura privada (permiso granular + traza, sin loguear tokens) |
 | `src/components/landing/GuildCategories.tsx` | Componente de landing |
 | `src/components/ThemeToggle.tsx` | Botón de modo oscuro accesible |
 | `src/pages/api/auth/csrf.ts` | Emisión de token CSRF |
+| `src/pages/api/notifications.ts` | GET admite agente (READ_NOTIFICATIONS); PATCH solo sesión |
+| `src/pages/api/conversations.ts` | GET admite agente (READ_MESSAGES) + `unread` aditivo; POST solo sesión |
+| `app/bot/page.tsx` | Sección de vinculación con instrucciones |
+| `BOT/telegram-hourly-bot.py` | `/vincular`, `/desvincular`, `/mibot`, `/personales` + digest personal horario |
 | `public/manifest.json` | Manifiesto PWA |
 | `scripts/tests/cap-formulas.test.mjs` | Tests de fórmulas |
 | `scripts/tests/auth.test.mjs` | Tests de auth |
@@ -231,6 +236,8 @@ Este documento resume todas las mejoras de seguridad, calidad y arquitectura imp
 | `scripts/tests/infra.test.mjs` | Tests de infraestructura (paginación, caché, CSRF, CSP, UX) |
 | `scripts/tests/api-integration.test.mjs` | Tests de integración (cableado CSRF + checks vivos con SKIP elegante) |
 | `scripts/tests/csrf-edge.test.mjs` | Tests conductuales del check CSRF (módulo real, incluye anti-drift) |
+| `scripts/tests/bot-link.test.mjs` | Tests de vinculación bot↔usuario (contrato + cableado) |
+| `scripts/tests/bot-selftest.py` | Self-test conductual del bot (redact, links, comandos) |
 | `scripts/run-all-tests.mjs` | Script de tests completo |
 | `scripts/validate-improvements.mjs` | Validación de mejoras |
 | `scripts/setup-migrations.mjs` | Inicialización de migraciones |

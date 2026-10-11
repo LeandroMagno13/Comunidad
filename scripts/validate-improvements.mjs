@@ -274,6 +274,57 @@ check(
 );
 
 // ════════════════════════════════════════════════════════════════════════════
+// 11. VINCULACIÓN BOT ↔ USUARIO
+// ════════════════════════════════════════════════════════════════════════════
+console.log('\n📋 11. VINCULACIÓN BOT ↔ USUARIO');
+console.log('─────────────────────────────────────────────────────────────');
+
+const agentAuth = readFile('src/lib/agent-auth.ts');
+check(
+  'Módulo agent-auth existe con getReaderUserId',
+  agentAuth && agentAuth.includes('getReaderUserId')
+);
+
+const notifApi = readFile('src/pages/api/notifications.ts');
+check(
+  'notifications GET admite agente (READ_NOTIFICATIONS)',
+  notifApi && notifApi.includes('READ_NOTIFICATIONS')
+);
+
+const convApi = readFile('src/pages/api/conversations.ts');
+check(
+  'conversations GET admite agente (READ_MESSAGES)',
+  convApi && convApi.includes('READ_MESSAGES')
+);
+
+check(
+  'conversations expone unread aditivo',
+  convApi && convApi.includes('unread')
+);
+
+const botPy = readFile('BOT/telegram-hourly-bot.py');
+check(
+  'Bot tiene /vincular y /desvincular',
+  botPy && botPy.includes('/vincular') && botPy.includes('/desvincular')
+);
+
+check(
+  'Bot tiene /mibot y /personales',
+  botPy && botPy.includes('/mibot') && botPy.includes('/personales')
+);
+
+check(
+  'Bot nunca loguea tokens',
+  botPy && botPy.includes('redact_token')
+);
+
+const botPage = readFile('app/bot/page.tsx');
+check(
+  'Página del bot documenta la vinculación',
+  botPage && botPage.includes('#vincular')
+);
+
+// ════════════════════════════════════════════════════════════════════════════
 // RESUMEN
 // ════════════════════════════════════════════════════════════════════════════
 console.log('\n╔════════════════════════════════════════════════════════════╗');
