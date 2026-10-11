@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Project } from '@/src/types/models';
+import { apiFetch } from '@/src/lib/api-client';
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -38,7 +39,7 @@ export default function ProjectsPage() {
     };
 
     try {
-      const response = await fetch('/api/projects', {
+      const response = await apiFetch('/api/projects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

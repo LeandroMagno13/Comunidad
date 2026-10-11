@@ -18,7 +18,11 @@ model User {
   avatarUrl                  String?
   createdAt                  DateTime                  @default(now())
   updatedAt                  DateTime                  @updatedAt
+  deletedAt                  DateTime?                  // soft delete: permite restaurar usuarios y mantiene historial
   profile                    Profile?
+
+  @@index([deletedAt])
+  @@index([status, deletedAt])
   skills                     Skill[]
   categories                 Category[]
   guildMemberships           GuildMembership[]
@@ -99,12 +103,15 @@ model Guild {
   status      String            @default("active")
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
+  deletedAt   DateTime?          // soft delete: permite restaurar gremios y mantiene historial
   creator     User?             @relation("GuildCreator", fields: [creatorId], references: [id])
   members     GuildMembership[]
   projects    Project[]
   discussions Discussion[]
   posts       Post[]
   polls       Poll[]
+
+  @@index([deletedAt])
 }
 
 model GuildMembership {
@@ -129,10 +136,13 @@ model Project {
   status           String   @default("investigation")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  deletedAt        DateTime? // soft delete: permite restaurar proyectos y mantiene historial
   contributors     User[]
   responsibilities Json?
   guilds           Guild[]
   tasks            Task[]
+
+  @@index([deletedAt])
 }
 
 model Task {
@@ -251,6 +261,7 @@ model Post {
   excludeFromFeed Boolean   @default(false) // contenido de prueba: queda en la web pero fuera de la corriente pública (feeds RSS/Atom)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime? // soft delete: permite restaurar contenido y mantiene integridad referencial
   author         User     @relation(fields: [authorId], references: [id])
   guild          Guild?   @relation(fields: [guildId], references: [id])
   fulfilledBy    User?    @relation("PostFulfiller", fields: [fulfillUserId], references: [id])
@@ -258,6 +269,9 @@ model Post {
   reports        Report[]
   participationEvents ParticipationEvent[]
   polls          Poll[]
+
+  @@index([deletedAt])
+  @@index([status, deletedAt])
 }
 
 model Comment {
@@ -269,11 +283,14 @@ model Comment {
   status    String    @default("visible")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // soft delete: permite restaurar contenido y mantiene integridad referencial
   post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
   author    User      @relation(fields: [authorId], references: [id])
   parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies   Comment[] @relation("CommentReplies")
   reports   Report[]
+
+  @@index([deletedAt])
 }
 
 model Notification {
@@ -495,6 +512,7 @@ model Poll {
   excludeFromFeed Boolean @default(false) // contenido de prueba: queda en la web pero fuera de la corriente pública (feeds RSS/Atom)
   closesAt    DateTime? // cierre temporal (modo temporal): se cierra sola al vencer el tiempo
   createdAt   DateTime    @default(now())
+  deletedAt   DateTime? // soft delete: permite restaurar encuestas y mantiene historial
 
   options PollOption[]
   votes   PollVote[]

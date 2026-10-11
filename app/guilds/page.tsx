@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/src/lib/api-client';
 
 type Membership = { status: string; role: string };
 
@@ -31,7 +32,7 @@ export default function GuildsPage() {
     e.preventDefault();
     setError('');
     setCreating(true);
-    const res = await fetch('/api/guilds', {
+    const res = await apiFetch('/api/guilds', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
@@ -49,7 +50,7 @@ export default function GuildsPage() {
   }
 
   async function join(guildId: string) {
-    const res = await fetch(`/api/guilds/${guildId}/members`, {
+    const res = await apiFetch(`/api/guilds/${guildId}/members`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'join' }),
@@ -58,7 +59,7 @@ export default function GuildsPage() {
   }
 
   async function leave(guildId: string) {
-    const res = await fetch(`/api/guilds/${guildId}/members`, {
+    const res = await apiFetch(`/api/guilds/${guildId}/members`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'leave' }),

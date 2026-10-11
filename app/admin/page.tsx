@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MANUAL_VERSION } from '@/src/lib/manual';
 import { htmlToText } from '@/src/lib/sanitize';
+import { apiFetch } from '@/src/lib/api-client';
 
 type Tab = 'dashboard' | 'users' | 'guilds' | 'reports' | 'content' | 'economy';
 
@@ -281,7 +282,7 @@ export default function AdminPanel() {
     if (!adjustTarget) return notify('Elegí un usuario');
     if (!Number.isInteger(delta) || delta === 0) return notify('El monto debe ser un entero distinto de cero');
     if (!adjustReason.trim()) return notify('El motivo es obligatorio');
-    const res = await fetch('/api/cu/adjust', {
+    const res = await apiFetch('/api/cu/adjust', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: adjustTarget, amount: delta, reason: adjustReason.trim() }),
@@ -347,7 +348,7 @@ export default function AdminPanel() {
 
   async function saveEcoConfig(e: React.FormEvent) {
     e.preventDefault();
-    const res = await fetch('/api/cu/config', {
+    const res = await apiFetch('/api/cu/config', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -393,7 +394,7 @@ export default function AdminPanel() {
 
   async function notifyManualVersion() {
     setManualNotify({ state: 'busy' });
-    const res = await fetch('/api/admin/manual-notify', {
+    const res = await apiFetch('/api/admin/manual-notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({}),
@@ -411,7 +412,7 @@ export default function AdminPanel() {
 
   async function saveBasket(e: React.FormEvent) {
     e.preventDefault();
-    const res = await fetch('/api/cu/basket', {
+    const res = await apiFetch('/api/cu/basket', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -438,7 +439,7 @@ export default function AdminPanel() {
 
   async function runSim(e: React.FormEvent) {
     e.preventDefault();
-    const res = await fetch('/api/cu/simulate', {
+    const res = await apiFetch('/api/cu/simulate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -521,7 +522,7 @@ export default function AdminPanel() {
   }
 
   async function updateUser(id: string, data: { status?: string; role?: string }) {
-    const res = await fetch('/api/admin/users', {
+    const res = await apiFetch('/api/admin/users', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, ...data }),
@@ -536,7 +537,7 @@ export default function AdminPanel() {
   }
 
   async function moderateGuild(id: string, status: string) {
-    const res = await fetch('/api/admin/guilds', {
+    const res = await apiFetch('/api/admin/guilds', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, status }),
@@ -548,7 +549,7 @@ export default function AdminPanel() {
   }
 
   async function resolveReport(id: string, status: string, action?: string, target?: { postId?: string; commentId?: string }) {
-    const res = await fetch('/api/admin/reports', {
+    const res = await apiFetch('/api/admin/reports', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, status, action, postId: target?.postId, commentId: target?.commentId }),
@@ -560,7 +561,7 @@ export default function AdminPanel() {
   }
 
   async function setFeedExclusion(type: 'post' | 'poll', id: string, excludeFromFeed: boolean) {
-    const res = await fetch('/api/admin/content', {
+    const res = await apiFetch('/api/admin/content', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type, id, excludeFromFeed }),
@@ -576,7 +577,7 @@ export default function AdminPanel() {
 
   async function moderateContent(type: 'post' | 'comment' | 'poll', id: string, status: string) {
     if (status === 'hidden' && !window.confirm('¿Ocultar este contenido a la comunidad?')) return;
-    const res = await fetch('/api/admin/content', {
+    const res = await apiFetch('/api/admin/content', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type, id, status }),
@@ -955,7 +956,7 @@ export default function AdminPanel() {
           <p className="text-sm text-gray-600">
             Moderación directa de publicaciones, comentarios y encuestas. Ocultar retira el
             contenido de la comunidad sin eliminarlo. Al ocultar una publicación también se
-            ocultan sus encuestas vinculadas. "No difundir" lo deja visible en la web pero fuera
+            ocultan sus encuestas vinculadas. &quot;No difundir&quot; lo deja visible en la web pero fuera
             de la corriente pública (RSS/Atom): contenido de prueba no forma parte de la historia.
           </p>
 
@@ -1432,7 +1433,7 @@ export default function AdminPanel() {
                   </div>
 
               <div className="rounded-lg border border-gray-200 bg-white p-4">
-                <h3 className="text-sm font-semibold text-gray-900">Estimación de 'liberación' (percepción colectiva, NO monetaria — LEGACY / RONDA A)</h3>
+                <h3 className="text-sm font-semibold text-gray-900">Estimación de &apos;liberación&apos; (percepción colectiva, NO monetaria — LEGACY / RONDA A)</h3>
                 <p className="mt-1 text-xs text-gray-500">
                   {LIBERATION_DISCLAIMER} Esta estimación es un dato experimental de percepción y{' '}
                   <span className="font-semibold">no alimenta al PID</span>: no modifica emisiones ni saldos.
@@ -1479,7 +1480,7 @@ export default function AdminPanel() {
                   <div className="mt-3 rounded-lg border border-teal-100 bg-teal-50 p-3">
                     <p className="text-xs font-semibold text-teal-900">Sensor v2 y control por ACCESO</p>
                     <p className="mt-1 text-[11px] text-teal-700">
-                      La canasta "sentida" integra flujo neto + brecha de acceso. El error de control
+                      La canasta &quot;sentida&quot; integra flujo neto + brecha de acceso. El error de control
                       combina el desvío de precio con cuántas cuentas pueden comprar la canasta
                       (objetivo: <b>acceso</b>). El set point efectivo se ancla a la distribución para
                       que la meta sea alcanzable, no un ideal imposible.
@@ -1586,7 +1587,7 @@ export default function AdminPanel() {
               <div className="mt-6 rounded-lg border border-gray-200 bg-white p-5">
                 <h3 className="text-sm font-semibold text-gray-900">Ajuste histórico (manual, auditado)</h3>
                 <p className="mt-1 text-xs text-gray-500">
-                  Toda modificación de un saldo queda registrada en CuTransaction (type='adjustment')
+                  Toda modificación de un saldo queda registrada en CuTransaction (type=&apos;adjustment&apos;)
                   con el actor y el motivo. Solo funciona si los ajustes están habilitados en la
                   configuración.
                 </p>
@@ -1690,8 +1691,8 @@ export default function AdminPanel() {
                 {sim && (
                   <div className="mt-4">
                     <p className="text-xs text-gray-500">
-                      Señal PID ≠ emisión: la columna 'Señal PID' es la salida del controlador; la
-                      columna 'Emisión' es la decisión de la política de oferta.
+                      Señal PID ≠ emisión: la columna &apos;Señal PID&apos; es la salida del controlador; la
+                      columna &apos;Emisión&apos; es la decisión de la política de oferta.
                     </p>
                     <div className="mt-2 grid gap-6 lg:grid-cols-2">
                       <div>

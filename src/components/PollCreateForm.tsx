@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { apiFetch } from '@/src/lib/api-client';
 
 export default function PollCreateForm({
   scope,
@@ -46,7 +47,7 @@ export default function PollCreateForm({
     setError('');
     setBusy(true);
     const postId = postRef.trim() ? extractPostId(postRef) : null;
-    const res = await fetch('/api/polls', {
+    const res = await apiFetch('/api/polls', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

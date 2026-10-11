@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest } from '@/src/lib/auth';
 import { sanitizeHtml, htmlToText } from '@/src/lib/sanitize';
+import { createPostSchema, validateBody } from '@/src/lib/validations';
+import { parsePagination, paginatedResponse } from '@/src/lib/pagination';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await getUserFromRequest(req);
@@ -24,44 +26,59 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 async function listPosts(req: NextApiRequest, res: NextApiResponse) {
   const { guildId } = req.query;
+  const { page, limit, skip } = parsePagination(req.query);
 
-  const posts = await db.post.findMany({
-    where: {
-      status: 'visible',
-      ...(guildId ? { guildId: guildId as string } : {}),
-    },
-    include: {
-      author: { include: { profile: true, cuAccount: true } },
-      guild: true,
-      fulfilledBy: { select: { id: true, name: true } },
-      _count: { select: { comments: true } },
-      comments: {
-        where: { status: 'visible' },
-        include: {
-          author: true,
-          replies: {
-            where: { status: 'visible' },
-            include: { author: true },
+  const where = {
+    status: 'visible',
+    deletedAt: null,
+    ...(guildId ? { guildId: guildId as string } : {}),
+  };
+
+  const [posts, total] = await Promise.all([
+    db.post.findMany({
+      where,
+      include: {
+        author: { include: { profile: true, cuAccount: true } },
+        guild: true,
+        fulfilledBy: { select: { id: true, name: true } },
+        _count: { select: { comments: true } },
+        comments: {
+          where: { status: 'visible', deletedAt: null },
+          include: {
+            author: true,
+            replies: {
+              where: { status: 'visible', deletedAt: null },
+              include: { author: true },
+            },
           },
+          orderBy: { createdAt: 'asc' },
+          take: 10, // Limitar comentarios por post en la lista
         },
-        orderBy: { createdAt: 'asc' },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 100,
-  });
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    }),
+    db.post.count({ where }),
+  ]);
 
-  return res.status(200).json(posts);
+  return res.status(200).json(paginatedResponse(posts, page, limit, total));
 }
 
 async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) {
-  const { title, content, guildId, type } = req.body;
+  // Validación de entrada (sin dependencias externas)
+  const validation = validateBody(createPostSchema, req.body);
+  if (!validation.success) {
+    return res.status(400).json({ error: validation.error });
+  }
+
+  const { title, content, guildId, type } = validation.data;
   const postType = type === 'request' ? 'request' : 'update';
 
   // Formato enriquecido: se recibe HTML del editor (whitelist) pero nunca se
   // confía en él. Se sanitiza al guardar y el texto es el que cuenta para
   // validar contenido y límites (lo que ve la persona, no las etiquetas).
-  const safeHtml = sanitizeHtml(typeof content === 'string' ? content : '');
+  const safeHtml = sanitizeHtml(content);
   const textContent = htmlToText(safeHtml);
 
   if (!textContent) {
@@ -69,10 +86,6 @@ async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) 
   }
 
   if (textContent.length > 10000) {
-    return res.status(400).json({ error: 'La publicación es demasiado larga' });
-  }
-
-  if (safeHtml.length > 20000) {
     return res.status(400).json({ error: 'La publicación es demasiado larga' });
   }
 
@@ -91,7 +104,7 @@ async function createPost(req: NextApiRequest, res: NextApiResponse, user: any) 
   const post = await db.post.create({
     data: {
       authorId: user.id,
-      title: title ? String(title).trim().slice(0, 200) : null,
+      title: title ? title.trim().slice(0, 200) : null,
       content: safeHtml,
       guildId: guildId || null,
       type: postType,

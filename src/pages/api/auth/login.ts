@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { signToken, TOKEN_COOKIE } from '@/src/lib/auth';
+import { loginSchema, validateBody } from '@/src/lib/validations';
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,11 +21,13 @@ export default async function handler(
 
 async function login(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email y contraseña son obligatorios' });
+    // Validación con Zod
+    const validation = validateBody(loginSchema, req.body);
+    if (!validation.success) {
+      return res.status(400).json({ error: validation.error });
     }
+
+    const { email, password } = validation.data;
 
     const user = await db.user.findUnique({
       where: { email: String(email).trim().toLowerCase() },

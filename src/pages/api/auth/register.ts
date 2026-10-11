@@ -4,6 +4,7 @@ import { db } from '@/src/lib/db';
 import { signToken, TOKEN_COOKIE } from '@/src/lib/auth';
 import { issueCu, ensureCuConfig } from '@/src/lib/cu';
 import { welcomeGrant } from '@/src/lib/cap-formulas';
+import { registerSchema, validateBody } from '@/src/lib/validations';
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,19 +23,16 @@ export default async function handler(
 
 async function register(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { email, password, name, profession, country, bio, expertise, interests, adminCode } = req.body;
-
-    if (!email || !password || !name) {
-      return res.status(400).json({ error: 'Email, contraseña y nombre son obligatorios' });
+    // Validación con Zod
+    const validation = validateBody(registerSchema, req.body);
+    if (!validation.success) {
+      return res.status(400).json({ error: validation.error });
     }
 
-    const normalizedEmail = String(email).trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      return res.status(400).json({ error: 'Email inválido' });
-    }
-    if (String(password).length < 8) {
-      return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres' });
-    }
+    const { email, password, name } = validation.data;
+    const { profession, country, bio, expertise, interests, adminCode } = req.body;
+
+    const normalizedEmail = email.trim().toLowerCase();
 
     const existing = await db.user.findUnique({ where: { email: normalizedEmail } });
     if (existing) {

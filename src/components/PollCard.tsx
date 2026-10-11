@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { apiFetch } from '@/src/lib/api-client';
 
 export type PollData = {
   id: string;
@@ -50,7 +51,7 @@ export default function PollCard({
   async function vote(optionId: string) {
     setError('');
     setBusy(true);
-    const res = await fetch('/api/polls', {
+    const res = await apiFetch('/api/polls', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'vote', pollId: poll.id, optionId }),
@@ -67,7 +68,7 @@ export default function PollCard({
   async function close() {
     setError('');
     setBusy(true);
-    const res = await fetch('/api/polls', {
+    const res = await apiFetch('/api/polls', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'close', pollId: poll.id }),

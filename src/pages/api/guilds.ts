@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { getUserFromRequest } from '@/src/lib/auth';
+import { createGuildSchema, validateBody } from '@/src/lib/validations';
+import { parsePagination, paginatedResponse } from '@/src/lib/pagination';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -23,21 +25,29 @@ async function getGuilds(req: NextApiRequest, res: NextApiResponse) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
-    const guilds = await db.guild.findMany({
-      include: {
-        members: {
-          where: { status: 'active' },
-          include: {
-            user: { include: { profile: true } },
+    const { page, limit, skip } = parsePagination(req.query);
+
+    const [guilds, total] = await Promise.all([
+      db.guild.findMany({
+        where: { deletedAt: null },
+        include: {
+          members: {
+            where: { status: 'active' },
+            include: {
+              user: { include: { profile: true } },
+            },
           },
+          creator: true,
+          projects: true,
+          discussions: true,
+          _count: { select: { members: true, posts: true } },
         },
-        creator: true,
-        projects: true,
-        discussions: true,
-        _count: { select: { members: true, posts: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      db.guild.count({ where: { deletedAt: null } }),
+    ]);
 
     const userMemberships = await db.guildMembership.findMany({
       where: { userId: user.id },
@@ -49,10 +59,15 @@ async function getGuilds(req: NextApiRequest, res: NextApiResponse) {
     );
 
     return res.status(200).json(
-      guilds.map((g: any) => ({
-        ...g,
-        myMembership: membershipMap[g.id] || null,
-      }))
+      paginatedResponse(
+        guilds.map((g: any) => ({
+          ...g,
+          myMembership: membershipMap[g.id] || null,
+        })),
+        page,
+        limit,
+        total
+      )
     );
   } catch (error) {
     console.error('Error fetching guilds:', error);
@@ -67,11 +82,13 @@ async function createGuild(req: NextApiRequest, res: NextApiResponse) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
-    const { name, description, purpose } = req.body;
-
-    if (!name || !description) {
-      return res.status(400).json({ error: 'Nombre y descripción son obligatorios' });
+    // Validación de entrada (sin dependencias externas)
+    const validation = validateBody(createGuildSchema, req.body);
+    if (!validation.success) {
+      return res.status(400).json({ error: validation.error });
     }
+
+    const { name, description, purpose } = validation.data;
 
     const guild = await db.guild.create({
       data: {

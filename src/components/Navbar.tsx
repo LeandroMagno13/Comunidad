@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import ThemeToggle from '@/src/components/ThemeToggle';
+import { apiFetch } from '@/src/lib/api-client';
 
 const NAV_STAFF_ROLES = ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'];
 
@@ -79,13 +81,13 @@ export default function Navbar() {
   }, [user, pathname]);
 
   async function logout() {
-    await fetch('/api/auth/logout', { method: 'POST' });
+    await apiFetch('/api/auth/logout', { method: 'POST' });
     router.push('/');
     router.refresh();
   }
 
   async function markAllRead() {
-    await fetch('/api/notifications', {
+    await apiFetch('/api/notifications', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ all: true }),
@@ -97,7 +99,7 @@ export default function Navbar() {
 
   async function openNotif(n: NotifItem) {
     if (!n.readAt) {
-      await fetch('/api/notifications', {
+      await apiFetch('/api/notifications', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: n.id }),
@@ -239,6 +241,7 @@ export default function Navbar() {
           {user && (
             <div className="flex items-center gap-3">
               <span className="text-sm text-slate-700">{user.name}</span>
+              <ThemeToggle />
               <button
                 onClick={logout}
                 className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
@@ -247,6 +250,7 @@ export default function Navbar() {
               </button>
             </div>
           )}
+          {!user && <ThemeToggle />}
         </div>
 
         <button

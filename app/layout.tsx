@@ -154,9 +154,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="antialiased">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#111827" />
+      </head>
+      <body className="antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('comunidad-theme');if(t==='dark'||t==='light'){if(t==='dark')document.documentElement.classList.add('dark');}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+          }}
+        />
+        <a
+          href="#contenido"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:underline dark:focus:bg-gray-900"
+        >
+          Saltar al contenido principal
+        </a>
         <Navbar />
-        {children}
+        <main id="contenido">{children}</main>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

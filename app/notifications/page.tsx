@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/src/lib/api-client';
 
 type NotifItem = {
   id: string;
@@ -60,7 +61,7 @@ export default function NotificationsPage() {
   }, [router]);
 
   async function markAllRead() {
-    const res = await fetch('/api/notifications', {
+    const res = await apiFetch('/api/notifications', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ all: true }),
@@ -72,7 +73,7 @@ export default function NotificationsPage() {
 
   async function openNotif(n: NotifItem) {
     if (!n.readAt) {
-      await fetch('/api/notifications', {
+      await apiFetch('/api/notifications', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: n.id }),

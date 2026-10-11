@@ -284,7 +284,7 @@ export default function ManualPage() {
             <strong>En tu perfil</strong> podés ver cuántos puntos te quedan y cuándo se renuevan.
           </p>
           <p>
-            El objetivo: que marcar urgencia tenga un costo real, para que nadie pueda "comprar" prioridad
+            El objetivo: que marcar urgencia tenga un costo real, para que nadie pueda &quot;comprar&quot; prioridad
             acumulando poder.
           </p>
         </Block>
@@ -329,7 +329,7 @@ export default function ManualPage() {
           <div className="bg-red-50 border border-red-200 rounded-xl p-4">
             <p className="font-bold text-red-800 mb-2">HISTÓRICO / LEGACY (NO tocar)</p>
             <p className="text-sm text-red-700">
-              El bloque "HISTÓRICO / LEGACY" es solo para reproducibilidad del experimento anterior.
+              El bloque &quot;HISTÓRICO / LEGACY&quot; es solo para reproducibilidad del experimento anterior.
               Sus controles <strong>no gobiernan el modelo vigente</strong>. Si no sabés qué hace algo, no lo toques.
             </p>
           </div>

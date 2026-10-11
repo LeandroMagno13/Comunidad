@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import RichText from '@/src/components/RichText';
 import PollCard, { PollData } from '@/src/components/PollCard';
+import { apiFetch } from '@/src/lib/api-client';
 
 type CommentItem = {
   id: string;
@@ -74,7 +75,7 @@ export default function PostDetailPage() {
   async function addComment(e: React.FormEvent) {
     e.preventDefault();
     if (!comment.trim()) return;
-    const res = await fetch(`/api/posts/${params?.id}`, {
+    const res = await apiFetch(`/api/posts/${params?.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: comment }),
@@ -88,7 +89,7 @@ export default function PostDetailPage() {
   async function addReply(e: React.FormEvent) {
     e.preventDefault();
     if (!reply.trim() || !replyId) return;
-    const res = await fetch(`/api/posts/${params?.id}`, {
+    const res = await apiFetch(`/api/posts/${params?.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: reply, parentId: replyId }),
@@ -104,7 +105,7 @@ export default function PostDetailPage() {
     e.preventDefault();
     if (!reportReason.trim()) return;
     setReporting(true);
-    const res = await fetch('/api/reports', {
+    const res = await apiFetch('/api/reports', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ postId: params?.id, reason: reportReason }),
@@ -118,7 +119,7 @@ export default function PostDetailPage() {
 
   async function requestAction(action: string) {
     setActionMsg('');
-    const res = await fetch(`/api/posts/${params?.id}/offer`, {
+    const res = await apiFetch(`/api/posts/${params?.id}/offer`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action }),

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { apiFetch } from '@/src/lib/api-client';
 
 type AgentRow = {
   id: string;
@@ -66,7 +67,7 @@ export default function AgentsAdminPage() {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch('/api/v1/external/agents', {
+      const res = await apiFetch('/api/v1/external/agents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, description }),
@@ -95,7 +96,7 @@ export default function AgentsAdminPage() {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch('/api/v1/external/agents', {
+      const res = await apiFetch('/api/v1/external/agents', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ agentId: id, action }),

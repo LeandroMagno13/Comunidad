@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/src/lib/api-client';
 
 type Conversation = {
   id: string;
@@ -43,7 +44,7 @@ export default function MessagesPage() {
   }
 
   async function startConversation(userId: string) {
-    const res = await fetch('/api/conversations', {
+    const res = await apiFetch('/api/conversations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ recipientId: userId }),

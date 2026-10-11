@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { apiFetch } from '@/src/lib/api-client';
 
 type Message = { id: string; senderId: string; content: string; createdAt: string; readAt?: string | null };
 
@@ -44,7 +45,7 @@ export default function ConversationPage() {
     e.preventDefault();
     if (!draft.trim()) return;
     setSending(true);
-    const res = await fetch(`/api/conversations/${params?.id}`, {
+    const res = await apiFetch(`/api/conversations/${params?.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: draft }),

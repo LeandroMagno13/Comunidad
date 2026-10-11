@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { apiFetch } from '@/src/lib/api-client';
 import { useRouter } from 'next/navigation';
 import PollCard, { PollData } from '@/src/components/PollCard';
 import PollCreateForm from '@/src/components/PollCreateForm';
@@ -82,7 +83,7 @@ export default function Cartelera({
     if (!htmlToText(content).trim() || !composer || composer === 'poll') return;
     setError('');
     setSubmitting(true);
-    const res = await fetch('/api/posts', {
+    const res = await apiFetch('/api/posts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

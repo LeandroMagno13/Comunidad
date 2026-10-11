@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/src/lib/api-client';
 
 type Me = {
   user?: {
@@ -114,7 +115,7 @@ export default function ProfilePage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/profile/update', {
+      const res = await apiFetch('/api/profile/update', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -148,7 +149,7 @@ export default function ProfilePage() {
     e.preventDefault();
     setPassMsg('');
 
-    const res = await fetch('/api/auth/change-password', {
+    const res = await apiFetch('/api/auth/change-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ currentPassword, newPassword }),

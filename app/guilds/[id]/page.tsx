@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import Cartelera from '@/src/components/Cartelera';
+import { apiFetch } from '@/src/lib/api-client';
 
 type Member = {
   id: string;
@@ -49,7 +50,7 @@ export default function GuildDetailPage() {
   }, [guildId]);
 
   async function membershipAction(action: string, userId?: string, extra?: Record<string, unknown>) {
-    const res = await fetch(`/api/guilds/${guildId}/members`, {
+    const res = await apiFetch(`/api/guilds/${guildId}/members`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, userId, ...extra }),
