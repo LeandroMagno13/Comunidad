@@ -28,8 +28,7 @@
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^1.14.0",
-    "typescript": "^5",
-    "zustand": "^5.0.15"
+    "typescript": "^5"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^14.1.5",
