@@ -17,6 +17,17 @@ El bot se inicia de inmediato y luego consulta cada hora. Informa cuando hay
 cambios, siempre a las 20:00 hora Argentina (UTC-3), y responde a /informe o
 /reporte. Lee solamente la API publica: https://postsingular.org/api/v1/public/
 
+VINCULACION CON TU USUARIO (personales)
+---------------------------------------
+Sin vincular, el bot solo manda el informe general. Vinculado con tu usuario
+de la web, ademas te avisa tus notificaciones y mensajes sin leer:
+1. En la web: Mis agentes -> crear agente "Telegram" con READ_NOTIFICATIONS
+   y READ_MESSAGES. Copia el token (se muestra una sola vez).
+2. En Telegram: /vincular TU_TOKEN. Despues borra ese mensaje (privacidad).
+3. Comandos: /personales (ver ahora), /mibot (estado), /desvincular (salir).
+El token queda solo en tu PC (.telegram-hourly-bot-state.json, no versionado).
+Para desvincular del lado web, revoca el agente en Mis agentes.
+
 SKILL PREVISION (extra, a pedido)
 ---------------------------------
 En BOT\prevision\ hay un segundo script: informe_forecast.py. Baja datos
