@@ -136,6 +136,22 @@ test('Cartelera usa apiFetch para publicar', () => {
   assertNoDirectMutations(c, 'Cartelera');
 });
 
+test('REGRESIÓN: consumidores desenvuelven { data, pagination }', () => {
+  // El 2026-10-11 /community cayó en prod porque la API pagina y la Cartelera
+  // esperaba un array plano. Todo consumidor de lista debe leer body.data.
+  for (const [rel, label] of [
+    ['src/components/Cartelera.tsx', 'Cartelera'],
+    ['app/guilds/page.tsx', 'guilds'],
+    ['app/guilds/[id]/page.tsx', 'guilds/[id]'],
+  ]) {
+    const c = read(rel);
+    assert.ok(
+      c.includes('body.data') || c.includes('.data ??'),
+      `${label} debe leer body.data de la respuesta paginada`
+    );
+  }
+});
+
 test('PollCard usa apiFetch para votar y cerrar', () => {
   const c = read('src/components/PollCard.tsx');
   assert.ok(c.includes("from '@/src/lib/api-client'"));

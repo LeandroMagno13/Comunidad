@@ -38,7 +38,9 @@ export default function GuildDetailPage() {
       router.push('/login');
       return;
     }
-    const list = await res.json();
+    const body = await res.json();
+    // La API pagina: { data, pagination }. Fallback al array plano por compatibilidad.
+    const list = Array.isArray(body) ? body : body.data ?? [];
     const found = list.find((g: any) => g.id === guildId);
     setGuild(found);
   }

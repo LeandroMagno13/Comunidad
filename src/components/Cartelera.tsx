@@ -59,7 +59,9 @@ export default function Cartelera({
       if (scope === 'community') router.push('/login');
       return;
     }
-    setPosts(await res.json());
+    const body = await res.json();
+    // La API pagina: { data, pagination }. Fallback al array plano por compatibilidad.
+    setPosts(Array.isArray(body) ? body : body.data ?? []);
   }
 
   async function loadPolls() {

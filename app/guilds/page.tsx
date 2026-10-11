@@ -21,7 +21,9 @@ export default function GuildsPage() {
       router.push('/login');
       return;
     }
-    setGuilds(await res.json());
+    const body = await res.json();
+    // La API pagina: { data, pagination }. Fallback al array plano por compatibilidad.
+    setGuilds(Array.isArray(body) ? body : body.data ?? []);
   }
 
   useEffect(() => {
