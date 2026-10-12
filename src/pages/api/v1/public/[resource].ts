@@ -33,14 +33,15 @@ export const PUBLIC_MAX_LIMIT = 200;
 // [RONDA H(b)] se agrega `users`. Orden de aparicion es el contrato real.
 // -----------------------------------------------------------------------------
 export const PUBLIC_RESOURCES = [
-  'health',    // disponibilidad básica del servicio público
-  'community', // resumen de metricas publicas de la comunidad
-  'posts',     // publicaciones visibles
-  'guilds',    // gremios con miembros activos
-  'requests',  // pedidos comunales visibles
-  'polls',     // encuestas visibles
-  'activity',  // actividad reciente (posts + encuestas combinadas)
-  'users',     // [RONDA H(b)] usuarios publicos (id, nombre, timestamps, gremios)
+  'health',                // disponibilidad básica del servicio público
+  'community',             // resumen de metricas publicas de la comunidad
+  'posts',                 // publicaciones visibles
+  'guilds',                // gremios con miembros activos
+  'requests',              // pedidos comunales visibles
+  'polls',                 // encuestas visibles
+  'activity',              // actividad reciente (posts + encuestas combinadas)
+  'users',                 // [RONDA H(b)] usuarios publicos (id, nombre, timestamps, gremios)
+  'stats',                 // [RONDA H(b)+NUEVO] conteos agregados publicos (total de posts/usuarios/guilds/polls/requests)
 ] as const;
 
 export type PublicResource = (typeof PUBLIC_RESOURCES)[number];
@@ -325,6 +326,29 @@ async function activity(db_: typeof db, limit: number) {
 }
 
 // -----------------------------------------------------------------------------
+// stats [RONDA H(b)+NUEVO]: conteos agregados 100% publicos, sin datos privados.
+// Se calculan usando las mismas consultas que ya existen en community()/activity()
+// para evitar duplicidad de lógica y asegurar consistencia.
+// -----------------------------------------------------------------------------
+async function stats(db_: typeof db) {
+  const [usersCount, postsCount, guildsCount, pollsCount, requestsCount] = await Promise.all([
+    db_.user.count({ where: { status: 'active' } }),
+    db_.post.count({ where: { status: 'visible' } }),
+    db_.guild.count(),
+    db_.poll.count({ where: { status: 'visible' } }),
+    db_.post.count({ where: { type: 'request', status: 'visible' } }),
+  ]);
+  return {
+    users: usersCount,
+    visiblePosts: postsCount,
+    guilds: guildsCount,
+    polls: pollsCount,
+    requests: requestsCount,
+    publicInfo: 'Conteos agregados 100% publicos; cada usuario conserva su privacidad.',
+  };
+}
+
+// -----------------------------------------------------------------------------
 // GET /api/v1/public/[recurso]  (read-only, sin autenticacion).
 // -----------------------------------------------------------------------------
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -354,6 +378,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'requests': data = await requests(db, limit); break;
       case 'polls': data = await polls(db, limit); break;
       case 'activity': data = await activity(db, limit); break;
+      case 'stats': data = await stats(db); break; // [RONDA H(b)+NUEVO]
       case 'users': data = await publicUsers(db, limit, since); break; // [RONDA H(b)]
     }
     return res.status(200).json({
