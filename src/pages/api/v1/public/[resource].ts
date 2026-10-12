@@ -23,6 +23,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/src/lib/db';
 import { publicUser } from '@/src/lib/auth';
+import { getVisitsTotal, trackVisit } from '@/src/lib/visit-counter';
 
 export const PUBLIC_VERSION = 'v1';
 export const PUBLIC_DEFAULT_LIMIT = 50;
@@ -33,7 +34,7 @@ export const PUBLIC_MAX_LIMIT = 200;
 // [RONDA H(b)] se agrega `users`. Orden de aparicion es el contrato real.
 // -----------------------------------------------------------------------------
 export const PUBLIC_RESOURCES = [
-  'health',                // disponibilidad básica del servicio público
+  'health',                // disponibilidad basica del servicio publico
   'community',             // resumen de metricas publicas de la comunidad
   'posts',                 // publicaciones visibles
   'guilds',                // gremios con miembros activos
@@ -42,6 +43,7 @@ export const PUBLIC_RESOURCES = [
   'activity',              // actividad reciente (posts + encuestas combinadas)
   'users',                 // [RONDA H(b)] usuarios publicos (id, nombre, timestamps, gremios)
   'stats',                 // [RONDA H(b)+NUEVO] conteos agregados publicos (total de posts/usuarios/guilds/polls/requests)
+  'visits-count',          // total de visitas al sitio (persistente en Neon; ?track=1 registra una)
 ] as const;
 
 export type PublicResource = (typeof PUBLIC_RESOURCES)[number];
@@ -50,8 +52,10 @@ export function isPublicResource(r: string): r is PublicResource {
   return (PUBLIC_RESOURCES as readonly string[]).includes(r);
 }
 
-// [RONDA H(b)] Cursor incremental opcional: `?since=<ISO timestamp>`.
+// -----------------------------------------------------------------------------
+// Cursor incremental opcional: `?since=<ISO timestamp>`.
 // Devuelve undefined si no viene o no es un ISO valido (comportamiento previo).
+// -----------------------------------------------------------------------------
 export function sinceFilter(req: NextApiRequest): Date | undefined {
   const raw = req.query?.since;
   if (typeof raw !== 'string' || !raw) return undefined;
@@ -95,7 +99,7 @@ async function community(db_: typeof db) {
 // -----------------------------------------------------------------------------
 // users [RONDA H(b)]: usuarios PUBLICOS (nunca emails, hashes, tokens ni
 // datos privados). Solo: id publico, nombre publico, timestamps y gremios
-// publicos del usuario. Incremental por `?since=<ISO  >`
+// publicos del usuario. Incremental por `?since=<ISO  >`.
 // spu mes luego la consulta real.
 // -----------------------------------------------------------------------------
 async function publicUsers(db_: typeof db, limit: number, since?: Date) {
@@ -327,8 +331,6 @@ async function activity(db_: typeof db, limit: number) {
 
 // -----------------------------------------------------------------------------
 // stats [RONDA H(b)+NUEVO]: conteos agregados 100% publicos, sin datos privados.
-// Se calculan usando las mismas consultas que ya existen en community()/activity()
-// para evitar duplicidad de lógica y asegurar consistencia.
 // -----------------------------------------------------------------------------
 async function stats(db_: typeof db) {
   const [usersCount, postsCount, guildsCount, pollsCount, requestsCount] = await Promise.all([
@@ -345,6 +347,20 @@ async function stats(db_: typeof db) {
     polls: pollsCount,
     requests: requestsCount,
     publicInfo: 'Conteos agregados 100% publicos; cada usuario conserva su privacidad.',
+  };
+}
+
+// -----------------------------------------------------------------------------
+// visits-count: total de visitas al sitio (persistente en Neon via SiteCounter).
+// 100% READ_PUBLIC, aditivo, nunca expone IPs ni datos personales.
+// ?track=1 registra una visita (el Navbar lo llama una vez por sesion) y
+// devuelve el total actualizado.
+// -----------------------------------------------------------------------------
+async function visitsCount(track: boolean) {
+  if (track) await trackVisit();
+  return {
+    total: await getVisitsTotal(),
+    publicInfo: 'Contador de visitas 100% publico; no se guardan IPs ni datos personales.',
   };
 }
 
@@ -368,6 +384,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const limit = publicLimit(req);
   const since = sinceFilter(req); // [RONDA H(b)] cursor incremental
+  const track = req.query?.track === '1'; // visits-count: ?track=1 registra una visita
   try {
     let data: unknown;
     switch (resource) {
@@ -379,6 +396,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'polls': data = await polls(db, limit); break;
       case 'activity': data = await activity(db, limit); break;
       case 'stats': data = await stats(db); break; // [RONDA H(b)+NUEVO]
+      case 'visits-count': data = await visitsCount(track); break; // contador persistente en Neon
       case 'users': data = await publicUsers(db, limit, since); break; // [RONDA H(b)]
     }
     return res.status(200).json({

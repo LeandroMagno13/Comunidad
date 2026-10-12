@@ -615,3 +615,12 @@ model AgentActionLog {
   @@index([userId, createdAt])
   @@index([agentId, createdAt])
 }
+
+// Contador de visitas del sitio (una fila por clave; hoy solo "site-visits").
+// Solo totales agregados: nunca IPs, user-agents ni datos personales.
+// La fila se crea sola con upsert en el primer conteo.
+model SiteCounter {
+  key       String   @id
+  value     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}

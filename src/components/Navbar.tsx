@@ -31,6 +31,10 @@ type NotifData = {
   unread: number;
 };
 
+type VisitStats = {
+  total: number;
+};
+
 function fmtFecha(iso: string) {
   const d = new Date(iso);
   const diff = Date.now() - d.getTime();
@@ -52,6 +56,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [stats, setStats] = useState<{users: number; visiblePosts: number; guilds: number} | null>(null);
+  const [visits, setVisits] = useState<number | null>(null);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -97,6 +102,17 @@ export default function Navbar() {
     return () => clearInterval(interval);
   }, [user]);
 
+  // Contador de visitas: registra una visita por sesion de pestana (una sola vez).
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('cps_visit_counted')) return;
+      sessionStorage.setItem('cps_visit_counted', '1');
+    } catch {
+      return;
+    }
+    fetch('/api/v1/public/visits-count?track=1').catch(() => {});
+  }, [pathname]);
+
   useEffect(() => {
     if (!user) return;
     fetch('/api/notifications')
@@ -107,6 +123,24 @@ export default function Navbar() {
       })
       .catch(() => {});
   }, [user, pathname]);
+
+  // Visitas totales (solo staff): se muestran junto al nombre.
+  useEffect(() => {
+    if (!user?.role || !NAV_STAFF_ROLES.includes(user.role)) {
+      setVisits(null);
+      return;
+    }
+    let active = true;
+    fetch('/api/v1/public/visits-count')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (active && data?.ok) setVisits(data.data.total);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   async function logout() {
     await apiFetch('/api/auth/logout', { method: 'POST' });
@@ -272,6 +306,11 @@ export default function Navbar() {
               {stats && (
                 <span className="text-[10px] text-slate-500 bg-sky-100 text-sky-800 rounded-full px-1.5 py-0.5 ms-1">
                   {stats.users}u/{stats.visiblePosts}p/{stats.guilds}g
+                </span>
+              )}
+              {visits !== null && (
+                <span className="text-[10px] text-slate-500 bg-emerald-100 text-emerald-800 rounded-full px-1.5 py-0.5 ms-1">
+                  {visits} visitas
                 </span>
               )}
               <ThemeToggle />

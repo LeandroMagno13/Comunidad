@@ -319,6 +319,7 @@ def collect_report_data():
     requests = public_get("requests")
     polls = public_get("polls")
     activity = public_get("activity")
+    visits = public_get("visits-count")
     community_data = (community or {}).get("data") or {}
     post_items, guild_items, user_items = (posts or {}).get("data") or [], (guilds or {}).get("data") or [], (users or {}).get("data") or []
     request_items, poll_items = (requests or {}).get("data") or [], (polls or {}).get("data") or []
@@ -335,12 +336,13 @@ def collect_report_data():
         "polls": len(poll_items) if polls and polls.get("ok") else "NO_DISPONIBLE", "polls_new": polls_new if polls and polls.get("ok") else "NO_DISPONIBLE",
         "activity": len(activity_data.get("entries") or []) if activity and activity.get("ok") else "NO_DISPONIBLE",
         "health": bool(health and health.get("ok")),
+        "visits": ((visits or {}).get("data") or {}).get("total", "NO_DISPONIBLE") if visits and visits.get("ok") else "NO_DISPONIBLE",
     }
     state["since_posts"], state["since_guilds"], state["since_users"] = newest_cursor(posts, state.get("since_posts", "")), newest_cursor(guilds, state.get("since_guilds", "")), newest_cursor(users, state.get("since_users", ""))
     state["known_request_ids"], state["known_poll_ids"], state["initialized"] = request_ids, poll_ids, True
     return data
 
-LABELS = {"version": "Version API", "members": "Miembros Activos", "members_new": "Miembros Nuevos", "posts": "Posts Visibles", "posts_new": "Post Nuevos", "guilds": "Gremios", "guilds_new": "Gremios Nuevos", "requests": "Solicitudes en Cartelera", "requests_new": "Solicitudes Nuevas", "polls": "Encuestas en Cartelera", "polls_new": "Encuestas Nuevas", "activity": "Actividad Reciente", "health": "Salud de Servicio"}
+LABELS = {"version": "Version API", "members": "Miembros Activos", "members_new": "Miembros Nuevos", "posts": "Posts Visibles", "posts_new": "Post Nuevos", "guilds": "Gremios", "guilds_new": "Gremios Nuevos", "requests": "Solicitudes en Cartelera", "requests_new": "Solicitudes Nuevas", "polls": "Encuestas en Cartelera", "polls_new": "Encuestas Nuevas", "activity": "Actividad Reciente", "health": "Salud de Servicio", "visits": "Visitas al Sitio"}
 ORDER = list(LABELS)
 
 def make_report(data):
@@ -367,7 +369,7 @@ def main():
     push_personal_digests(token)
     data, report = collect_report_data(), None
     report = make_report(data)
-    fingerprint = hashlib.sha256(json.dumps(data, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+    fingerprint = hashlib.sha256(json.dumps({k: v for k, v in data.items() if k != "visits"}, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()  # visits cambia siempre: se muestra pero no dispara avisos
     now = datetime.now(ARGENTINA)
     must_send = bool(state.get("report_requested")) or now.hour == HORA_CIERRE or fingerprint != state.get("last_fingerprint")
     print(report)
