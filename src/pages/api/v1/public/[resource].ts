@@ -43,7 +43,7 @@ export const PUBLIC_RESOURCES = [
   'activity',              // actividad reciente (posts + encuestas combinadas)
   'users',                 // [RONDA H(b)] usuarios publicos (id, nombre, timestamps, gremios)
   'stats',                 // [RONDA H(b)+NUEVO] conteos agregados publicos (total de posts/usuarios/guilds/polls/requests)
-  'visits-count',          // total de visitas al sitio (persistente en Neon; ?track=1 registra una)
+  'visits',                // total de visitas al sitio (persistente en Neon; ?track=1 registra una)
 ] as const;
 
 export type PublicResource = (typeof PUBLIC_RESOURCES)[number];
@@ -351,7 +351,7 @@ async function stats(db_: typeof db) {
 }
 
 // -----------------------------------------------------------------------------
-// visits-count: total de visitas al sitio (persistente en Neon via SiteCounter).
+// visits: total de visitas al sitio (persistente en Neon via SiteCounter).
 // 100% READ_PUBLIC, aditivo, nunca expone IPs ni datos personales.
 // ?track=1 registra una visita (el Navbar lo llama una vez por sesion) y
 // devuelve el total actualizado.
@@ -384,7 +384,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const limit = publicLimit(req);
   const since = sinceFilter(req); // [RONDA H(b)] cursor incremental
-  const track = req.query?.track === '1'; // visits-count: ?track=1 registra una visita
+  const track = req.query?.track === '1'; // visits: ?track=1 registra una visita
   try {
     let data: unknown;
     switch (resource) {
@@ -396,7 +396,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'polls': data = await polls(db, limit); break;
       case 'activity': data = await activity(db, limit); break;
       case 'stats': data = await stats(db); break; // [RONDA H(b)+NUEVO]
-      case 'visits-count': data = await visitsCount(track); break; // contador persistente en Neon
+      case 'visits': data = await visitsCount(track); break; // contador persistente en Neon
       case 'users': data = await publicUsers(db, limit, since); break; // [RONDA H(b)]
     }
     return res.status(200).json({

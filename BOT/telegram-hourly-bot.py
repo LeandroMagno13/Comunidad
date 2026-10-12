@@ -319,7 +319,7 @@ def collect_report_data():
     requests = public_get("requests")
     polls = public_get("polls")
     activity = public_get("activity")
-    visits = public_get("visits-count")
+    visits = public_get("visits")
     community_data = (community or {}).get("data") or {}
     post_items, guild_items, user_items = (posts or {}).get("data") or [], (guilds or {}).get("data") or [], (users or {}).get("data") or []
     request_items, poll_items = (requests or {}).get("data") or [], (polls or {}).get("data") or []

@@ -110,7 +110,7 @@ export default function Navbar() {
     } catch {
       return;
     }
-    fetch('/api/v1/public/visits-count?track=1').catch(() => {});
+    fetch('/api/v1/public/visits?track=1').catch(() => {});
   }, [pathname]);
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function Navbar() {
       return;
     }
     let active = true;
-    fetch('/api/v1/public/visits-count')
+    fetch('/api/v1/public/visits')
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (active && data?.ok) setVisits(data.data.total);

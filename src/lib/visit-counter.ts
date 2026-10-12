@@ -1,8 +1,8 @@
 /**
  * Contador de visitas del sitio, persistente en Neon (modelo SiteCounter).
  * - Solo totales agregados: nunca IPs, user-agents ni datos personales.
- * - GET /api/v1/public/visits-count devuelve el total (100% READ_PUBLIC).
- * - GET /api/v1/public/visits-count?track=1 registra una visita y devuelve el total.
+ * - GET /api/v1/public/visits devuelve el total (100% READ_PUBLIC).
+ * - GET /api/v1/public/visits?track=1 registra una visita y devuelve el total.
  *   El Navbar lo llama una sola vez por sesion de pestana (sessionStorage).
  * - Incremento atomico via upsert (seguro ante requests concurrentes).
  */
