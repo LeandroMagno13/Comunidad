@@ -51,6 +51,7 @@ export default function Navbar() {
   const [unread, setUnread] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [stats, setStats] = useState<{users: number; visiblePosts: number; guilds: number} | null>(null);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -68,6 +69,33 @@ export default function Navbar() {
       active = false;
     };
   }, [pathname]);
+
+  useEffect(() => {
+    if (!user) return;
+    async function loadStats() {
+      try {
+        const res = await fetch('https://www.postsingular.org/api/v1/public/stats', {
+          headers: { 'User-Agent': 'navbar-stats' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok && data.data) {
+            setStats({
+              users: data.data.users,
+              visiblePosts: data.data.visiblePosts,
+              guilds: data.data.guilds,
+            });
+          }
+        }
+      } catch (e) {
+        // Silently ignore stats fetch failure
+      }
+    }
+    loadStats();
+    // Revalidar cada 5 minutos
+    const interval = setInterval(loadStats, 300000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -241,6 +269,11 @@ export default function Navbar() {
           {user && (
             <div className="flex items-center gap-3">
               <span className="text-sm text-slate-700">{user.name}</span>
+              {stats && (
+                <span className="text-[10px] text-slate-500 bg-sky-100 text-sky-800 rounded-full px-1.5 py-0.5 ms-1">
+                  {stats.users}u/{stats.visiblePosts}p/{stats.guilds}g
+                </span>
+              )}
               <ThemeToggle />
               <button
                 onClick={logout}
