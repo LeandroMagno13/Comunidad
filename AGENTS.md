@@ -158,6 +158,13 @@ privados, datos administrativos ni informacion personal interna.
                                  votos personales). `?limit=`.
 - GET /api/v1/public/activity  -> actividad reciente (posts + encuestas
                                  combinadas). `?limit=`.
+- GET /api/v1/public/stats     -> conteos agregados publicos (usuarios, posts,
+                                 gremios, encuestas, solicitudes). Solo totales.
+- GET /api/v1/public/visits    -> total de visitas al sitio (contador
+                                 persistente, solo el numero). `?track=1`
+                                 registra una visita (lo llama el Navbar una
+                                 vez por sesion). NUNCA guarda IPs ni datos
+                                 personales.
 
 Convencion de respuesta de TODOS los recursos publicos:
 { ok: true, data: [...], meta: { resource, version, limit, generatedAt,
